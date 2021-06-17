@@ -1,6 +1,7 @@
 <!DOCTYPE html>
+<html>
     <head>
-	    <title>CTX Framework</title>
+	<title>CTX Framework</title>
         <script id="VertexSource" type="x-shader/x-vertex">
             attribute vec4 vertex;
             varying vec2 pos;
@@ -59,11 +60,11 @@
             
             var setup = function()
             {
-			    canvas = document.getElementById("canvas");
+		canvas = document.getElementById("canvas");
                 ctx = ctxBegin(canvas);
-				canvas.width = canvas.clientWidth;
-				canvas.height = canvas.clientHeight;
-				VertexSource = document.getElementById("VertexSource");
+		canvas.width = canvas.clientWidth;
+		canvas.height = canvas.clientHeight;
+		VertexSource = document.getElementById("VertexSource");
                 FragmentSource = document.getElementById("FragmentSource");
                 vertexBuffer = ctxCreateBuffer(ctx, [-1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0]);
                 vertexShader = ctxCreateShader(ctx, VertexSource.text, ctx.VERTEX_SHADER);
