@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+    <head>
+	    <title>CTX Framework</title>
+        <script id="VertexSource" type="x-shader/x-vertex">
+            attribute vec4 vertex;
+            varying vec2 pos;
+            void main()
+            {
+                gl_Position = vertex;
+                pos.xy = vertex.xy;
+            }
+        </script>
+        <script id="FragmentSource" type="x-shader/x-fragment">
+            precision highp float;
+            varying vec2 pos;
+            void main()
+            {
+                if ((pos.y >  -0.5)
+                &&  (pos.y < ( 2.0 * pos.x +  0.5))
+                &&  (pos.y < (-2.0 * pos.x +  0.5)))
+                {
+                    gl_FragColor.r = 1.0 - distance(pos, vec2( 0.0,  0.5));
+                    gl_FragColor.g = 1.0 - distance(pos, vec2(-0.5, -0.5));
+                    gl_FragColor.b = 1.0 - distance(pos, vec2( 0.5, -0.5));
+                }
+                else
+                {
+                    gl_FragColor.r = 0.0;
+                    gl_FragColor.g = 0.0;
+                    gl_FragColor.b = 0.0;
+                }
+                gl_FragColor.a = 0.8;
+            }
+        </script>
+        <script>
+            var clock = null;
+            var request = null;
+            
+            var canvas = null;
+            var context = null;
+            
+            var vertexBuffer = null;
+            var attributeVertex = 0;
+            var vertexShader = null;
+            var fragmentShader = null;
+            var vertexShaderSource = null;
+            var fragmentShaderSource = null;
+            var shaderProgram = null;
+            
+            window.onload = function()
+            {
+                setTimeout(() => { setup(); setInterval(() => { loop(); }, 0); }, 0);
+            }
+            
+            window.onunload = function()
+            {
+                setTimeout(() => { cleanup(); }, 0);
+            }
+            
+            var setup = function()
+            {
+			    canvas = document.getElementById("canvas");
+                ctx = ctxBegin(canvas);
+				canvas.width = canvas.clientWidth;
+				canvas.height = canvas.clientHeight;
+				VertexSource = document.getElementById("VertexSource");
+                FragmentSource = document.getElementById("FragmentSource");
+                vertexBuffer = ctxCreateBuffer(ctx, [-1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0]);
+                vertexShader = ctxCreateShader(ctx, VertexSource.text, ctx.VERTEX_SHADER);
+                fragmentShader = ctxCreateShader(ctx, FragmentSource.text, ctx.FRAGMENT_SHADER);
+                shaderProgram = ctxCreateProgram(ctx, vertexShader, fragmentShader);
+            }
+            
+            var loop = function()
+            {
+			    ctx.viewport(0, 0, canvas.width, canvas.height);
+                ctx.clear(ctx.COLOR_BUFFER_BIT);
+                ctx.useProgram(shaderProgram);
+                ctx.bindBuffer(ctx.ARRAY_BUFFER, vertexBuffer);
+                ctx.enableVertexAttribArray(attributeVertex);
+                ctx.vertexAttribPointer(attributeVertex, 2, ctx.FLOAT, false, 0, 0);
+                ctx.drawArrays(ctx.TRIANGLE_STRIP, 0, 4);
+            }
+            
+            var cleanup = function()
+            {
+                ctx.deleteProgram(shaderProgram);
+                ctx.deleteShader(fragmentShader);
+                ctx.deleteShader(vertexShader);
+            }
+            
+            var delay = function(milliseconds)
+            {
+                clock = Date.now();
+                while ((Date.now() - clock) < milliseconds) { }
+            }
+            
+            
+            var ctxBegin = function(element)
+            {
+                var context = element.getContext("webgl");
+                if (!context)
+                {
+                    console.log("[WARN]: glBegin() failed\nERROR: Graphics Context Not Supported");
+                    return null;
+                }
+                context.clearColor(0.0, 0.0, 0.3, 1.0);
+                context.clear(context.COLOR_BUFFER_BIT);
+                return context;
+            }
+            
+            var ctxCreateBuffer = function(context, positions)
+            {
+                var buffer = context.createBuffer();
+                context.bindBuffer(context.ARRAY_BUFFER, buffer);
+                context.bufferData(context.ARRAY_BUFFER, new Float32Array(positions), context.STATIC_DRAW);
+                return buffer;
+            }
+            
+            var ctxCreateShader = function(context, source, type)
+            {
+                var shader = context.createShader(type);
+                context.shaderSource(shader, source);
+                context.compileShader(shader);
+                if (!context.getShaderParameter(shader, context.COMPILE_STATUS))
+                {
+                    var info = context.getShaderInfoLog(shader);
+                    console.log("[WARN]: createShader() failed\n" + info);
+                    return null;
+                }
+                return shader;
+            }
+            
+            var ctxCreateProgram = function(context, vertex, fragment)
+            {
+                var program = context.createProgram();
+                context.attachShader(program, vertex);
+                context.attachShader(program, fragment);
+                context.linkProgram(program);
+                if (!context.getProgramParameter(program, context.LINK_STATUS))
+                {
+                    var info = context.getProgramInfoLog(program);
+                    console.log("[WARN]: createProgram() failed\n" + info);
+                    return null;
+                }
+                return program;
+            }
+		</script>
+		<style>
+		    * { box-sizing: border-box; margin: auto; text-align: center; overflow: hidden; }
+		    body { background: black; }
+		    #canvas { position: fixed; bottom: 0; left: 0; width: 100vw; height: 100vh; }
+		</style>
+    <head>
+    <body>
+        <canvas id="canvas"></canvas>
+    </body>
+</html>
