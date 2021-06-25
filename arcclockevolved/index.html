@@ -3,7 +3,7 @@
     <head>
         <title>Windows On Edge</title>
         <script>
-            var pos1 = 0, pos2 = 0, pos3 = 0, pos4, w, h, t = 0;
+            var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
             
             var pi = Math.PI;
             var tau = pi * 2.0;
@@ -18,7 +18,7 @@
             var Size = 0;
             var Overlap = 3;
 
-            varh = 0;
+            var h = 0;
             var hc = pi / 12.0;
             var hsz = 200;
             var hth = 15;
@@ -73,18 +73,18 @@
                 ms = ((now.getMilliseconds() / 500.0) - 0.5) * pi;
 
                 //CLEAR
-                w = canvas.clientWidth;
-                h = canvas.clientHeight;
-                canvas.width = w;
-                canvas.height = h;
-                X = w / 2.0;
-                Y = h / 2.0;
-                if (h < w) { Size = h / 500.0; }
-                else { Size = w / 500.0; }
+                Width = canvas.clientWidth;
+                Height = canvas.clientHeight;
+                canvas.width = Width;
+                canvas.height = Height;
+                X = Width / 2.0;
+                Y = Height / 2.0;
+                if (Height < Width) { Size = Height / 500.0; }
+                else { Size = Width / 500.0; }
 
                 //BACKGROUND
                 ctx.fillStyle = colourBackground;
-                ctx.fillRect(0, 0, w, h);
+                ctx.fillRect(0, 0, Width, Height);
 
                 //HOUR FACE
                 ctx.strokeStyle = colourPrimary;
