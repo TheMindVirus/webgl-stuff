@@ -39,7 +39,7 @@
             var msth = 25;
 
             var am = 0;
-            var amc = pi / 2.0;
+            var amc = 0.075;
             var amsz = 5;
             var amth = 10;
 
@@ -78,7 +78,7 @@
                 m = ((now.getMinutes() / 30.0) - 0.5) * pi;
                 s = ((now.getSeconds() / 30.0) - 0.5) * pi;
                 ms = ((now.getMilliseconds() / 500.0) - 0.5) * pi;
-                am = (h < 12) ? 1 : 0;
+                am = (now.getHours() < 12) ? 1 : 0;
 
                 //CLEAR
                 Width = canvas.clientWidth;
@@ -166,7 +166,7 @@
                     ctx.strokeStyle = colourNight;
                     ctx.lineWidth = amth * Size;
                     ctx.beginPath();
-                    ctx.arc(X, Y, amsz * Size, -1 * amc, amc, false);
+                    ctx.arc(X, Y, amsz * Size, (pi / -2.0) + (tau * amc), (pi / -2.0) + (tau * (0.750 - amc)), false);
                     ctx.stroke();
                 }
             }
