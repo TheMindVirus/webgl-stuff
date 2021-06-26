@@ -28,19 +28,26 @@
             var msz = 160;
             var mth = 30;
 
-            s = 0;
+            var s = 0;
             var sc = pi / 60.0;
-            ssz = 100;
-            sth = 20;
+            var ssz = 100;
+            var sth = 20;
 
-            ms = 0;
-            msc = pi / 40.0;
-            mssz = 55;
-            msth = 25;
+            var ms = 0;
+            var msc = pi / 40.0;
+            var mssz = 55;
+            var msth = 25;
 
-            colourPrimary = "rgba(0, 153, 255, 1.00)";
-            colourSecondary = "rgba(0, 0, 0, 0.00)";
-            colourBackground = "rgba(0, 0, 0, 0.00)";
+            var am = 0;
+            var amc = pi / 2.0;
+            var amsz = 5;
+            var amth = 10;
+
+            var colourPrimary = "rgba(0, 153, 255, 1.00)";
+            var colourSecondary = "rgba(0, 0, 0, 0.00)";
+            var colourBackground = "rgba(0, 0, 0, 0.00)";
+            var colourDay = "rgba(255, 255, 0, 1.00)";
+            var colourNight = "rgba(255, 255, 255, 1.00)";
 
             window.onload = function()
             {
@@ -71,6 +78,7 @@
                 m = ((now.getMinutes() / 30.0) - 0.5) * pi;
                 s = ((now.getSeconds() / 30.0) - 0.5) * pi;
                 ms = ((now.getMilliseconds() / 500.0) - 0.5) * pi;
+                am = (h < 12) ? 1 : 0;
 
                 //CLEAR
                 Width = canvas.clientWidth;
@@ -141,6 +149,26 @@
                 ctx.beginPath();
                 ctx.arc(X, Y, mssz * Size, ms - msc, ms + msc, false);
                 ctx.stroke();
+
+                //AM/PM INDICATOR
+                if (am)
+                {
+                    ctx.strokeStyle = colourDay;
+                    ctx.fillStyle = colourDay;
+                    ctx.lineWidth = amth * Size;
+                    ctx.beginPath();
+                    ctx.arc(X, Y, amsz * Size, 0, tau, false);
+                    ctx.stroke();
+                    ctx.fill();
+                }
+                else 
+                {
+                    ctx.strokeStyle = colourNight;
+                    ctx.lineWidth = amth * Size;
+                    ctx.beginPath();
+                    ctx.arc(X, Y, amsz * Size, -1 * amc, amc, false);
+                    ctx.stroke();
+                }
             }
 
             var OnDragStart = function(event)
