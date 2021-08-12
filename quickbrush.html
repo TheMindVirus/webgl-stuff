@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>QuickBrush</title>
+        <script>
+            var container = null;
+            var viewport = null;
+            var canvas = null;
+            var ctx = null;
+            var overlay = null;
+            var octx = null;
+
+            var select = null;
+            var loader = null;
+            var reader = null;
+            var buffer = null;
+            var saver = null;
+
+            var mouseX = 0.0;
+            var mouseY = 0.0;
+            var mouseDrag = false;
+            var scale = 1.0;
+            var radius = 50;
+
+            window.onbeforeunload = function(event) { return true; }
+            window.onload = function() { setTimeout(() => { setup(); setInterval(() => { loop(); }, 0); }, 0); }
+
+            var setup = function()
+            {
+                container = document.getElementById("container");
+                container.onmousemove = canvas_onmousemove;
+                container.onmousedown = canvas_onmousedown;
+                container.onmouseup = canvas_onmouseup;
+                viewport = document.getElementById("viewport");
+                viewport.onwheel = canvas_onwheel;
+                canvas = document.getElementById("canvas");
+                canvas.width = canvas.clientWidth;
+                canvas.height = canvas.clientHeight;
+                container.onwheel = canvas_onwheel;
+                canvas.ondrop = canvas_ondrop;
+                ctx = canvas.getContext("2d");
+                overlay = document.getElementById("overlay");
+                octx = overlay.getContext("2d");
+                overlay_submit();
+                select = document.getElementById("brush");
+                loader = document.getElementById("loader");
+                loader.onchange = loader_onchange;
+                reader = new FileReader();
+                reader.onload = reader_onload;
+                buffer = document.getElementById("buffer");
+                buffer.onload = buffer_onload;
+                saver = document.getElementById("saver");
+            }
+
+            var loop = function()
+            {
+                if (mouseDrag)
+                {
+                    if (select.value == "Alpha Brush")
+                    {
+                         ctx.save();
+                         ctx.beginPath();
+                         ctx.arc(mouseX, mouseY, radius, 0, 2 * Math.PI, false);
+                         ctx.clip();
+                         ctx.clearRect(mouseX - radius, mouseY - radius, radius * 2, radius * 2);
+                         ctx.restore();
+                    }
+                    else if (select.value == "Corrupt Brush")
+                    {
+                         ctx.save();
+                         ctx.beginPath();
+                         ctx.arc(mouseX, mouseY, radius, 0, 2 * Math.PI, false);
+                         ctx.clip();
+                         var tex = ctx.getImageData(mouseX - radius, mouseY - radius, radius * 2, radius * 2);
+                         for (var i in tex.data) { if ((i % 4) != 3) { tex.data[i] = 255.0 - tex.data[i]; } }
+                         ctx.putImageData(tex, mouseX - radius, mouseY - radius);
+                         ctx.restore();
+                    }
+                    else if (select.value == "Invert Brush")
+                    {
+                         ctx.save();
+                         var tex = ctx.getImageData(mouseX - radius, mouseY - radius, radius * 2, radius * 2);
+                         for (var i in tex.data) { if ((i % 4) != 3) { tex.data[i] = 255.0 - tex.data[i]; } }
+                         octx.putImageData(tex, mouseX - radius, mouseY - radius);
+                         ctx.restore();
+                    }
+                    else if (select.value == "DarkHDR Brush")
+                    {
+                        ctx.save();
+                        var tex = ctx.getImageData(mouseX - radius, mouseY - radius, radius * 2, radius * 2);
+                        for (var i in tex.data)
+                        {
+                            if ((i % 4) != 3)
+                            {
+                                var x1 = 0.50;
+                                var y1 = 0.33;
+                                var x2 = 0.75;
+                                var y2 = 0.90;
+                                var p1x = Math.min(x1, x2);
+                                var p1y = Math.min(y1, y2);
+                                var p2x = Math.max(x1, x2);
+                                var p2y = Math.max(y1, y2);
+                                var m1 = p1y / p1x;
+                                var m2 = (p2y - p1y) / (p2x - p1x);
+                                var m3 = (1.00 - p2y) / (1.00 - p2x);
+                                var c1 = 0.00;
+                                var c2 = p1y - (m2 * p1x);
+                                var c3 = p2y - (m3 * p2x);
+                                if (tex.data[i] > 0.75) { tex.data[i] = (m1 * tex.data[i]) + c1; }
+                                else if (tex.data[i] > 0.25) { tex.data[i] = (m2 * tex.data[i]) + c2; }
+                                else { tex.data[i] = (m3 * tex.data[i]) + c3; }
+                            }
+                        }
+                        octx.putImageData(tex, mouseX - radius, mouseY - radius);
+                        ctx.restore();
+                    }
+                }
+            }
+
+            var canvas_onmousemove = function(event)
+            {
+                vp = canvas.getBoundingClientRect();
+                mouseX = (((event.x - vp.left) / canvas.clientWidth) * canvas.width) / scale;
+                mouseY = (((event.y - vp.top) / canvas.clientHeight) * canvas.height) / scale;
+                //document.title = parseInt(mouseX) + ", " + parseInt(mouseY);
+            }
+            var canvas_onmousedown = function(event) { mouseDrag = true; }
+            var canvas_onmouseup = function(event) { mouseDrag = false; overlay_submit(); }
+            var canvas_onwheel = function(event)
+            {
+                scale -= (event.deltaY > 0) ? 0.1 : -0.1;
+                if (scale < 0.1) { scale = 0.1; }
+                viewport.style.transform = "scale(" + scale + ")";
+                event.preventDefault();
+                return;
+            }
+            var canvas_ondrop = function(event)
+            {
+                event.preventDefault();
+                reader.readAsDataURL(event.dataTransfer.files[0]);
+            }
+
+            var overlay_submit = function(event)
+            {
+                ctx.drawImage(overlay, 0, 0);
+                overlay.width = canvas.width;
+                overlay.height = canvas.height;
+            }
+
+            var load_onclick = function(sender) { loader.click(); }
+            var loader_onchange = function(event) { reader.readAsDataURL(loader.files[0]); event.target.value = ""; }
+            var reader_onload = function(event) { buffer.src = reader.result; }
+            var buffer_onload = function(event)
+            {
+                canvas.width = buffer.width;
+                canvas.height = buffer.height;
+                var h = parseInt(window.getComputedStyle(viewport).height);
+                viewport.style.width = canvas.width * (h / canvas.height) + "px";
+                scale = 1.0;
+                viewport.style.transform = "scale(" + scale + ")";
+                ctx.drawImage(buffer, 0, 0);
+                overlay_submit();
+            }
+            var save_onclick = function(sender)
+            {
+                saver.href = canvas.toDataURL();
+                saver.download = "QuickBrush-" + new Date().toISOString().split("T")[0] + ".png";
+                saver.click();
+            }
+
+            document.onpaste = function(event)
+            {
+                var item = event.clipboardData.items[0];
+                if (item.type.indexOf("image") == 0) { reader.readAsDataURL(item.getAsFile()); }
+            }
+            document.oncopy = function(event)
+            {
+                event.preventDefault();
+                //event.clipboardData.setData("text/plain", "test");
+                canvas.toBlob((blob) => { navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]); }, "image/png", 1.00);
+            }
+            document.onkeydown = function(event)
+            {
+                if (event.keyCode == 83 && (navigator.platform.match("Mac") ? event.metaKey : event.ctrlKey))
+                {
+                    event.preventDefault();
+                    save_onclick(null);
+                }
+            }
+        </script>
+        <style>
+            * { box-sizing: border-box; margin: auto; text-align: center; font-family: consolas; font-size: 14pt; font-weight: bold; overflow: hidden; }
+            body { background: rgba(33, 33, 33, 1.00); }
+            button { border-radius: 5px; border: none; box-shadow: inset 0 0 10px rgba(0, 0, 0, 1.00); user-select: none; }
+            button:hover { opacity: 0.8; } button:active { opacity: 0.6; }
+            #load { background: rgba(0, 255, 0, 1.00); position: absolute; top: 10px; left: 10px; width: 100px; height: 35px; }
+            #save { background: rgba(0, 255, 0, 1.00); position: absolute; top: 10px; left: 115px; width: 100px; height: 35px; }
+            #brush { position: absolute; top: 10px; left: 220px; width: 200px; height: 35px; border-radius: 5px; box-shadow: inset 0 0 5px rgba(0, 0, 0, 1.00); user-select: none; }
+            #container { position: absolute; bottom: 0; left: 0; width: 100%; height: calc(100% - 55px); user-select: none; overflow-x: scroll; }
+            #viewport { position: relative; top: 5px; left: 0; width: calc(100vw - 10px); height: calc(100% - 20px); border: 1px rgba(255, 255, 175, 1.00) solid; cursor: crosshair; }
+            canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <div id="viewport" ondragover="event.preventDefault();">
+                <canvas id="canvas"></canvas>
+                <canvas id="overlay"></canvas>
+            </div>
+        </div>
+        <button id="load" onclick="load_onclick(this);">Load</button>
+        <button id="save" onclick="save_onclick(this);">Save</button>
+        <select id="brush" title="Brush Select">
+            <option>Alpha Brush</option>
+            <option>Corrupt Brush</option>
+            <option>Invert Brush</option>
+            <option>DarkHDR Brush</option>
+        </select>
+        <input id="loader" type="file" accept="image/png" hidden></input>
+        <img id="buffer" alt="" hidden></img>
+        <a id="saver" target="_blank" hidden></a>
+    </body>
+</html>
