@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>M4 GPU Camera</title>
+        <script id="VertexSource" type="x-shader/x-vertex">
+            #define R_PI 3.1415926535897932384626433832795
+            uniform mat4 camera;
+            attribute vec4 vertex;
+
+            vec3 v3normalise(vec3 src)
+            {
+                vec3 dst = vec3(0.0, 0.0, 0.0);
+                float length = sqrt(src[0] * src[0] + src[1] * src[1] + src[2] * src[2]);
+                if (length > 0.00001)
+                {
+                    dst[0] = src[0] / length;
+                    dst[1] = src[1] / length;
+                    dst[2] = src[2] / length;
+                }
+                return dst;
+            }
+
+            vec3 v3subtractVectors(vec3 a, vec3 b)
+            {
+                vec3 dst = vec3(0.0, 0.0, 0.0);
+                dst[0] = a[0] - b[0];
+                dst[1] = a[1] - b[1];
+                dst[2] = a[2] - b[2];
+                return dst;
+            }
+
+            vec3 v3cross(vec3 a, vec3 b)
+            {
+                vec3 dst = vec3(0.0, 0.0, 0.0);
+                dst[0] = a[1] * b[2] - a[2] * b[1];
+                dst[1] = a[2] * b[0] - a[0] * b[2];
+                dst[2] = a[0] * b[1] - a[1] * b[0];
+                return dst;
+            }
+
+            mat4 m4lookAt(vec3 cameraPosition, vec3 target, vec3 up)
+            {
+                mat4 dst = mat4(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+                vec3 zAxis = v3normalise(v3subtractVectors(cameraPosition, target));
+                vec3 xAxis = v3normalise(v3cross(up, zAxis));
+                vec3 yAxis = v3normalise(v3cross(zAxis, xAxis));
+                dst[0][0] = xAxis[0];
+                dst[0][1] = xAxis[1];
+                dst[0][2] = xAxis[2];
+                dst[0][3] = 0.0;
+                dst[1][0] = yAxis[0];
+                dst[1][1] = yAxis[1];
+                dst[1][2] = yAxis[2];
+                dst[1][3] = 0.0;
+                dst[2][0] = zAxis[0];
+                dst[2][1] = zAxis[1];
+                dst[2][2] = zAxis[2];
+                dst[2][3] = 0.0;
+                dst[3][0] = cameraPosition[0];
+                dst[3][1] = cameraPosition[1];
+                dst[3][2] = cameraPosition[2];
+                dst[3][3] = 1.0;
+                return dst;
+            }
+
+            mat4 m4multiply(mat4 a, mat4 b)
+            {
+                mat4 dst = mat4(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+                dst[0][0] = b[0][0] * a[0][0] + b[0][1] * a[1][0] + b[0][2] * a[2][0] + b[0][3] * a[3][0];
+                dst[0][1] = b[0][0] * a[0][1] + b[0][1] * a[1][1] + b[0][2] * a[2][1] + b[0][3] * a[3][1];
+                dst[0][2] = b[0][0] * a[0][2] + b[0][1] * a[1][2] + b[0][2] * a[2][2] + b[0][3] * a[3][2];
+                dst[0][3] = b[0][0] * a[0][3] + b[0][1] * a[1][3] + b[0][2] * a[2][3] + b[0][3] * a[3][3];
+                dst[1][0] = b[1][0] * a[0][0] + b[1][1] * a[1][0] + b[1][2] * a[2][0] + b[1][3] * a[3][0];
+                dst[1][1] = b[1][0] * a[0][1] + b[1][1] * a[1][1] + b[1][2] * a[2][1] + b[1][3] * a[3][1];
+                dst[1][2] = b[1][0] * a[0][2] + b[1][1] * a[1][2] + b[1][2] * a[2][2] + b[1][3] * a[3][2];
+                dst[1][3] = b[1][0] * a[0][3] + b[1][1] * a[1][3] + b[1][2] * a[2][3] + b[1][3] * a[3][3];
+                dst[2][0] = b[2][0] * a[0][0] + b[2][1] * a[1][0] + b[2][2] * a[2][0] + b[2][3] * a[3][0];
+                dst[2][1] = b[2][0] * a[0][1] + b[2][1] * a[1][1] + b[2][2] * a[2][1] + b[2][3] * a[3][1];
+                dst[2][2] = b[2][0] * a[0][2] + b[2][1] * a[1][2] + b[2][2] * a[2][2] + b[2][3] * a[3][2];
+                dst[2][3] = b[2][0] * a[0][3] + b[2][1] * a[1][3] + b[2][2] * a[2][3] + b[2][3] * a[3][3];
+                dst[3][0] = b[3][0] * a[0][0] + b[3][1] * a[1][0] + b[3][2] * a[2][0] + b[3][3] * a[3][0];
+                dst[3][1] = b[3][0] * a[0][1] + b[3][1] * a[1][1] + b[3][2] * a[2][1] + b[3][3] * a[3][1];
+                dst[3][2] = b[3][0] * a[0][2] + b[3][1] * a[1][2] + b[3][2] * a[2][2] + b[3][3] * a[3][2];
+                dst[3][3] = b[3][0] * a[0][3] + b[3][1] * a[1][3] + b[3][2] * a[2][3] + b[3][3] * a[3][3];
+                return dst;
+            }
+
+            mat4 m4inverse(mat4 src)
+            {
+                mat4 dst = mat4(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+                float m00 = src[0][0];
+                float m01 = src[0][1];
+                float m02 = src[0][2];
+                float m03 = src[0][3];
+                float m10 = src[1][0];
+                float m11 = src[1][1];
+                float m12 = src[1][2];
+                float m13 = src[1][3];
+                float m20 = src[2][0];
+                float m21 = src[2][1];
+                float m22 = src[2][2];
+                float m23 = src[2][3];
+                float m30 = src[3][0];
+                float m31 = src[3][1];
+                float m32 = src[3][2];
+                float m33 = src[3][3];
+                float tmp_0  = m22 * m33;
+                float tmp_1  = m32 * m23;
+                float tmp_2  = m12 * m33;
+                float tmp_3  = m32 * m13;
+                float tmp_4  = m12 * m23;
+                float tmp_5  = m22 * m13;
+                float tmp_6  = m02 * m33;
+                float tmp_7  = m32 * m03;
+                float tmp_8  = m02 * m23;
+                float tmp_9  = m22 * m03;
+                float tmp_10 = m02 * m13;
+                float tmp_11 = m12 * m03;
+                float tmp_12 = m20 * m31;
+                float tmp_13 = m30 * m21;
+                float tmp_14 = m10 * m31;
+                float tmp_15 = m30 * m11;
+                float tmp_16 = m10 * m21;
+                float tmp_17 = m20 * m11;
+                float tmp_18 = m00 * m31;
+                float tmp_19 = m30 * m01;
+                float tmp_20 = m00 * m21;
+                float tmp_21 = m20 * m01;
+                float tmp_22 = m00 * m11;
+                float tmp_23 = m10 * m01;
+                float t0 = (tmp_0 * m11 + tmp_3 * m21 + tmp_4  * m31) -
+                           (tmp_1 * m11 + tmp_2 * m21 + tmp_5  * m31);
+                float t1 = (tmp_1 * m01 + tmp_6 * m21 + tmp_9  * m31) -
+                           (tmp_0 * m01 + tmp_7 * m21 + tmp_8  * m31);
+                float t2 = (tmp_2 * m01 + tmp_7 * m11 + tmp_10 * m31) -
+                           (tmp_3 * m01 + tmp_6 * m11 + tmp_11 * m31);
+                float t3 = (tmp_5 * m01 + tmp_8 * m11 + tmp_11 * m21) -
+                           (tmp_4 * m01 + tmp_9 * m11 + tmp_10 * m21);
+                float d = 1.0 / (m00 * t0 + m10 * t1 + m20 * t2 + m30 * t3);
+                dst[0][0] = d * t0;
+                dst[0][1] = d * t1;
+                dst[0][2] = d * t2;
+                dst[0][3] = d * t3;
+                dst[1][0] = d * ((tmp_1  * m10 + tmp_2  * m20 + tmp_5  * m30) -
+                                 (tmp_0  * m10 + tmp_3  * m20 + tmp_4  * m30));
+                dst[1][1] = d * ((tmp_0  * m00 + tmp_7  * m20 + tmp_8  * m30) -
+                                 (tmp_1  * m00 + tmp_6  * m20 + tmp_9  * m30));
+                dst[1][2] = d * ((tmp_3  * m00 + tmp_6  * m10 + tmp_11 * m30) -
+                                 (tmp_2  * m00 + tmp_7  * m10 + tmp_10 * m30));
+                dst[1][3] = d * ((tmp_4  * m00 + tmp_9  * m10 + tmp_10 * m20) -
+                                 (tmp_5  * m00 + tmp_8  * m10 + tmp_11 * m20));
+                dst[2][0] = d * ((tmp_12 * m13 + tmp_15 * m23 + tmp_16 * m33) -
+                                 (tmp_13 * m13 + tmp_14 * m23 + tmp_17 * m33));
+                dst[2][1] = d * ((tmp_13 * m03 + tmp_18 * m23 + tmp_21 * m33) -
+                                 (tmp_12 * m03 + tmp_19 * m23 + tmp_20 * m33));
+                dst[2][2] = d * ((tmp_14 * m03 + tmp_19 * m13 + tmp_22 * m33) -
+                                 (tmp_15 * m03 + tmp_18 * m13 + tmp_23 * m33));
+                dst[2][3] = d * ((tmp_17 * m03 + tmp_20 * m13 + tmp_23 * m23) -
+                                 (tmp_16 * m03 + tmp_21 * m13 + tmp_22 * m23));
+                dst[3][0] = d * ((tmp_14 * m22 + tmp_17 * m32 + tmp_13 * m12) -
+                                 (tmp_16 * m32 + tmp_12 * m12 + tmp_15 * m22));
+                dst[3][1] = d * ((tmp_20 * m32 + tmp_12 * m02 + tmp_19 * m22) -
+                                 (tmp_18 * m22 + tmp_21 * m32 + tmp_13 * m02));
+                dst[3][2] = d * ((tmp_18 * m12 + tmp_23 * m32 + tmp_15 * m02) -
+                                 (tmp_22 * m32 + tmp_14 * m02 + tmp_19 * m12));
+                dst[3][3] = d * ((tmp_22 * m22 + tmp_16 * m02 + tmp_21 * m12) -
+                                 (tmp_20 * m12 + tmp_23 * m22 + tmp_17 * m02));
+                return dst;
+            }
+
+            mat4 m4perspective(float FOVradians, float aspect, float near, float far)
+            {
+                mat4 dst = mat4(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+                float f = tan(R_PI * 0.5 - 0.5 * FOVradians);
+                float rangeInv = 1.0 / (near - far);
+                dst[0][0] = f / aspect;
+                dst[0][1] = 0.0;
+                dst[0][2] = 0.0;
+                dst[0][3] = 0.0;
+                dst[1][0] = 0.0;
+                dst[1][1] = f;
+                dst[1][2] = 0.0;
+                dst[1][3] = 0.0;
+                dst[2][0] = 0.0;
+                dst[2][1] = 0.0;
+                dst[2][2] = (near + far) * rangeInv;
+                dst[2][3] = -1.0;
+                dst[3][0] = 0.0;
+                dst[3][1] = 0.0;
+                dst[3][2] = near * far * rangeInv * 2.0;
+                dst[3][3] = 0.0;
+                return dst;
+            }
+
+            mat4 m4xRotate(mat4 src, float radians)
+            {
+                mat4 dst = mat4(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+                float m10 = src[1][0];
+                float m11 = src[1][1];
+                float m12 = src[1][2];
+                float m13 = src[1][3];
+                float m20 = src[2][0];
+                float m21 = src[2][1];
+                float m22 = src[2][2];
+                float m23 = src[2][3];
+                float c = cos(radians);
+                float s = sin(radians);
+                dst[1][0] = c * m10 + s * m20;
+                dst[1][1] = c * m11 + s * m21;
+                dst[1][2] = c * m12 + s * m22;
+                dst[1][3] = c * m13 + s * m23;
+                dst[2][0] = c * m20 - s * m10;
+                dst[2][1] = c * m21 - s * m11;
+                dst[2][2] = c * m22 - s * m12;
+                dst[2][3] = c * m23 - s * m13;
+                if (src != dst)
+                {
+                    dst[0][0] = src[0][0];
+                    dst[0][1] = src[0][1];
+                    dst[0][2] = src[0][2];
+                    dst[0][3] = src[0][3];
+                    dst[3][0] = src[3][0];
+                    dst[3][1] = src[3][1];
+                    dst[3][2] = src[3][2];
+                    dst[3][3] = src[3][3];
+                }
+                return dst;
+            }
+
+            mat4 m4yRotate(mat4 src, float radians)
+            {
+                mat4 dst = mat4(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+                float m00 = src[0][0];
+                float m01 = src[0][1];
+                float m02 = src[0][2];
+                float m03 = src[0][3];
+                float m20 = src[2][0];
+                float m21 = src[2][1];
+                float m22 = src[2][2];
+                float m23 = src[2][3];
+                float c = cos(radians);
+                float s = sin(radians);
+                dst[0][0] = c * m00 - s * m20;
+                dst[0][1] = c * m01 - s * m21;
+                dst[0][2] = c * m02 - s * m22;
+                dst[0][3] = c * m03 - s * m23;
+                dst[2][0] = c * m20 + s * m00;
+                dst[2][1] = c * m21 + s * m01;
+                dst[2][2] = c * m22 + s * m02;
+                dst[2][3] = c * m23 + s * m03;
+                if (src != dst)
+                {
+                    dst[1][0] = src[1][0];
+                    dst[1][1] = src[1][1];
+                    dst[1][2] = src[1][2];
+                    dst[1][3] = src[1][3];
+                    dst[3][0] = src[3][0];
+                    dst[3][1] = src[3][1];
+                    dst[3][2] = src[3][2];
+                    dst[3][3] = src[3][3];
+                }
+                return dst;
+            }
+
+            //Format: Time, Width, Height, FOV,   Vec3(PositionXYZ), RotationX,   Vec3(TargetXYZ), RotationY,   Vec3(Upwards), Reserved
+            mat4 CameraMatrix(mat4 src)
+            {
+                mat4 dst = mat4(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+                dst = m4lookAt(vec3(src[1][0], src[1][1], src[1][2]), vec3(src[2][0], src[2][1], src[2][2]), vec3(src[3][0], src[3][1], src[3][2]));
+                dst = m4multiply(m4perspective(src[0][3] * R_PI / 180.0, src[0][1] / src[0][2], 1.0, 2000.0), m4inverse(dst)); //TODO: Change Near/Far to 0.01 and 10000.0
+                dst = m4xRotate(dst, src[1][3]);
+                dst = m4yRotate(dst, src[2][3]);
+                return dst;
+            }
+
+            void main()
+            {
+                gl_Position = CameraMatrix(camera) * vertex; //Do Not Swap Order
+                gl_PointSize = 1.0;
+            }
+        </script>
+        <script id="FragmentSource" type="x-shader/x-fragment">
+            precision highp float;
+            void main()
+            {
+                gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
+            }
+        </script>
+        <script>
+            var then = 0;
+            var time = null;
+            var clock = null;
+            var request = null;
+            
+            var canvas = null;
+            var gl = null;
+	
+            var VertexSource = null;
+            var FragmentSource = null;
+            var ShaderProgram = null;
+
+            var CameraUniform = null;
+            var VertexAttribute = null;
+            var VertexBuffer = null;
+
+            var camera = null;
+            var rotationX = 0.0;
+            var rotationY = 0.0;
+            var twopi = 2.0 * Math.PI;
+
+            window.onload = function()
+            {
+                setTimeout(() => { setup(); setInterval(() => { loop(); }, 0); }, 0);
+                //setTimeout(() => { setup(); loop(); }, 0); //Run Once
+            }
+
+            window.onunload = function()
+            {
+                setTimeout(() => { cleanup(); }, 0);
+            }
+
+            var setup = function()
+            {
+                canvas = document.getElementById("canvas");
+                gl = glCreateContext(canvas);
+				
+                VertexSource = document.getElementById("VertexSource");
+                FragmentSource = document.getElementById("FragmentSource");
+                VertexShader = glCreateShader(gl, VertexSource.text, gl.VERTEX_SHADER);
+                FragmentShader = glCreateShader(gl, FragmentSource.text, gl.FRAGMENT_SHADER);
+                ShaderProgram = glCreateProgram(gl, VertexShader, FragmentShader);
+                
+                CameraUniform = gl.getUniformLocation(ShaderProgram, "camera");
+                VertexAttribute = gl.getAttribLocation(ShaderProgram, "vertex");
+                VertexBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, VertexBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, getData("vertex"), gl.STATIC_DRAW);
+            }
+
+            var loop = function()
+            {
+                var t = delta() * 0.001;
+                var w = canvas.clientWidth;
+                var h = canvas.clientHeight;
+                var f = 60.0;
+                canvas.width = w;
+                canvas.height = h;
+
+                rotationX += -0.4 * t;
+                rotationY += -0.7 * t;
+                if (rotationX > Math.PI) { rotationX = rotationX % twopi; } else if (rotationX < -Math.PI) { rotationX = (Math.abs(rotationX) % twopi) * -1.0; }
+                if (rotationY > Math.PI) { rotationY = rotationY % twopi; } else if (rotationY < -Math.PI) { rotationY = (Math.abs(rotationY) % twopi) * -1.0; }
+                //document.title = rotationX + ", " + rotationY;
+
+                //OUTPUT
+
+                gl.bindFramebuffer(gl.FRAMEBUFFER, null); //Weird, should be Buffer instead of the Main Framebuffer?
+                gl.viewport(0, 0, w, h);
+                gl.clearColor(0.0, 0.0, 0.0, 0.0);
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+                gl.useProgram(ShaderProgram);
+                gl.enableVertexAttribArray(VertexAttribute);
+                gl.bindBuffer(gl.ARRAY_BUFFER, VertexBuffer);
+                gl.vertexAttribPointer(VertexAttribute, 3, gl.FLOAT, false, 0, 0);
+
+                //Format: Time, Width, Height, FOV,   Vec3(PositionXYZ), RotationX,   Vec3(TargetXYZ), RotationY,   Vec3(Upwards), Reserved
+                camera = new Float32Array([t, w, h, f,   0, 0, 2, rotationX,   0, 0, 0, rotationY,   0, 1, 0, 0]);
+                gl.uniformMatrix4fv(CameraUniform, false, camera);
+                gl.drawArrays(gl.TRIANGLES, 0, 6 * 6); //Weirdly part of the Data...
+            }
+
+            var cleanup = function()
+            {
+                gl.deleteProgram(ShaderProgram);
+                gl.deleteShader(FragmentShader);
+                gl.deleteShader(VertexShader);
+            }
+
+            var delta = function()
+            {
+                time = Date.now();
+                var deltaTime = time - then;
+                then = time;
+                return deltaTime;
+            }
+
+            var delay = function(milliseconds)
+            {
+                clock = Date.now();
+                while ((Date.now() - clock) < milliseconds) { }
+            }
+
+            var glCreateContext = function(element)
+            {
+                var gl = element.getContext("webgl");
+                if (!gl)
+                {
+                    console.log("[WARN]: glBegin() failed\nERROR: Graphics Context Not Supported");
+                    return null;
+                }
+                gl.enable(gl.CULL_FACE);
+                gl.enable(gl.DEPTH_TEST);
+                return gl;
+            }
+
+            var glCreateShader = function(gl, source, type)
+            {
+                var shader = gl.createShader(type);
+                gl.shaderSource(shader, source);
+                gl.compileShader(shader);
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+                {
+                    var info = gl.getShaderInfoLog(shader);
+                    console.log("[WARN]: createShader() failed\n" + info);
+                    return null;
+                }
+                return shader;
+            }
+
+            var glCreateProgram = function(gl, vertex, fragment)
+            {
+                var program = gl.createProgram();
+                gl.attachShader(program, vertex);
+                gl.attachShader(program, fragment);
+                gl.linkProgram(program);
+                if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+                {
+                    var info = gl.getProgramInfoLog(program);
+                    console.log("[WARN]: createProgram() failed\n" + info);
+                    return null;
+                }
+                return program;
+            }
+
+            function getData(key) //Temporary Solution
+            {
+                if (key == "vertex")
+                {
+                    return new Float32Array(
+                    [
+                        -0.5, -0.5, -0.5,
+                        -0.5,  0.5, -0.5,
+                         0.5, -0.5, -0.5,
+                        -0.5,  0.5, -0.5,
+                         0.5,  0.5, -0.5,
+                         0.5, -0.5, -0.5,
+
+                        -0.5, -0.5,  0.5,
+                         0.5, -0.5,  0.5,
+                        -0.5,  0.5,  0.5,
+                        -0.5,  0.5,  0.5,
+                         0.5, -0.5,  0.5,
+                         0.5,  0.5,  0.5,
+
+                        -0.5,  0.5, -0.5,
+                        -0.5,  0.5,  0.5,
+                         0.5,  0.5, -0.5,
+                        -0.5,  0.5,  0.5,
+                         0.5,  0.5,  0.5,
+                         0.5,  0.5, -0.5,
+
+                        -0.5, -0.5, -0.5,
+                         0.5, -0.5, -0.5,
+                        -0.5, -0.5,  0.5,
+                        -0.5, -0.5,  0.5,
+                         0.5, -0.5, -0.5,
+                         0.5, -0.5,  0.5,
+
+                        -0.5, -0.5, -0.5,
+                        -0.5, -0.5,  0.5,
+                        -0.5,  0.5, -0.5,
+                        -0.5, -0.5,  0.5,
+                        -0.5,  0.5,  0.5,
+                        -0.5,  0.5, -0.5,
+
+                         0.5, -0.5, -0.5,
+                         0.5,  0.5, -0.5,
+                         0.5, -0.5,  0.5,
+                         0.5, -0.5,  0.5,
+                         0.5,  0.5, -0.5,
+                         0.5,  0.5,  0.5,
+                    ]);
+                }
+                else { return null; }
+            }
+        </script>
+        <style>
+            * { box-sizing: border-box; margin: auto; text-align: center; overflow: hidden; }
+            body { background: black; }
+            canvas { position: fixed; bottom: 0; left: 0; width: 100vw; height: 100vh; }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+    </body>
+</html>
