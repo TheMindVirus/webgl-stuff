@@ -30,54 +30,54 @@
             uniform mat4 matrix;
             varying vec2 pos;
             varying vec4 vertex2;
-			varying float distance;
-			varying float increment;
-			varying float factor;
+            varying float distance;
+            varying float increment;
+            varying float factor;
             void main()
             {
                 gl_Position = matrix * vertex; //Do Not Swap Order
                 gl_PointSize = 1.0;
                 pos = uvmap;
                 vertex2 = matrix * vertex;
-				distance = 10.0;//5.0
-				increment = 1.0;
-				factor = 0.01;//0.01;
+                distance = 10.0;//5.0
+                increment = 1.0;
+                factor = 0.01;//0.01;
             }
         </script>
         <script id="BloomFragmentSource" type="x-shader/x-fragment">
             precision highp float;
             varying vec2 pos;
             varying vec4 vertex2;
-			varying float distance;
-			varying float increment;
-			varying float factor;
+            varying float distance;
+            varying float increment;
+            varying float factor;
             uniform sampler2D texture; 
             void main()
             {
-			    vec4 val = texture2D(texture, pos);
+                vec4 val = texture2D(texture, pos);
                 if (val.w != 0.0)
-				{
-					gl_FragColor = val;
-					return;
-				}
+                {
+                    gl_FragColor = val;
+                    return;
+                }
                 val = vec4(0, 0, 0, 0);
-				float mind = -distance;
-				float maxd = float(distance);
-				float y = mind;
-				for (float dummyy = 0.0; dummyy < 1.0; dummyy += 0.0)
-				{
-				    if (y > maxd) { break; }
-				    float x = mind;
-				    for (float dummyx = 0.0; dummyx < 1.0; dummyx += 0.0)
-					{
-					    if (x > maxd) { break; }
-				        val += texture2D(texture, vec2(pos.x - (x * factor), pos.y - (y * factor)));
-						x += increment;
-				    }
-					y += increment;
-			    }
-				val /= vec4(distance, distance, distance, distance);
-				gl_FragColor = val;
+                float mind = -distance;
+                float maxd = float(distance);
+                float y = mind;
+                for (float dummyy = 0.0; dummyy < 1.0; dummyy += 0.0)
+                {
+                    if (y > maxd) { break; }
+                    float x = mind;
+                    for (float dummyx = 0.0; dummyx < 1.0; dummyx += 0.0)
+                    {
+                        if (x > maxd) { break; }
+                        val += texture2D(texture, vec2(pos.x - (x * factor), pos.y - (y * factor)));
+                        x += increment;
+                    }
+                    y += increment;
+                }
+                val /= vec4(distance, distance, distance, distance);
+                gl_FragColor = val;
             }
         </script>
         <script>
@@ -86,7 +86,7 @@
             var clock = null;
             var request = null;
             
-			var canvas = null;
+            var canvas = null;
             var gl = null;
 			
             var vertexShader = null;
@@ -95,7 +95,7 @@
             var fragmentSource = null;
             var shaderProgram = null;
 			
-			var vertexAttribute = null;
+            var vertexAttribute = null;
             var uvmapAttribute = null;
             var matrixUniform = null;
             var textureUniform = null;
@@ -116,8 +116,8 @@
             var uvmapBuffer = null;
             var vertexBuffer = null;
             
-			var frameBuffer = null;
-			var camera = null;
+            var frameBuffer = null;
+            var camera = null;
             var rotationX = 0.0;
             var rotationY = 0.0;
 
@@ -143,7 +143,7 @@
                 fragmentShader = glCreateShader(gl, fragmentSource.text, gl.FRAGMENT_SHADER);
                 shaderProgram = glCreateProgram(gl, vertexShader, fragmentShader);
                 
-				vertexAttribute = gl.getAttribLocation(shaderProgram, "vertex");
+                vertexAttribute = gl.getAttribLocation(shaderProgram, "vertex");
                 uvmapAttribute = gl.getAttribLocation(shaderProgram, "uvmap");
                 matrixUniform = gl.getUniformLocation(shaderProgram, "matrix");
                 textureUniform = gl.getUniformLocation(shaderProgram, "texture");
