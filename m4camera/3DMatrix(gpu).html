@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>3DMatrix</title>
+    <script id="VertexSource" type="x-shader/x-vertex">
+        attribute vec4 vertex;
+        attribute vec4 fragment;
+        varying vec4 colour;
+        uniform vec4 cursor;
+
+        mat3 Rotation()
+        {
+            mat3 dst = mat3(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+            float theta = cursor.x * cursor.w;
+            float phi = cursor.y * cursor.w;
+            float psi = cursor.z * cursor.w;
+            dst[0][0] = cos(theta) * cos(psi);
+            dst[0][1] = (-1.0 * cos(phi) * sin(psi)) + (sin(phi) * sin(theta) * cos(psi));
+            dst[0][2] = (sin(phi) * sin(psi)) + (cos(phi) * sin(theta) * cos(psi));
+            dst[1][0] = cos(theta) * sin(psi);
+            dst[1][1] = (cos(phi) * cos(psi)) + (sin(phi) * sin(theta) * sin(psi));
+            dst[1][2] = (-1.0 * sin(phi) * cos(psi)) + (cos(phi) * sin(theta) * sin(psi));
+            dst[2][0] = (-1.0 * sin(theta));
+            dst[2][1] = sin(phi) * cos(theta);
+            dst[2][2] = cos(phi) * cos(theta);
+            return dst;
+        }
+
+        vec4 RotationMatrix(mat3 src, vec4 vert)
+        {
+            vec4 dst = vec4(0.0, 0.0, 0.0, 0.0);
+            dst.x = (src[0][0] * vert.x) + (src[0][1] * vert.y) + (src[0][2] * vert.z);
+            dst.y = (src[1][0] * vert.x) + (src[1][1] * vert.y) + (src[1][2] * vert.z);
+            dst.z = (src[2][0] * vert.x) + (src[2][1] * vert.y) + (src[2][2] * vert.z);
+            dst.w = vert.w;
+            return dst;
+        }
+
+        vec4 RotationMatrixCalculate(vec3 pos)
+        {
+            vec4 dst = RotationMatrix(Rotation(), vertex);
+            dst.xyz += pos.xyz;
+            dst.x /= (1.0 + dst.z);
+            dst.y /= (1.0 + dst.z);
+            return dst;
+        }
+
+        void main()
+        {
+            gl_Position = RotationMatrixCalculate(vec3(0.0, 0.0, 0.5));
+            gl_PointSize = 1.0;
+            colour = fragment;
+        }
+    </script>
+    <script id="FragmentSource" type="x-shader/x-fragment">
+        precision highp float;
+        varying vec4 colour;
+        void main() { gl_FragColor = colour; }
+    </script>
+    <script>
+        var canvas = null;
+        var gl = null;
+
+        var then = 0;
+        var time = null;
+        var clock = null;
+
+        var VertexSource = null;
+        var FragmentSource = null;
+        var ShaderProgram = null;
+
+        var VertexAttribute = null;
+        var VertexBuffer = null;
+        var FragmentAttribute = null;
+        var FragmentBuffer = null;
+        var CursorUniform = null;
+
+        var CursorData = [0.0, 0.0, 0.0, 0.01];
+
+        window.onload = function()
+        {
+            setTimeout(() => { setup(); setInterval(() => { loop(); }, 0); }, 0);
+            //setTimeout(() => { setup(); loop(); }, 0); //Run Once
+        }
+
+        window.onunload = function()
+        {
+            setTimeout(() => { cleanup(); }, 0);
+        }
+
+        var setup = function()
+        {
+            canvas = document.getElementById("canvas");
+            gl = glCreateContext(canvas);
+
+            VertexSource = document.getElementById("VertexSource");
+            FragmentSource = document.getElementById("FragmentSource");
+            VertexShader = glCreateShader(gl, VertexSource.text, gl.VERTEX_SHADER);
+            FragmentShader = glCreateShader(gl, FragmentSource.text, gl.FRAGMENT_SHADER);
+            ShaderProgram = glCreateProgram(gl, VertexShader, FragmentShader);
+
+            VertexAttribute = gl.getAttribLocation(ShaderProgram, "vertex");
+            VertexBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, VertexBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, getData("vertex"), gl.STATIC_DRAW);
+            FragmentAttribute = gl.getAttribLocation(ShaderProgram, "fragment");
+            FragmentBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, FragmentBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, getData("fragment"), gl.STATIC_DRAW);
+            CursorUniform = gl.getUniformLocation(ShaderProgram, "cursor");
+        }
+
+        var loop = function()
+        {
+            var t = delta() * 0.001;
+            var w = canvas.clientWidth;
+            var h = canvas.clientHeight;
+            var f = 60.0;
+            canvas.width = w;
+            canvas.height = h;
+
+            //OUTPUT
+
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null); //Weird, should be Buffer instead of the Main Framebuffer?
+            gl.viewport(0, 0, w, h);
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+            gl.useProgram(ShaderProgram);
+            gl.enableVertexAttribArray(VertexAttribute);
+            gl.bindBuffer(gl.ARRAY_BUFFER, VertexBuffer);
+            gl.vertexAttribPointer(VertexAttribute, 4, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(FragmentAttribute);
+            gl.bindBuffer(gl.ARRAY_BUFFER, FragmentBuffer);
+            gl.vertexAttribPointer(FragmentAttribute, 4, gl.FLOAT, false, 0, 0);
+
+            gl.uniform4fv(CursorUniform, CursorData);
+            gl.drawArrays(gl.TRIANGLES, 0, 6 * 6); //Weirdly part of the Data...
+        }
+
+        var cleanup = function()
+        {
+            gl.deleteProgram(ShaderProgram);
+            gl.deleteShader(FragmentShader);
+            gl.deleteShader(VertexShader);
+        }
+
+        var delta = function()
+        {
+            time = Date.now();
+            var deltaTime = time - then;
+            then = time;
+            return deltaTime;
+        }
+
+        var delay = function(milliseconds)
+        {
+            clock = Date.now();
+            while ((Date.now() - clock) < milliseconds) { }
+        }
+
+        var glCreateContext = function(element)
+        {
+            var gl = element.getContext("webgl");
+            if (!gl)
+            {
+                console.log("[WARN]: glBegin() failed\nERROR: Graphics Context Not Supported");
+                return null;
+            }
+            //gl.enable(gl.CULL_FACE);
+            gl.enable(gl.DEPTH_TEST);
+            return gl;
+        }
+
+        var glCreateShader = function(gl, source, type)
+        {
+            var shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+            {
+                var info = gl.getShaderInfoLog(shader);
+                console.log("[WARN]: createShader() failed\n" + info);
+                return null;
+            }
+            return shader;
+        }
+
+        var glCreateProgram = function(gl, vertex, fragment)
+        {
+            var program = gl.createProgram();
+            gl.attachShader(program, vertex);
+            gl.attachShader(program, fragment);
+            gl.linkProgram(program);
+            if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+            {
+                var info = gl.getProgramInfoLog(program);
+                console.log("[WARN]: createProgram() failed\n" + info);
+                return null;
+            }
+            return program;
+        }
+
+        var getData = function(key)
+        {
+            if (key == "vertex")
+            {
+                return new Float32Array(
+                [
+                    -0.5, -0.5, -0.5,  1.0,
+                    -0.5,  0.5, -0.5,  1.0,
+                     0.5, -0.5, -0.5,  1.0,
+                    -0.5,  0.5, -0.5,  1.0,
+                     0.5,  0.5, -0.5,  1.0,
+                     0.5, -0.5, -0.5,  1.0,
+
+                    -0.5, -0.5,  0.5,  1.0,
+                     0.5, -0.5,  0.5,  1.0,
+                    -0.5,  0.5,  0.5,  1.0,
+                    -0.5,  0.5,  0.5,  1.0,
+                     0.5, -0.5,  0.5,  1.0,
+                     0.5,  0.5,  0.5,  1.0,
+
+                    -0.5,  0.5, -0.5,  1.0,
+                    -0.5,  0.5,  0.5,  1.0,
+                     0.5,  0.5, -0.5,  1.0,
+                    -0.5,  0.5,  0.5,  1.0,
+                     0.5,  0.5,  0.5,  1.0,
+                     0.5,  0.5, -0.5,  1.0,
+
+                    -0.5, -0.5, -0.5,  1.0,
+                     0.5, -0.5, -0.5,  1.0,
+                    -0.5, -0.5,  0.5,  1.0,
+                    -0.5, -0.5,  0.5,  1.0,
+                     0.5, -0.5, -0.5,  1.0,
+                     0.5, -0.5,  0.5,  1.0,
+
+                    -0.5, -0.5, -0.5,  1.0,
+                    -0.5, -0.5,  0.5,  1.0,
+                    -0.5,  0.5, -0.5,  1.0,
+                    -0.5, -0.5,  0.5,  1.0,
+                    -0.5,  0.5,  0.5,  1.0,
+                    -0.5,  0.5, -0.5,  1.0,
+
+                     0.5, -0.5, -0.5,  1.0,
+                     0.5,  0.5, -0.5,  1.0,
+                     0.5, -0.5,  0.5,  1.0,
+                     0.5, -0.5,  0.5,  1.0,
+                     0.5,  0.5, -0.5,  1.0,
+                     0.5,  0.5,  0.5,  1.0,
+                ]);
+            }
+            else if (key == "fragment")
+            {
+                return new Float32Array(
+                [
+                    1.0, 0.0, 0.0, 1.0,
+                    1.0, 0.0, 0.0, 1.0,
+                    1.0, 0.0, 0.0, 1.0,
+                    1.0, 0.0, 0.0, 1.0,
+                    1.0, 0.0, 0.0, 1.0,
+                    1.0, 0.0, 0.0, 1.0,
+
+                    1.0, 1.0, 0.0, 1.0,
+                    1.0, 1.0, 0.0, 1.0,
+                    1.0, 1.0, 0.0, 1.0,
+                    1.0, 1.0, 0.0, 1.0,
+                    1.0, 1.0, 0.0, 1.0,
+                    1.0, 1.0, 0.0, 1.0,
+
+                    0.0, 1.0, 0.0, 1.0,
+                    0.0, 1.0, 0.0, 1.0,
+                    0.0, 1.0, 0.0, 1.0,
+                    0.0, 1.0, 0.0, 1.0,
+                    0.0, 1.0, 0.0, 1.0,
+                    0.0, 1.0, 0.0, 1.0,
+
+                    0.0, 1.0, 1.0, 1.0,
+                    0.0, 1.0, 1.0, 1.0,
+                    0.0, 1.0, 1.0, 1.0,
+                    0.0, 1.0, 1.0, 1.0,
+                    0.0, 1.0, 1.0, 1.0,
+                    0.0, 1.0, 1.0, 1.0,
+
+                    0.0, 0.0, 1.0, 1.0,
+                    0.0, 0.0, 1.0, 1.0,
+                    0.0, 0.0, 1.0, 1.0,
+                    0.0, 0.0, 1.0, 1.0,
+                    0.0, 0.0, 1.0, 1.0,
+                    0.0, 0.0, 1.0, 1.0,
+
+                    1.0, 0.0, 1.0, 1.0,
+                    1.0, 0.0, 1.0, 1.0,
+                    1.0, 0.0, 1.0, 1.0,
+                    1.0, 0.0, 1.0, 1.0,
+                    1.0, 0.0, 1.0, 1.0,
+                    1.0, 0.0, 1.0, 1.0,
+                ]);
+            }
+            else { return null; }
+        }
+
+        var getCursorPos = function(event)
+        {
+            CursorData[0] = -event.clientX;
+            CursorData[1] = event.clientY;
+            document.title = CursorData[0] + ", " + CursorData[1];
+        }
+    </script>
+    <style>
+        * { box-sizing: border-box; margin: auto; font-family: sans-serif; overflow: hidden; }
+        #canvas { position: absolute; border: thick blue solid; }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="600" height="600" onmousemove="getCursorPos(event);" ontouchmove="getCursorPos(event);"></canvas>
+  </body>
+</html>
