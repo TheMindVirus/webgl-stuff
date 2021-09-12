@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>PhoneLit</title>
+    <meta name="viewport" content="width=device-width"></meta>
+    <meta name="apple-mobile-web-app-capable" content="yes"></meta>
+    <script>
+        var R = null;
+        var G = null;
+        var B = null;
+
+        var slider_R = null;
+        var slider_G = null;
+        var slider_B = null;
+
+        window.onload = function()
+        {
+            slider_R = document.getElementById("slider_R");
+            slider_G = document.getElementById("slider_G");
+            slider_B = document.getElementById("slider_B");
+
+            R = localStorage.getItem("slider_R"); if ((R == "null") || (R == null)) { R = 0.0; }
+            G = localStorage.getItem("slider_G"); if ((G == "null") || (G == null)) { G = 0.0; }
+            B = localStorage.getItem("slider_B"); if ((B == "null") || (B == null)) { B = 0.0; }
+
+            slider_R.oninput = function(event) { R = this.value; phonelit(); }
+            slider_G.oninput = function(event) { G = this.value; phonelit(); }
+            slider_B.oninput = function(event) { B = this.value; phonelit(); }
+
+            phonelit();
+        }
+
+        var phonelit = function()
+        {
+            document.body.style.backgroundColor = "rgba(" + R + ", " + G + ", " + B + ", 1.0)";
+
+            slider_R.value = R;
+            slider_G.value = G;
+            slider_B.value = B;
+
+            localStorage.setItem("slider_R", R);
+            localStorage.setItem("slider_G", G);
+            localStorage.setItem("slider_B", B);
+        }
+    </script>
+    <style>
+        body { background: rgba(0.0, 0.0, 0.0, 1.0); }
+        .slider { appearance: none; position: absolute; width: 95%; height: 10px; border-radius: 5px; border: 2px rgba(255.0, 255.0, 255.0, 0.7) solid; cursor: pointer; }
+        .slider::-webkit-slider-thumb { appearance: none; width: 30px; height: 30px; border-radius: 15px; border: 2px rgba(255.0, 255.0, 255.0, 0.7) solid; }
+        .slider::-moz-range-thumb { appearance: none; width: 30px; height: 30px; border-radius: 15px; border: 2px rgba(255.0, 255.0, 255.0, 0.7) solid; }
+        #slider_R { top: 70%; left: 2.5%; background: rgba(255.0, 0.0, 0.0, 1.0); box-shadow: 0 0 5px rgba(255.0, 0.0, 0.0, 1.0); }
+        #slider_G { top: 80%; left: 2.5%; background: rgba(0.0, 255.0, 0.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 255.0, 0.0, 1.0); }
+        #slider_B { top: 90%; left: 2.5%; background: rgba(0.0, 0.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 0.0, 255.0, 1.0); }
+        #slider_R::-webkit-slider-thumb { background: rgba(255.0, 0.0, 0.0, 1.0); box-shadow: 0 0 5px rgba(255.0, 0.0, 0.0, 1.0); }
+        #slider_G::-webkit-slider-thumb { background: rgba(0.0, 255.0, 0.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 255.0, 0.0, 1.0); }
+        #slider_B::-webkit-slider-thumb { background: rgba(0.0, 0.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 0.0, 255.0, 1.0); }
+        #slider_R::-moz-range-thumb { background: rgba(255.0, 0.0, 0.0, 1.0); box-shadow: 0 0 5px rgba(255.0, 0.0, 0.0, 1.0); }
+        #slider_G::-moz-range-thumb { background: rgba(0.0, 255.0, 0.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 255.0, 0.0, 1.0); }
+        #slider_B::-moz-range-thumb { background: rgba(0.0, 0.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 0.0, 255.0, 1.0); }
+    </style>
+  </head>
+  <body>
+    <input class="slider" id="slider_R" type="range" min="0" max="255" value="0"></input>
+    <input class="slider" id="slider_G" type="range" min="0" max="255" value="0"></input>
+    <input class="slider" id="slider_B" type="range" min="0" max="255" value="0"></input>
+  </body>
+</html>
