@@ -1,0 +1,47 @@
+<script>
+    var meme = null;
+    var uppertext = null;
+    var lowertext = null;
+    window.onload = function()
+    {
+        meme = document.getElementById("meme");
+        uppertext = document.getElementById("uppertext");
+        lowertext = document.getElementById("lowertext");
+        window.onresize();
+    }
+    window.onresize = function()
+    {
+        meme.style.width = "inherit";
+        meme.style.height = "inherit";
+        var windowAspect = parseFloat(window.innerWidth)
+                         / parseFloat(window.innerHeight);
+        var memeAspect = parseFloat(window.getComputedStyle(meme).width)
+                       / parseFloat(window.getComputedStyle(meme).height);
+        if (windowAspect > memeAspect)
+        {
+            meme.style.height = window.innerHeight;
+            meme.style.width = "inherit";
+            meme.style.top = "0px";
+            meme.style.left = ((window.innerWidth - parseFloat(window.getComputedStyle(meme).width)) / 2.0) + "px";
+            uppertext.style.fontSize = window.innerHeight * 0.2;
+            document.title = uppertext.style.fontSize;
+        }
+        else
+        {
+            meme.style.width = window.innerWidth;
+            meme.style.height = "inherit";
+            meme.style.left = "0px";
+            meme.style.top = ((window.innerHeight - parseFloat(window.getComputedStyle(meme).height)) / 2.0) + "px";
+            uppertext.style.fontSize = window.innerHeight * 0.2;
+            document.title = uppertext.style.fontSize;
+        }
+    }
+</script>
+<style>
+    * { box-sizing: border-box; margin: auto; position: fixed; overflow: hidden; }
+    body { background: black; }
+    h1 { font-family: impact; color: white; text-outline: 1px black; width: 100vw; }
+</style>
+<img id="meme" src="template.png" alt=""/>
+<h1 id="uppertext" style="top: 5px; left: 5px;">Something</h1>
+<h1 id="lowertext" style="top: calc(100vh - 25vh); left: 5px;">Went Wrong</h1>
