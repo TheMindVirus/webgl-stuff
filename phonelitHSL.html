@@ -55,16 +55,22 @@
             var data = {};
             H = parseFloat(H);
             S = 1.0 - (S / 100.0);
-            L = (L / 100.0) * 255.0;
+            L = (L / 100.0);
             var HR = 180.0 + (H);
             var HG = 180.0 + (H - 120.0);
             var HB = 180.0 + (H - 240.0);
             if (HR >= 360.0) { HR -= 360.0; } else if (HR < 0) { HR += 360.0; }
             if (HG >= 360.0) { HG -= 360.0; } else if (HG < 0) { HG += 360.0; }
             if (HB >= 360.0) { HB -= 360.0; } else if (HB < 0) { HB += 360.0; }
-            data.R = parseInt(Math.min(Math.max(L * (S + Math.min(Math.max(2.0 * (1.0 - (Math.abs(180.0 - HR) / 120.0)), 0.0), 1.0)), 0.0), 255.0));
-            data.G = parseInt(Math.min(Math.max(L * (S + Math.min(Math.max(2.0 * (1.0 - (Math.abs(180.0 - HG) / 120.0)), 0.0), 1.0)), 0.0), 255.0));
-            data.B = parseInt(Math.min(Math.max(L * (S + Math.min(Math.max(2.0 * (1.0 - (Math.abs(180.0 - HB) / 120.0)), 0.0), 1.0)), 0.0), 255.0));
+            data.R = S + Math.min(Math.max(2.0 * (1.0 - (Math.abs(180.0 - HR) / 120.0)), 0.0), 1.0);
+            data.G = S + Math.min(Math.max(2.0 * (1.0 - (Math.abs(180.0 - HG) / 120.0)), 0.0), 1.0);
+            data.B = S + Math.min(Math.max(2.0 * (1.0 - (Math.abs(180.0 - HB) / 120.0)), 0.0), 1.0);
+            data.R = L * Math.min(Math.max(data.R, 0.0), 1.0);
+            data.G = L * Math.min(Math.max(data.G, 0.0), 1.0);
+            data.B = L * Math.min(Math.max(data.B, 0.0), 1.0);
+            data.R = parseInt(255.0 * data.R);
+            data.G = parseInt(255.0 * data.G);
+            data.B = parseInt(255.0 * data.B);
             return data;
         }
     </script>
