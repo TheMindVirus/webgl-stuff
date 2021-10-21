@@ -53,24 +53,35 @@
         var HSL2RGB = function(H, S, L)
         {
             var data = {};
+
             H = parseFloat(H);
             S = 1.0 - (S / 100.0);
             L = (L / 100.0);
+
             var HR = 180.0 + (H);
             var HG = 180.0 + (H - 120.0);
             var HB = 180.0 + (H - 240.0);
+
             if (HR >= 360.0) { HR -= 360.0; } else if (HR < 0) { HR += 360.0; }
             if (HG >= 360.0) { HG -= 360.0; } else if (HG < 0) { HG += 360.0; }
             if (HB >= 360.0) { HB -= 360.0; } else if (HB < 0) { HB += 360.0; }
-            data.R = S + Math.min(Math.max(2.0 * (1.0 - (Math.abs(180.0 - HR) / 120.0)), 0.0), 1.0);
-            data.G = S + Math.min(Math.max(2.0 * (1.0 - (Math.abs(180.0 - HG) / 120.0)), 0.0), 1.0);
-            data.B = S + Math.min(Math.max(2.0 * (1.0 - (Math.abs(180.0 - HB) / 120.0)), 0.0), 1.0);
-            data.R = L * Math.min(Math.max(data.R, 0.0), 1.0);
-            data.G = L * Math.min(Math.max(data.G, 0.0), 1.0);
-            data.B = L * Math.min(Math.max(data.B, 0.0), 1.0);
+
+            data.R = Math.min(Math.max(2.0 * (1.0 - (Math.abs(180.0 - HR) / 120.0)), 0.0), 1.0);
+            data.G = Math.min(Math.max(2.0 * (1.0 - (Math.abs(180.0 - HG) / 120.0)), 0.0), 1.0);
+            data.B = Math.min(Math.max(2.0 * (1.0 - (Math.abs(180.0 - HB) / 120.0)), 0.0), 1.0);
+
+            var SR = S * (1.0 - data.R);
+            var SG = S * (1.0 - data.G);
+            var SB = S * (1.0 - data.B);
+
+            data.R = L * (SR + data.R);
+            data.G = L * (SG + data.G);
+            data.B = L * (SB + data.B);
+
             data.R = parseInt(255.0 * data.R);
             data.G = parseInt(255.0 * data.G);
             data.B = parseInt(255.0 * data.B);
+
             return data;
         }
     </script>
@@ -91,8 +102,8 @@
     </style>
   </head>
   <body>
-    <input class="slider" id="slider_H" type="range" min="0" max="360" step="0.01" value="0"></input>
-    <input class="slider" id="slider_S" type="range" min="0" max="100" step="0.01" value="0"></input>
-    <input class="slider" id="slider_L" type="range" min="0" max="100" step="0.01" value="0"></input>
+    <input class="slider" id="slider_H" type="range" min="0" max="360" step="0.001" value="0"></input>
+    <input class="slider" id="slider_S" type="range" min="0" max="100" step="0.001" value="0"></input>
+    <input class="slider" id="slider_L" type="range" min="0" max="100" step="0.001" value="0"></input>
   </body>
 </html>
