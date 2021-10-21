@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>PhoneLitHSL</title>
+    <meta name="viewport" content="width=device-width"></meta>
+    <meta name="apple-mobile-web-app-capable" content="yes"></meta>
+    <script>
+        var H = null;
+        var S = null;
+        var L = null;
+
+        var slider_H = null;
+        var slider_S = null;
+        var slider_L = null;
+
+        window.onload = function()
+        {
+            slider_H = document.getElementById("slider_H");
+            slider_S = document.getElementById("slider_S");
+            slider_L = document.getElementById("slider_L");
+
+            H = localStorage.getItem("slider_H"); if ((H == "null") || (H == null)) { H = 0.0; }
+            S = localStorage.getItem("slider_S"); if ((S == "null") || (S == null)) { S = 0.0; }
+            L = localStorage.getItem("slider_L"); if ((L == "null") || (L == null)) { L = 0.0; }
+
+            slider_H.oninput = function(event) { H = this.value; phonelit(); }
+            slider_S.oninput = function(event) { S = this.value; phonelit(); }
+            slider_L.oninput = function(event) { L = this.value; phonelit(); }
+
+            phonelit();
+        }
+
+        var phonelit = function()
+        {
+            var rgb = HSL2RGB(H, S, L);
+            var hue = HSL2RGB(H, 100, 100);
+            document.title = rgb.R + ", " + rgb.G + ", " + rgb.B;
+            document.body.style.backgroundColor = "rgba(" + rgb.R + ", " + rgb.G + ", " + rgb.B + ", 1.0)";
+
+            slider_H.style.background = "linear-gradient(to right, red, orange, yellow, lime, green, cyan, blue, indigo, violet, magenta, red)";
+            slider_S.style.background = "linear-gradient(to right, white, rgba(" + hue.R + ", " + hue.G + ", " + hue.B + ", 1.0))";
+            slider_L.style.background = "linear-gradient(to right, black, white)";
+
+            slider_H.value = H;
+            slider_S.value = S;
+            slider_L.value = L;
+
+            localStorage.setItem("slider_H", H);
+            localStorage.setItem("slider_S", S);
+            localStorage.setItem("slider_L", L);
+        }
+
+        var HSL2RGB = function(H, S, L)
+        {
+            var data = {};
+            H = parseFloat(H);
+            S = 1.0 - (S / 100.0);
+            L = (L / 100.0) * 255.0;
+            var HR = 180.0 + (H);
+            var HG = 180.0 + (H - 120.0);
+            var HB = 180.0 + (H - 240.0);
+            if (HR >= 360.0) { HR -= 360.0; } else if (HR < 0) { HR += 360.0; }
+            if (HG >= 360.0) { HG -= 360.0; } else if (HG < 0) { HG += 360.0; }
+            if (HB >= 360.0) { HB -= 360.0; } else if (HB < 0) { HB += 360.0; }
+            data.R = parseInt(Math.min(Math.max(L * (S + Math.min(Math.max(2.0 * (1.0 - (Math.abs(180.0 - HR) / 120.0)), 0.0), 1.0)), 0.0), 255.0));
+            data.G = parseInt(Math.min(Math.max(L * (S + Math.min(Math.max(2.0 * (1.0 - (Math.abs(180.0 - HG) / 120.0)), 0.0), 1.0)), 0.0), 255.0));
+            data.B = parseInt(Math.min(Math.max(L * (S + Math.min(Math.max(2.0 * (1.0 - (Math.abs(180.0 - HB) / 120.0)), 0.0), 1.0)), 0.0), 255.0));
+            return data;
+        }
+    </script>
+    <style>
+        body { background: rgba(0.0, 0.0, 0.0, 1.0); }
+        .slider { appearance: none; position: absolute; width: 95%; height: 10px; border-radius: 5px; border: 2px rgba(255.0, 255.0, 255.0, 0.7) solid; cursor: pointer; }
+        .slider::-webkit-slider-thumb { appearance: none; width: 30px; height: 30px; border-radius: 15px; border: 2px rgba(255.0, 255.0, 255.0, 0.7) solid; }
+        .slider::-moz-range-thumb { appearance: none; width: 30px; height: 30px; border-radius: 15px; border: 2px rgba(255.0, 255.0, 255.0, 0.7) solid; }
+        #slider_H { top: 70%; left: 2.5%; background: rgba(255.0, 255.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 0.0, 0.0, 1.0); }
+        #slider_S { top: 80%; left: 2.5%; background: rgba(255.0, 255.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 0.0, 0.0, 1.0); }
+        #slider_L { top: 90%; left: 2.5%; background: rgba(255.0, 255.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 0.0, 0.0, 1.0); }
+        #slider_H::-webkit-slider-thumb { background: rgba(255.0, 255.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 0.0, 0.0, 1.0); }
+        #slider_S::-webkit-slider-thumb { background: rgba(255.0, 255.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 0.0, 0.0, 1.0); }
+        #slider_L::-webkit-slider-thumb { background: rgba(255.0, 255.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 0.0, 0.0, 1.0); }
+        #slider_H::-moz-range-thumb { background: rgba(255.0, 255.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 0.0, 0.0, 1.0); }
+        #slider_S::-moz-range-thumb { background: rgba(255.0, 255.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 0.0, 0.0, 1.0); }
+        #slider_L::-moz-range-thumb { background: rgba(255.0, 255.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 0.0, 0.0, 1.0); }
+    </style>
+  </head>
+  <body>
+    <input class="slider" id="slider_H" type="range" min="0" max="360" step="0.01" value="0"></input>
+    <input class="slider" id="slider_S" type="range" min="0" max="100" step="0.01" value="0"></input>
+    <input class="slider" id="slider_L" type="range" min="0" max="100" step="0.01" value="0"></input>
+  </body>
+</html>
