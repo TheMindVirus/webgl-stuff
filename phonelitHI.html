@@ -51,7 +51,7 @@
 
             H = parseFloat(H);
             I = 4.0 * I;
-            D = Math.min(Math.max(1.0 - (I - 3.0), 0.0), 1.0);
+            D = Math.min(Math.max((1.0 - (I - 3.0)) / 2.0, 0.0), 1.0);
 
             var S = Math.min(Math.max(I - 1.0, 0.0), 1.0);
             var L = Math.min(Math.max(I, 0.0), 1.0);
