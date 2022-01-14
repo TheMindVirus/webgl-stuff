@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Teleprompter - Arcs</title>
+    <script>
+       var canvas = null;
+
+       window.onload = function()
+       {
+           canvas = document.getElementsByTagName("canvas")[0];
+           ctx = canvas.getContext("2d");
+           setInterval("Draw();", 1);
+       }
+
+       var Clear = function()
+       {
+           style = window.getComputedStyle(canvas);
+           canvas.width = parseFloat(style.width);
+           canvas.height = parseFloat(style.height);
+           ctx.imageSmoothingEnabled = true;
+           ctx.imageSmoothingQuality = "high";
+       }
+
+       var Draw = function()
+       {
+           Clear();
+           var nx = 40;
+           var ny = 20;
+           var sx = canvas.width / nx;
+           var sy = canvas.height / ny;
+           var ox = sx / 2;
+           var oy = sy / 2;
+           var r = oy / 2;
+           var v = 0.5;
+           var o = -0.5 * Math.PI;
+           var tau = 2.0 * Math.PI;
+           ctx.strokeStyle = "#FF0000";
+           ctx.lineWidth = 3;
+           for (var x = 0; x < nx; ++x)
+           {
+               for (var y = 0; y < ny; ++y)
+               {
+                   v = Math.random();
+                   ctx.beginPath();
+                   ctx.arc(ox + (sx * x), oy + (sy * y), r, o, o + (tau * v), false);
+                   ctx.stroke();
+               }
+           }
+       }
+    </script>
+    <style>
+        * { box-sizing: border-box; margin: auto; font-family: sans-serif; overflow: hidden; }
+        body { background: #100000; }
+        canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <canvas/>
+  </body>
+</html>

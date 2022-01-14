@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Teleprompter - CSSFAX</title>
+    <script>
+        var header = null;
+
+        window.onload = function()
+        {
+            header = document.getElementById("header");
+            Update();
+            setInterval("Update();", 1000);
+        }
+
+        var Update = function()
+        {
+            var date = new Date(Date.now()).toString().split(" GMT")[0];
+            var text = ("CSSFAX I UwU " + date).replaceAll(" ", "   ") + "  ";
+            header.innerText = text;
+        }
+    </script>
+    <style>
+        * { box-sizing: border-box; margin: auto; font-family: monospace; overflow: hidden; font-size: 20pt; color: white; white-space: pre; }
+        body { background: #100000; }
+        #header { position: fixed; top: 0; left: 0; width: 100%; height: 100%; text-align: right; user-select: none; }
+        #livery { position: fixed; top: 40px; left: 30px; width: 100%; height: 100%; text-align: left; user-select: none; }
+        #livery > span { background: white; color: #100000; font-size: 40pt; font-weight: bold; user-select: none; }
+        #banner { background: red; position: fixed; top: 40px; left: 350px; width: calc(100% - 380px); height: 60px; text-align: center; font-size: 40pt; font-weight: bold; user-select: none; }
+        #footer { background: red; position: fixed; bottom: 30px; left: 30px; width: calc(100% - 60px); height: 30px; text-align: center; font-weight: bold; user-select: none; }
+        #container { position: fixed; top: 111px; left: 30px; width: calc(100% - 60px); height: calc(100% - 183px); color: red; font-weight: bold; overflow: scroll; z-index: 1; }
+        #anchor { position: fixed; background: #100000; font-size: 30pt; text-decoration: underline; z-index: 2; }
+        .block { position: relative; width: 50%; color: yellow; display: inline-block; float: left; white-space: pre; }
+        .block > p { display: inline-block; float: right; padding-right: 30px; }
+    </style>
+  </head>
+  <body>
+    <div id="header"></div>
+    <div id="livery"><span> C </span> <span> S </span> <span> S </span></div>
+    <div id="banner">FAX SIMILE</div>
+    <div id="footer">CSSFAX: The Metaverse direct to your Teleprompter</div>
+    <div id="container"><h1 id="anchor">READ ALL ABOUT IT | NEWS OF THE WORLD</h1>
+      <div class="block">
+A-Z INDEX<p>199</p>
+BBC INFO<p>695</p>
+CHESS<p>568</p>
+COMMUNITY<p>BBC2 650</p>
+ENTERTAINMENT<p>111</p>
+
+FILM REVIEWS<p>526</p>
+FINANCE<p>BBC2 200</p>
+FLIGHTS<p>440</p>
+GAMES REVIEWS<p>527</p>
+HORSERACING<p>660</p>
+LOTTERY<p>555</p>
+PI-TECH<p>400</p>
+      </div>
+      <div class="block" style="margin-top: -64px;">
+NEWS HEADLINES<p>101</p>
+NEWS FOR REGION<p>160</p>
+NEWSROUND<p>570</p>
+RADIO<p>BBC1 640</p>
+READ HEAR<p>BBC2 640</p>
+
+SPORT<p>300</p>
+SUBTITLING<p>888</p>
+TOP 40<p>528</p>
+TRAVEL<p>430</p>
+TV LINKS<p>615</p>
+TV LISTINGS<p>600</p>
+WEATHER<p>400</p>
+      </div>
+    </div>
+  </body>
+</html>
