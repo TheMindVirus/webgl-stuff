@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TELETEXT - CEEFAX</title>
+    <script>
+        var header = null;
+
+        window.onload = function()
+        {
+            header = document.getElementById("header");
+            Update();
+            setInterval("Update();", 1000);
+        }
+
+        var Update = function()
+        {
+            var dates = new Date(Date.now()).toString().split(" ");
+            var date = dates[0] + " " + dates[1] + " " + dates[2] + " " + dates[3] + " "
+                     + "<span id=\"timespan\">" + dates[4] + "</span>";
+            var text = ("CEEFAX 1 100 " + date).replaceAll(" ", "   ") + "  ";
+            header.innerHTML = text;
+        }
+    </script>
+    <style>
+        * { box-sizing: border-box; margin: auto; font-family: monospace; overflow: hidden; font-size: 20pt; color: white; white-space: pre; }
+        body { background: black; }
+        #timespan { color: yellow; }
+        #header { position: fixed; top: 0; left: 0; width: 100%; height: 100%; text-align: right; user-select: none; }
+        #livery { position: fixed; top: 40px; left: 30px; width: 100%; height: 100%; text-align: left; user-select: none; }
+        #livery > span { background: white; color: black; font-size: 40pt; font-weight: bolder; user-select: none; }
+        #banner { background: blue; color: yellow; position: fixed; top: 40px; left: 350px; width: calc(100% - 380px); height: 60px; text-align: center; font-size: 40pt; font-weight: bold; user-select: none; }
+        #footer { background: blue; position: fixed; bottom: 30px; left: 30px; width: calc(100% - 60px); height: 30px; text-align: center; font-weight: bold; user-select: none; }
+        #prompt { position: fixed; bottom: 0; left: 30px; width: calc(100% - 60px); height: 30px; text-align: center; font-weight: bold; user-select: none; }
+        #red { position: absolute; left: 0%; width: 25%; color: red; }
+        #green { position: absolute; left: 25%; width: 25%; color: lime; }
+        #yellow { position: absolute; left: 50%; width: 25%; color: yellow; }
+        #blue { position: absolute; left: 75%; width: 25%; color: cyan; }
+        #container { position: fixed; top: 111px; left: 30px; width: calc(100% - 60px); height: calc(100% - 183px); color: red; font-weight: bold; overflow: scroll; z-index: 1; }
+        #anchor { position: fixed; background: black; font-size: 30pt; text-decoration: underline; z-index: 2; }
+        .block { position: relative; width: 50%; color: yellow; display: inline-block; float: left; white-space: pre; }
+        .block > p { display: inline-block; float: right; padding-right: 30px; }
+    </style>
+  </head>
+  <body>
+    <div id="header"></div>
+    <div id="livery"><span> B </span> <span> B </span> <span> C </span></div>
+    <div id="banner">CEEFAX</div>
+    <div id="footer">Ceefax: The World at your fingertips</div>
+    <div id="prompt"><span id="red">Headlines</span><span id="green">Sport</span><span id="yellow">Local TV</span><span id="blue">A-Z Index</span></div>
+    <div id="container"><h1 id="anchor">READ ALL ABOUT IT | NEWS OF THE WORLD</h1>
+      <div class="block">
+A-Z INDEX<p>199</p>
+BBC INFO<p>695</p>
+CHESS<p>568</p>
+COMMUNITY<p>BBC2 650</p>
+ENTERTAINMENT<p>111</p>
+
+FILM REVIEWS<p>526</p>
+FINANCE<p>BBC2 200</p>
+FLIGHTS<p>440</p>
+GAMES REVIEWS<p>527</p>
+HORSERACING<p>660</p>
+LOTTERY<p>555</p>
+SCI-TECH<p>154</p>
+      </div>
+      <div class="block" style="margin-top: -64px;">
+NEWS HEADLINES<p>101</p>
+NEWS FOR REGION<p>160</p>
+NEWSROUND<p>570</p>
+RADIO<p>BBC1 640</p>
+READ HEAR<p>BBC2 640</p>
+
+SPORT<p>300</p>
+SUBTITLING<p>888</p>
+TOP 40<p>528</p>
+TRAVEL<p>430</p>
+TV LINKS<p>615</p>
+TV LISTINGS<p>600</p>
+WEATHER<p>400</p>
+      </div>
+    </div>
+  </body>
+</html>
