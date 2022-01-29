@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>WebMIDI - CrossModTest</title>
+        <script>
+var log = null;
+var midi = null;
+var audio = null;
+var mixer = null;
+var oscillatorA = null;
+var oscillatorAGate = null;
+var oscillatorB = null;
+var oscillatorBGate = null;
+var crossmod = null;
+var polyphony = new Array();
+var veloprev = new Array();
+var portamento = 0.0;
+var volume = 1.0;
+
+var Start = async function()
+{
+    log = document.getElementById("log");
+    Log("[MIDI]: Initialising...");
+
+    audio = new AudioContext();
+    mixer = audio.createGain();
+    mixer.connect(audio.destination);
+    mixer.gain.setValueAtTime(volume, audio.currentTime);
+
+    await audio.audioWorklet.addModule("./CrossModulator.js");
+    crossmod = new AudioWorkletNode(audio, "CrossModulator");
+    crossmod.connect(mixer);
+    
+    oscillatorA = audio.createOscillator();
+    oscillatorAGate = audio.createGain();
+
+    oscillatorA.connect(oscillatorAGate);
+    oscillatorAGate.connect(crossmod);
+
+    oscillatorA.type = "sawtooth";
+    oscillatorAGate.gain.setValueAtTime(0.0, audio.currentTime);
+    oscillatorA.start();
+
+    oscillatorB = audio.createOscillator();
+    oscillatorBGate = audio.createGain();
+
+    oscillatorB.connect(oscillatorBGate);
+    oscillatorBGate.connect(crossmod);
+
+    oscillatorB.type = "sawtooth";
+    oscillatorBGate.gain.setValueAtTime(0.0, audio.currentTime);
+    oscillatorB.start();
+
+    if (navigator.requestMIDIAccess) { navigator.requestMIDIAccess({sysex: false}).then(MIDIsetup, MIDIerror); }
+    else { Log("[MIDI]: Error Initialising WebMIDI"); }
+}
+
+var Log = function(message)
+{
+    log.value += message + "\n";
+    log.scrollTop = log.scrollHeight;
+    console.log(message);
+}
+
+var MIDIsetup = function(handle)
+{
+    if (midi != null)
+    {
+        var inputs = midi.inputs.values();
+        for (var input = inputs.next(); input && (!input.done); input = inputs.next())
+        {
+            input.value.onmidimessage = null;
+        }
+    }
+    midi = handle;
+    midi.onstatechange = MIDIstate;
+    var inputs = midi.inputs.values();
+    for (var input = inputs.next(); input && (!input.done); input = inputs.next())
+    {
+        input.value.onmidimessage = MIDIevent;
+    }
+}
+
+var MIDIstate = function(state) { Log(state.port.name + " " + state.port.state); }
+var MIDIerror = function(error) { Log(error); }
+
+var MIDIevent = function(event)
+{
+    switch (event.data[0] & 0xf0)
+    {
+        case (0x90): { if (event.data[2] != 0) { NoteOn(event.data); } else { NoteOff(event.data); } } break;
+        case (0x80): { NoteOff(event.data); } break;
+        //case (0xB0): { oscillatorB.frequency.setTargetAtTime(oscillatorA.frequency.value * 2.0 /*(event.data[2] / 127.0)*/, audio.currentTime, 0.0); } }
+    }
+    Log(event.data);
+}
+
+var NoteToFrequency = function(note) { return 440.0 * Math.pow(2.0, (note - 69.0) / 12.0); }
+
+var NoteOn = function(event)
+{
+    polyphony.push(event[1]);
+    veloprev.push(event[2]);
+    //Log(polyphony);
+    //Log(veloprev);
+    //oscillatorB.frequency.setTargetAtTime(NoteToFrequency(event[1]), audio.currentTime, (polyphony.length > 1) ? portamento : 0.0);
+    oscillatorBGate.gain.setValueAtTime(event[2] / 127.0, audio.currentTime);
+    oscillatorA.frequency.setTargetAtTime(NoteToFrequency(event[1]), audio.currentTime, (polyphony.length > 1) ? portamento : 0.0);
+    oscillatorAGate.gain.setValueAtTime(event[2] / 127.0, audio.currentTime);
+}
+
+var NoteOff = function(event)
+{
+    var position = polyphony.indexOf(event[1]);
+    if (position != -1) { polyphony.splice(position, 1); veloprev.splice(position, 1); }
+    //Log(polyphony);
+    //Log(veloprev);
+    if (polyphony.length == 0)
+    {
+        oscillatorBGate.gain.setValueAtTime(0.0, audio.currentTime);
+        oscillatorAGate.gain.setValueAtTime(0.0, audio.currentTime);
+    }
+    else
+    {
+        oscillatorB.frequency.setTargetAtTime(NoteToFrequency(polyphony[polyphony.length - 1]), audio.currentTime, portamento);
+        oscillatorBGate.gain.setValueAtTime(veloprev[veloprev.length - 1] / 127.0, audio.currentTime);
+        oscillatorA.frequency.setTargetAtTime(NoteToFrequency(polyphony[polyphony.length - 1]), audio.currentTime, portamento);
+        oscillatorAGate.gain.setValueAtTime(veloprev[veloprev.length - 1] / 127.0, audio.currentTime);
+    }
+}
+
+var Info = function()
+{
+    Log("[MIDI]: Inputs:");
+    var inputs = midi.inputs.values();
+    for (var input = inputs.next(); input && (!input.done); input = inputs.next())
+    {
+        Log(_Info(input.value));
+    }
+    Log("[MIDI]: Outputs:");
+    var outputs = midi.outputs.values();
+    for (var output = outputs.next(); output && (!output.done); output = outputs.next())
+    {
+        Log(_Info(output.value));
+    }
+}
+
+var _Info = function(device)
+{
+    var info = "";
+    info += device.id + ":\n";
+    info += "\tName: " + device.name + "\n";
+    info += "\tManufacturer: " + device.manufacturer + "\n";
+    info += "\tVersion: " + device.version;
+    return info;
+}
+
+var Send = function()
+{
+    var outputs = midi.outputs.values();
+    var id = document.getElementById("id").value;
+    var output = midi.outputs.get(id);
+    if (output == null) { Log("[MIDI]: Send Error"); return; }
+    Log("[MIDI]: Sending NoteOn/NoteOff to " + output.id + ": " + output.name);
+    output.send([0x90, 60, 127]);
+    output.send([0x90, 60,   0], window.performance.now() + 1000.0);
+}
+        </script>
+        <style>
+            * { box-sizing: border-box; margin: auto; text-align: center; font-family: consolas; font-size: 14pt; color: white; overflow: hidden; }
+            body { background: black; }
+            #start { position: absolute; top: 10px; left: 10px; width: 100px; height: 35px; background: #330000; border-radius: 15px; box-shadow: 1px 1px 10px #770000; }
+            #info { position: absolute; top: 10px; left: 120px; width: 100px; height: 35px; background: #330000; border-radius: 15px; box-shadow: 1px 1px 10px #770000; }
+            #send { position: absolute; top: 10px; left: 230px; width: 100px; height: 35px; background: #330000; border-radius: 15px; box-shadow: 1px 1px 10px #770000; }
+            #id { position: absolute; top: 10px; left: 340px; width: 300px; height: 35px; background: #330000; border-radius: 15px; box-shadow: 1px 1px 10px #770000; }
+            #log { position: absolute; top: 55px; left: 10px; width: calc(100% - 20px); height: calc(80% - 35px); background: #110000; border-radius: 15px; border: thin #FF0000 solid; box-shadow: inset 0 0 15px #FF0000; padding: 10px; color: #FF0000; text-align: left; outline: none; overflow: auto; }
+        </style>
+    </head>
+    <body>
+        <input id="start" type="button" value="START" onclick="Start()"></input>
+        <input id="info" type="button" value="INFO" onclick="Info()"></input>
+        <input id="send" type="button" value="SEND" onclick="Send()"></input>
+        <input id="id" type="input" value="output-12"></input>
+        <textarea readonly id="log"></textarea>
+    </body>
+</html>

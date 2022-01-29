@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>WebMIDI - PSYCH0</title>
+        <script>
+var log = null;
+var midi = null;
+var audio = null;
+var unison = 16;
+var oscillatorA = new Array();
+var oscillatorAGate = new Array();
+var oscillatorAPhase = new Array();
+var oscillatorB = new Array();
+var oscillatorBGate = new Array();
+var oscillatorBPhase = new Array();
+var crossmod = null;
+var splitter = null;
+var inverter = null;
+var merger = null;
+var envelope = null;
+var mixer = null;
+var scope = null;
+var scope_data = null;
+var scope_canvas = null;
+var scope_ctx = null;
+var polyphony = new Array();
+var veloprev = new Array();
+var phase = 0.0001;
+var detune = 0;
+var headroom = 1;
+var width = 0.03;
+var attack = 0.01;
+var release = 9999.0;
+var portamento = 0.0;
+var FM = 1.0;
+var factor = 44.1;
+
+var Start = async function()
+{
+    log = document.getElementById("log");
+    Log("[MIDI]: Initialising...");
+
+    audio = new AudioContext();
+    splitter = audio.createChannelSplitter(2);
+    inverter = audio.createDelay();
+    merger = audio.createChannelMerger(2);
+    envelope = audio.createGain();
+    mixer = audio.createGain();
+    scope = audio.createAnalyser();
+    scope.fftSize = 2048;
+    scope_data = new Uint8Array(scope.frequencyBinCount);
+
+    await audio.audioWorklet.addModule("./CrossModulator.js");
+    crossmod = new AudioWorkletNode(audio, "CrossModulator");
+
+    crossmod.connect(splitter);
+    splitter.connect(merger, 0, 0);
+    splitter.connect(inverter, 0);
+    inverter.connect(merger, 0, 1);
+    merger.connect(envelope);
+    envelope.connect(mixer);
+    mixer.connect(scope);
+    scope.connect(audio.destination);
+
+    inverter.delayTime.setValueAtTime(width, audio.currentTime);
+    envelope.gain.value = 0.0;
+    mixer.gain.setValueAtTime(headroom / unison, audio.currentTime);
+
+    for (var i = 0; i < unison; ++i)
+    {
+        oscillatorA.push(audio.createOscillator());
+        oscillatorAGate.push(audio.createGain());
+        oscillatorAPhase.push(audio.createDelay());
+
+        oscillatorA[i].connect(oscillatorAGate[i]);
+        oscillatorAGate[i].connect(oscillatorAPhase[i]);
+        oscillatorAPhase[i].connect(crossmod);
+
+        oscillatorA[i].type = "sawtooth";
+        oscillatorA[i].detune.setValueAtTime(Math.random() * detune, audio.currentTime);
+        oscillatorAGate[i].gain.setValueAtTime(0.0, audio.currentTime);
+        oscillatorAPhase[i].delayTime.setValueAtTime(phase * i, audio.currentTime);
+        oscillatorA[i].start();
+
+        oscillatorB.push(audio.createOscillator());
+        oscillatorBGate.push(audio.createGain());
+        oscillatorBPhase.push(audio.createDelay());
+
+        oscillatorB[i].connect(oscillatorBGate[i]);
+        oscillatorBGate[i].connect(oscillatorBPhase[i]);
+        oscillatorBPhase[i].connect(crossmod);
+
+        oscillatorB[i].type = "sawtooth";
+        oscillatorB[i].detune.setValueAtTime(Math.random() * detune, audio.currentTime);
+        oscillatorBGate[i].gain.setValueAtTime(0.0, audio.currentTime);
+        oscillatorBPhase[i].delayTime.setValueAtTime(phase * i, audio.currentTime);
+        oscillatorB[i].start();
+    }
+
+    if (navigator.requestMIDIAccess) { navigator.requestMIDIAccess({sysex: false}).then(MIDIsetup, MIDIerror); }
+    else { Log("[MIDI]: Error Initialising WebMIDI"); }
+
+    scope_canvas = document.getElementById("scope");
+    scope_ctx = scope_canvas.getContext("2d");
+    Draw();
+}
+
+var Log = function(message)
+{
+    log.value += message + "\n";
+    log.scrollTop = log.scrollHeight;
+    console.log(message);
+}
+
+var MIDIsetup = function(handle)
+{
+    if (midi != null)
+    {
+        var inputs = midi.inputs.values();
+        for (var input = inputs.next(); input && (!input.done); input = inputs.next())
+        {
+            input.value.onmidimessage = null;
+        }
+    }
+    midi = handle;
+    midi.onstatechange = MIDIstate;
+    var inputs = midi.inputs.values();
+    for (var input = inputs.next(); input && (!input.done); input = inputs.next())
+    {
+        input.value.onmidimessage = MIDIevent;
+    }
+}
+
+var MIDIstate = function(state) { Log(state.port.name + " " + state.port.state); }
+var MIDIerror = function(error) { Log(error); }
+
+var MIDIevent = function(event)
+{
+    switch (event.data[0] & 0xf0)
+    {
+        case (0x90): { if (event.data[2] != 0) { NoteOn(event.data); } else { NoteOff(event.data); } } break;
+        case (0x80): { NoteOff(event.data); } break;
+        case (0xB0): { FM = (event.data[2] / 127.0) * factor; for (var i = 0; i < unison; ++i) { oscillatorB[i].frequency.setTargetAtTime(oscillatorA[i].frequency.value * FM, audio.currentTime, 0.0); } }
+    }
+    //Log(event.data);
+}
+
+var NoteToFrequency = function(note) { return 440.0 * Math.pow(2.0, (note - 69.0) / 12.0); }
+
+var NoteOn = function(event)
+{
+    polyphony.push(event[1]);
+    veloprev.push(event[2]);
+    //Log(polyphony);
+    //Log(veloprev);
+    for (var i = 0; i < unison; ++i)
+    {
+        oscillatorB[i].frequency.setTargetAtTime(NoteToFrequency(event[1]) * FM, audio.currentTime, (polyphony.length > 1) ? portamento : 0.0);
+        oscillatorBGate[i].gain.setValueAtTime(event[2] / 127.0, audio.currentTime);
+        oscillatorA[i].frequency.setTargetAtTime(NoteToFrequency(event[1]), audio.currentTime, (polyphony.length > 1) ? portamento : 0.0);
+        oscillatorAGate[i].gain.setValueAtTime(event[2] / 127.0, audio.currentTime);
+    }
+    envelope.gain.setTargetAtTime(1.0, audio.currentTime, attack);
+    envelope.gain.setTargetAtTime(0.0, audio.currentTime + 1, release);
+}
+
+var NoteOff = function(event)
+{
+    var position = polyphony.indexOf(event[1]);
+    if (position != -1) { polyphony.splice(position, 1); veloprev.splice(position, 1); }
+    //Log(polyphony);
+    //Log(veloprev);
+    if (polyphony.length == 0)
+    {
+        for (var i = 0; i < unison; ++i)
+        {
+            oscillatorBGate[i].gain.setValueAtTime(0.0, audio.currentTime);
+            oscillatorAGate[i].gain.setValueAtTime(0.0, audio.currentTime);
+        }
+        envelope.gain.setValueAtTime(0.0, audio.currentTime, release);
+    }
+    else
+    {
+        for (var i = 0; i < unison; ++i)
+        {
+            oscillatorB[i].frequency.setTargetAtTime(NoteToFrequency(polyphony[polyphony.length - 1]) * FM, audio.currentTime, portamento);
+            oscillatorBGate[i].gain.setValueAtTime(veloprev[veloprev.length - 1] / 127.0, audio.currentTime);
+            oscillatorA[i].frequency.setTargetAtTime(NoteToFrequency(polyphony[polyphony.length - 1]), audio.currentTime, portamento);
+            oscillatorAGate[i].gain.setValueAtTime(veloprev[veloprev.length - 1] / 127.0, audio.currentTime);
+        }
+        envelope.gain.setTargetAtTime(1.0, audio.currentTime, attack);
+        envelope.gain.setTargetAtTime(0.0, audio.currentTime + 1, release);
+    }
+}
+
+var Info = function()
+{
+    Log("[MIDI]: Inputs:");
+    var inputs = midi.inputs.values();
+    for (var input = inputs.next(); input && (!input.done); input = inputs.next())
+    {
+        Log(_Info(input.value));
+    }
+    Log("[MIDI]: Outputs:");
+    var outputs = midi.outputs.values();
+    for (var output = outputs.next(); output && (!output.done); output = outputs.next())
+    {
+        Log(_Info(output.value));
+    }
+}
+
+var _Info = function(device)
+{
+    var info = "";
+    info += device.id + ":\n";
+    info += "\tName: " + device.name + "\n";
+    info += "\tManufacturer: " + device.manufacturer + "\n";
+    info += "\tVersion: " + device.version;
+    return info;
+}
+
+var Send = function()
+{
+    var outputs = midi.outputs.values();
+    var id = document.getElementById("id").value;
+    var output = midi.outputs.get(id);
+    if (output == null) { Log("[MIDI]: Send Error"); return; }
+    Log("[MIDI]: Sending NoteOn/NoteOff to " + output.id + ": " + output.name);
+    output.send([0x90, 60, 127]);
+    output.send([0x90, 60,   0], window.performance.now() + 1000.0);
+}
+
+var Draw = function()
+{
+    var draw = requestAnimationFrame(Draw);
+    scope.getByteTimeDomainData(scope_data);
+    scope_canvas.width = parseInt(window.getComputedStyle(scope_canvas).width);
+    scope_canvas.height = parseInt(window.getComputedStyle(scope_canvas).height);
+    scope_ctx.fillStyle = "rgb(10, 0, 0)";
+    scope_ctx.fillRect(0, 0, scope_canvas.width, scope_canvas.height);
+    scope_ctx.lineWidth = 2;
+    scope_ctx.strokeStyle = "rgb(255, 0, 0)";
+    scope_ctx.beginPath();
+    var slice = scope_canvas.width / (scope.frequencyBinCount - 2);
+    var x = 0;
+    for (var i = 0; i < scope.frequencyBinCount; ++i)
+    {
+        var v = scope_data[i] / 128.0;
+        var y = v * scope_canvas.height / 2;
+        if (i == 0) { scope_ctx.moveTo(x, y); }
+        else { scope_ctx.lineTo(x, y); }
+        x += slice;
+    }
+    scope_ctx.stroke();
+}
+        </script>
+        <style>
+            * { box-sizing: border-box; margin: auto; text-align: center; font-family: consolas; font-size: 14pt; color: white; overflow: hidden; }
+            body { background: black; }
+            #start { position: absolute; top: 10px; left: 10px; width: 100px; height: 35px; background: #330000; border-radius: 15px; box-shadow: 1px 1px 10px #770000; }
+            #info { position: absolute; top: 10px; left: 120px; width: 100px; height: 35px; background: #330000; border-radius: 15px; box-shadow: 1px 1px 10px #770000; }
+            #send { position: absolute; top: 10px; left: 230px; width: 100px; height: 35px; background: #330000; border-radius: 15px; box-shadow: 1px 1px 10px #770000; }
+            #id { position: absolute; top: 10px; left: 340px; width: 300px; height: 35px; background: #330000; border-radius: 15px; box-shadow: 1px 1px 10px #770000; }
+            #log { position: absolute; top: 55px; left: 10px; width: calc(100% - 20px); height: calc(80% - 35px); background: #110000; border-radius: 15px; border: thin #FF0000 solid; box-shadow: inset 0 0 15px #FF0000; padding: 10px; color: #FF0000; text-align: left; outline: none; overflow: auto; }
+            #scope { position: absolute; top: calc(80% + 35px); left: 10px; width: calc(100% - 20px); height: calc(20% - 65px); background: #110000; border-radius: 15px; border: thin #FF0000 solid; box-shadow: inset 0 0 15px #FF0000; padding: 10px; color: #FF0000; text-align: left; outline: none; overflow: auto; }
+        </style>
+    </head>
+    <body>
+        <input id="start" type="button" value="START" onclick="Start()"></input>
+        <input id="info" type="button" value="INFO" onclick="Info()"></input>
+        <input id="send" type="button" value="SEND" onclick="Send()"></input>
+        <input id="id" type="input" value="output-12"></input>
+        <textarea readonly id="log"></textarea>
+        <canvas id="scope"></canvas>
+    </body>
+</html>
