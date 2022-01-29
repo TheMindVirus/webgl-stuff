@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>LMNC:500xOsc-MegaDrone</title>
+    <script>
+
+var audio = null;
+var mixer = null;
+var splitter = null;
+var inverter = null;
+var merger = null;
+
+var oscillator = new Array();
+var oscillatorGate = new Array();
+var oscillatorPhase = new Array();
+
+var Oscillators = 101;
+var PhaseWidth = 0.0001;
+var DetuneDrift = 90;
+var Headroom = 10;
+var Width = 0.03;
+
+var keyMap = new Array();
+var keyStack = new Array();
+var frequencyMap = new Array();
+
+var Start = function()
+{
+    //Initialisation
+    audio = new AudioContext();
+    mixer = audio.createGain();
+    splitter = audio.createChannelSplitter(2);
+    inverter = audio.createDelay();
+    merger = audio.createChannelMerger(2);
+
+    //Patching
+    mixer.connect(splitter);
+    splitter.connect(merger, 0, 0);
+    splitter.connect(inverter, 0);
+    inverter.connect(merger, 0, 1);
+    merger.connect(audio.destination);
+			
+    //Levels
+    mixer.gain.setValueAtTime(Headroom / Oscillators, audio.currentTime);
+    inverter.delayTime.setValueAtTime(Width, audio.currentTime);
+    keyMap = [90, 83, 88, 68, 67, 86, 71, 66, 72, 78, 74, 77, 188,
+              81, 50, 87, 51, 69, 82, 53, 84, 54, 89, 55, 85, 73];
+    //frequencyMap = [16.35, 17.32, 18.35, 19.45, 20.60, 21.83, 23.12, 24.50, 25.96, 27.50, 29.14, 30.87, 32.70,
+    //                32.70, 34.65, 36.71, 38.89, 41.20, 43.65, 46.25, 49.00, 51.91, 55.00, 58.27, 61.74, 65.41];
+    frequencyMap = [130.81, 138.59, 146.83, 155.56, 164.81, 174.61, 185.00, 196.00, 207.65, 220.00, 233.00, 246.94, 261.63,
+                    261.63, 277.18, 293.66, 311.13, 329.63, 349.23, 369.99, 392.00, 415.30, 440.00, 466.16, 493.88, 523.25];
+    for (i = 0; i < Oscillators; ++i)
+    {
+        oscillator.push(audio.createOscillator());
+        oscillatorGate.push(audio.createGain());
+        oscillatorPhase.push(audio.createDelay());
+        oscillator[i].connect(oscillatorGate[i]);
+        oscillatorGate[i].connect(oscillatorPhase[i]);
+        oscillatorPhase[i].connect(mixer);
+        oscillator[i].type = "sawtooth";
+        oscillator[i].detune.setValueAtTime(Math.random() * DetuneDrift, audio.currentTime);
+        oscillatorGate[i].gain.setValueAtTime(0.0, audio.currentTime);
+        oscillatorPhase[i].delayTime.setValueAtTime(PhaseWidth * i, audio.currentTime);
+        oscillator[i].start();
+    }
+}
+
+window.onkeydown = function(event)
+{
+    if (event.repeat) { return; }
+    var index = keyMap.findIndex(key => key == event.keyCode);
+    var frequency = (index >= 0) ? frequencyMap[index] : -1;
+    var position = keyStack.findIndex(pos => pos == frequency);
+    if ((frequency == -1) || (position != -1)) { return; }
+    play(frequency);
+    keyStack.push(frequency);
+    console.log(frequency);
+}
+
+window.onkeyup = function(event)
+{
+    var index = keyMap.findIndex(key => key == event.keyCode);
+    var frequency = (index >= 0) ? frequencyMap[index] : -1;
+    if (frequency == -1) { return; }
+    var position = keyStack.findIndex(pos => pos == frequency);
+    if ((frequency == -1) || (position == -1)) { return; }
+    keyStack.splice(position, 1);
+    if (keyStack.length == 0) { stop(); }
+    else { play(keyStack[keyStack.length - 1]); }
+}
+
+var play = function(frequency)
+{
+    for (i = 0; i < Oscillators; ++i)
+    {
+        oscillator[i].frequency.setValueAtTime(frequency, audio.currentTime);
+        oscillatorGate[i].gain.setValueAtTime(1.0 , audio.currentTime);
+    }
+}
+
+var stop = function()
+{
+    for (i = 0; i < Oscillators; ++i)
+    {
+        oscillatorGate[i].gain.setValueAtTime(0, audio.currentTime);
+    }
+}
+
+var StartButtonClick = function(element)
+{
+    element.remove();
+    Start();
+}
+
+    </script>
+    <style>
+
+* { font-family: sans-serif; text-align: center; }
+body { background: #111111; color: white; }
+h1 { font-size: 250pt; width: 100%; height: 100%; }
+p { font-size: 25pt; font-weight: bold; color: #FFCC00; }
+#start-button { position: fixed; top: 0; left: 0; width: 100%; height: 100%; text-align: center; color: white; background: black; border: none; font-size: 150pt; user-select: none; z-index: 9999; }
+
+    </style>
+  </head>
+  <body>
+    <button id="start-button" onclick="StartButtonClick(this);">Start</button>
+    <p>Use the computer keyboard to play notes!</p>
+    <h1>:)</h1>
+  </body>
+</html>
