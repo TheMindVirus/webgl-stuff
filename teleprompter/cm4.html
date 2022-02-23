@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Thinking Machines - Connection Machine</title>
+    <script>
+       var canvas = null;
+       var ctx = null;
+
+       var nx = 25;
+       var ny = 100;
+       var gx = 20;
+       var gy = 10;
+       var gs = 50;
+       var t = 25;
+       var c = 0.5;
+
+       window.onload = function()
+       {
+           canvas = document.getElementsByTagName("canvas")[0];
+           ctx = canvas.getContext("2d");
+           setInterval("Draw();", t);
+       }
+
+       var Clear = function()
+       {
+           style = window.getComputedStyle(canvas);
+           canvas.width = parseFloat(style.width);
+           canvas.height = parseFloat(style.height);
+       }
+
+       var Draw = function()
+       {
+           Clear();
+           var sx = (canvas.width / nx) - gx;
+           var sy = (canvas.height / ny) - gy;
+           var ox = sx + gx;
+           var oy = sy + gy;
+           var dx = gx / 2;
+           var dy = gy / 2;
+           ctx.fillStyle = "#FF3366";
+           ctx.shadowColor = "#FF0033";
+           ctx.shadowBlur = gs;
+           for (var x = 0; x < nx; ++x)
+           {
+               for (var y = 0; y < ny; ++y)
+               {
+                   if (Math.random() > c) { ctx.fillRect((ox * x) + dx, (oy * y) + dy, sx, sy); }
+               }
+           }
+       }
+    </script>
+    <style>
+        * { box-sizing: border-box; margin: auto; font-family: sans-serif; overflow: hidden; }
+        body { background: url("./metal.png") no-repeat center center fixed; background-size: cover; }
+        #panel { position: fixed; top: 0; left: calc(100vw - 65%); width: 30%; height: 100%; background: #400000D0; box-shadow: inset 0 0 20px #000000FF; }
+        canvas { position: absolute; top: 10%; left: 5%; width: 90%; height: 80%; }
+    </style>
+  </head>
+  <body>
+    <div id="panel">
+      <canvas/>
+    </div>
+  </body>
+</html>
