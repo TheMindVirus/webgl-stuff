@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>vib</title>
+    <script>
+var aud = null;
+var btn = null;
+var cvs = null;
+var ctx = null;
+
+var w = 100;
+var h = 100;
+
+var keys = [0, 0, 0, 0];
+var queue = null;
+var vib = "ribbon";
+
+window.onload = () =>
+{
+    aud = document.getElementsByTagName("audio")[0];
+    btn = document.getElementsByTagName("button")[0];
+    cvs = document.getElementsByTagName("canvas")[0];
+    aud.src = "music.mp3";
+    btn.innerText = "Play";
+    ctx = cvs.getContext("2d");
+    aud.loop = true;
+    btn.onclick = () => { play(); }
+    window.onresize();
+}
+
+window.onresize = () =>
+{
+    if (cvs != null)
+    {
+        cvs.width = w; //window.innerWidth;
+        cvs.height = h; //window.innerHeight;
+        cvs.style.width = parseFloat(cvs.style.width);
+        cvs.style.height = parseFloat(cvs.style.height);
+    }
+}
+
+window.onkeydown = (event) =>
+{
+    //console.log(event.keyCode);
+    if ((event.keyCode == 87) || (event.keyCode == 38)) { keys[0] = 1; } //W or Up
+    if ((event.keyCode == 83) || (event.keyCode == 40)) { keys[1] = 1; } //S or Down
+    if ((event.keyCode == 65) || (event.keyCode == 37)) { keys[2] = 1; } //A or Left
+    if ((event.keyCode == 68) || (event.keyCode == 39)) { keys[3] = 1; } //D or Right
+}
+
+window.onkeyup = (event) =>
+{
+    //console.log(event.keyCode);
+    if ((event.keyCode == 87) || (event.keyCode == 38)) { keys[0] = 0; } //W or Up
+    if ((event.keyCode == 83) || (event.keyCode == 40)) { keys[1] = 0; } //S or Down
+    if ((event.keyCode == 65) || (event.keyCode == 37)) { keys[2] = 0; } //A or Left
+    if ((event.keyCode == 68) || (event.keyCode == 39)) { keys[3] = 0; } //D or Right
+}
+
+play = () =>
+{
+    aud.play();
+    btn.remove();
+    queue = new QUEUE();
+    setInterval(() => { update(); }, 50);
+    setInterval(() => { spawn(); }, 1000);
+}
+
+update = () =>
+{
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgb(255, 0, 0, 1.0)";
+    ctx.fillStyle = "rgb(0, 0, 0, 1.0)";
+    ctx.fillRect(0, 0, w, h);
+    ctx.beginPath();
+    ctx.moveTo(0, h - 20);
+    ctx.lineTo(w, h - 20);
+    ctx.closePath();
+    ctx.stroke();
+
+    queue.update(ctx);
+    queue.draw(ctx);
+
+    cx = 0;
+    cy = 5;
+    cr = 0.25;
+    cs = 5
+
+    if (keys[0]) { cy += 20; }
+    if (keys[1]) { cy -= 10; }
+    if (keys[2]) { cr += 0.25; }
+    if (keys[3]) { cr += 0.125; }
+
+    cw = 20 + cx;
+    ch = (h - 30) - cy;
+    ct = cs / 2;
+
+    ctx.save();
+    ctx.translate(cw + ct, ch + ct);
+    ctx.rotate(cr * Math.PI);
+    ctx.translate(-(cw + ct), -(ch + ct));
+    ctx.fillStyle = "rgb(255, 0, 0, 1.0)";
+    ctx.fillRect(cw, ch, cs, cs);
+    ctx.restore();
+}
+
+spawn = () =>
+{
+    r = parseInt(Math.random() * 4); //console.log(r);
+    if (r == 0) { queue.push(new STEP(queue)); }
+    if (r == 1) { queue.push(new LOOP(queue)); }
+    if (r == 2) { queue.push(new WAVE(queue)); }
+    if (r == 3) { queue.push(new DROP(queue)); }
+    console.log(queue.objects);
+}
+
+QUEUE = function()
+{
+    this.objects = [];
+    this.update = (context) => { for (var i in this.objects) { if (this.objects[i]) { this.objects[i].update(context); } } }
+    this.draw = (context) => { for (var i in this.objects) { if (this.objects[i]) { this.objects[i].draw(context); } } }
+    this.push = (obj) =>
+    {
+        var n = this.objects.length + 1;
+        if (n > 999) { return; }
+        var tmp = new Array(n);
+        for (var i = 0; i < (n - 1); ++i) { tmp[i] = this.objects[i]; }
+        tmp[(n - 1)] = obj;
+        this.objects = new Array(n);
+        for (var i = 0; i < n; ++i) { this.objects[i] = tmp[i]; }
+    }
+    this.pop = () =>
+    {
+        var n = this.objects.length - 1;
+        if (n < 0) { return; }
+        var tmp = new Array(n);
+        for (var i = 0; i < n; ++i) { tmp[i] = this.objects[i + 1]; }
+        this.objects = new Array(n);
+        for (var i = 0; i < n; ++i) { this.objects[i] = tmp[i]; }
+    }
+}
+
+STEP = function(sequence)
+{
+    this.x = w + 10;
+    this.update = (context) => { this.x -= 1; if (this.x < -10) { sequence.pop(); } }
+    this.draw = (context) =>
+    {
+        context.lineWidth = 0.5;
+        context.strokeStyle = "rgb(0, 0, 0, 1.0)";
+        context.fillStyle = "rgb(0, 0, 0, 1.0)";
+        context.fillRect(this.x, h - 50, 10, 40);
+        context.strokeRect(this.x, h - 50, 10, 40);
+        context.strokeStyle = "rgb(255, 0, 0, 1.0)";
+        context.beginPath();
+        context.moveTo(this.x, h - 20); 
+        context.lineTo(this.x, h - 40);
+        context.lineTo(this.x + 10, h - 40);
+        context.lineTo(this.x + 10, h - 20);
+        context.stroke();
+    }
+}
+
+LOOP = function(sequence)
+{
+    this.x = w + 10;
+    this.update = (context) => { this.x -= 1; if (this.x < -10) { sequence.pop(); } }
+    this.draw = (context) =>
+    {
+        context.lineWidth = 0.5;
+        context.strokeStyle = "rgb(0, 0, 0, 1.0)";
+        context.fillStyle = "rgb(0, 0, 0, 1.0)";
+        context.fillRect(this.x, h - 50, 10, 40);
+        context.strokeRect(this.x, h - 50, 10, 40);
+        context.strokeStyle = "rgb(255, 0, 0, 1.0)";
+        context.beginPath();
+        context.moveTo(this.x, h - 20); 
+        context.arcTo(this.x + 10, h - 20, this.x + 10, h - 30, 12);
+        context.arcTo(this.x + 10, h - 40, this.x + 5, h - 40, 6);
+        context.arcTo(this.x, h - 40, this.x, h - 30, 6);
+        context.arcTo(this.x, h - 20, this.x + 10, h - 20, 12);
+        context.stroke();
+    }
+}
+
+WAVE = function(sequence)
+{
+    this.x = w + 10;
+    this.update = (context) => { this.x -= 1; if (this.x < -10) { sequence.pop(); } }
+    this.draw = (context) =>
+    {
+        context.lineWidth = 0.5;
+        context.strokeStyle = "rgb(0, 0, 0, 1.0)";
+        context.fillStyle = "rgb(0, 0, 0, 1.0)";
+        context.fillRect(this.x, h - 50, 10, 40);
+        context.strokeRect(this.x, h - 50, 10, 40);
+        context.strokeStyle = "rgb(255, 0, 0, 1.0)";
+        context.beginPath();
+        context.moveTo(this.x, h - 20); 
+        context.lineTo(this.x + 2, h - 30);
+        context.lineTo(this.x + 4, h - 10);
+        context.lineTo(this.x + 6, h - 30);
+        context.lineTo(this.x + 8, h - 10);
+        context.lineTo(this.x + 10, h - 20);
+        context.stroke();
+    }
+}
+
+DROP = function(sequence)
+{
+    this.x = w + 10;
+    this.update = (context) => { this.x -= 1; if (this.x < -10) { sequence.pop(); } }
+    this.draw = (context) =>
+    {
+        context.lineWidth = 0.5;
+        context.strokeStyle = "rgb(0, 0, 0, 1.0)";
+        context.fillStyle = "rgb(0, 0, 0, 1.0)";
+        context.fillRect(this.x, h - 50, 10, 40);
+        context.strokeRect(this.x, h - 50, 10, 40);
+        context.strokeStyle = "rgb(255, 0, 0, 1.0)";
+        context.beginPath();
+        context.moveTo(this.x, h - 20); 
+        context.lineTo(this.x + 5, h - 10);
+        context.lineTo(this.x + 10, h - 20);
+        context.stroke();
+    }
+}
+
+    </script>
+    <style>
+body { background: black; }
+button { position: fixed; top: 0; left: 0; width: 100%; height: 100%; text-align: center; color: red; background: black; border: none; font-size: 100pt; user-select: none; z-index: 9999; }
+canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
+    </style>
+  </head>
+  <body>
+    <audio></audio>
+    <button></button>
+    <canvas></canvas>
+  </body>
+</html>
