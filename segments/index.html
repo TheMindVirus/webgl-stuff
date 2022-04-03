@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Segments</title>
+    <meta name="apple-mobile-web-app-capable" content="yes"></meta>
+    <script>
+var canvas = null;
+var ctx = null;
+
+var w = 0;
+var h = 0;
+
+var click_x = null;
+var click_y = null;
+
+var segments = null;
+var segments_A = null;
+var segments_B = null;
+var segments_C = null;
+var segments_D = null;
+var segments_E = null;
+var segments_F = null;
+var segments_G = null;
+
+var toggle_A = false;
+var toggle_B = false;
+var toggle_C = false;
+var toggle_D = false;
+var toggle_E = false;
+var toggle_F = false;
+var toggle_G = false;
+
+window.onload = function()
+{
+    segments = document.getElementById("segments");
+    segments_A = document.getElementById("segments_A");
+    segments_B = document.getElementById("segments_B");
+    segments_C = document.getElementById("segments_C");
+    segments_D = document.getElementById("segments_D");
+    segments_E = document.getElementById("segments_E");
+    segments_F = document.getElementById("segments_F");
+    segments_G = document.getElementById("segments_G");
+    canvas = document.getElementsByTagName("canvas")[0];
+    ctx = canvas.getContext("2d");
+    canvas.onclick = (event) => { getpixel(event); }
+    window.onresize();
+    setInterval("draw()", 10);
+}
+
+window.onresize = function()
+{
+    var style = window.getComputedStyle(canvas);
+    w = canvas.width = parseFloat(style.width);
+    h = canvas.height = parseFloat(style.height);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+}
+
+var draw = function()
+{
+    window.onresize();
+    if (click_x)
+    {
+        ctx.drawImage(segments_A, 0, 0, w, h);
+        data = ctx.getImageData(click_x, click_y, 1, 1);
+        if (data.data[3] > 127) { toggle_A = !toggle_A; }
+        window.onresize();
+
+        ctx.drawImage(segments_B, 0, 0, w, h);
+        data = ctx.getImageData(click_x, click_y, 1, 1);
+        if (data.data[3] > 127) { toggle_B = !toggle_B; }
+        window.onresize();
+
+        ctx.drawImage(segments_C, 0, 0, w, h);
+        data = ctx.getImageData(click_x, click_y, 1, 1);
+        if (data.data[3] > 127) { toggle_C = !toggle_C; }
+        window.onresize();
+
+        ctx.drawImage(segments_D, 0, 0, w, h);
+        data = ctx.getImageData(click_x, click_y, 1, 1);
+        if (data.data[3] > 127) { toggle_D = !toggle_D; }
+        window.onresize();
+
+        ctx.drawImage(segments_E, 0, 0, w, h);
+        data = ctx.getImageData(click_x, click_y, 1, 1);
+        if (data.data[3] > 127) { toggle_E = !toggle_E; }
+        window.onresize();
+
+        ctx.drawImage(segments_F, 0, 0, w, h);
+        data = ctx.getImageData(click_x, click_y, 1, 1);
+        if (data.data[3] > 127) { toggle_F = !toggle_F; }
+        window.onresize();
+
+        ctx.drawImage(segments_G, 0, 0, w, h);
+        data = ctx.getImageData(click_x, click_y, 1, 1);
+        if (data.data[3] > 127) { toggle_G = !toggle_G; }
+        window.onresize();
+
+        click_x = null;
+        click_y = null;
+    }
+    ctx.drawImage(segments, 0, 0, w, h);
+    if (toggle_A) { ctx.drawImage(segments_A, 0, 0, w, h); }
+    if (toggle_B) { ctx.drawImage(segments_B, 0, 0, w, h); }
+    if (toggle_C) { ctx.drawImage(segments_C, 0, 0, w, h); }
+    if (toggle_D) { ctx.drawImage(segments_D, 0, 0, w, h); }
+    if (toggle_E) { ctx.drawImage(segments_E, 0, 0, w, h); }
+    if (toggle_F) { ctx.drawImage(segments_F, 0, 0, w, h); }
+    if (toggle_G) { ctx.drawImage(segments_G, 0, 0, w, h); }
+}
+
+var getpixel = (event) =>
+{
+    click_x = event.x;
+    click_y = event.y;
+    //document.title = event.x + ", " + event.y;
+}
+    </script>
+    <style>
+* { box-sizing: border-box; margin: auto; font-family: sans-serif; overflow: hidden; }
+body { background: black; }
+canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; }
+    </style>
+  </head>
+  <body>
+    <canvas></canvas>
+    <img id="segments" src="segments.png" hidden></img>
+    <img id="segments_A" src="segments_A.png" hidden></img>
+    <img id="segments_B" src="segments_B.png" hidden></img>
+    <img id="segments_C" src="segments_C.png" hidden></img>
+    <img id="segments_D" src="segments_D.png" hidden></img>
+    <img id="segments_E" src="segments_E.png" hidden></img>
+    <img id="segments_F" src="segments_F.png" hidden></img>
+    <img id="segments_G" src="segments_G.png" hidden></img>
+  </body>
+</html>
