@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>PatchBay[LITE]</title>
+    <script>
+var canvas = null;
+var ctx = null;
+var patch = 
+{
+    "X": 16,
+    "Y": 16,
+    "links": [],
+};
+
+window.onload=()=>
+{
+    canvas = document.getElementsByTagName("canvas")[0];
+    canvas.onclick = test;
+    canvas.oncontextmenu =(event)=> { event.preventDefault(); test(event); };
+    ctx = canvas.getContext("2d");
+    draw();
+}
+
+window.onresize=()=> { draw(); }
+
+var ix = 0;
+var iy = 0;
+var test=(event)=>
+{
+    ix = 1 + parseInt((event.x / canvas.width) * patch.X);
+    iy = 1 + parseInt((event.y / canvas.height) * patch.Y);
+    if (event.button == 0) { link(ix, iy); }
+    if ((event.button == 2) && (event.pointerId == 1)) { tear(ix, iy); }
+}
+
+var selected = null;
+var link=(x, y)=> //LMB, RMB cancel
+{
+    if (!selected)
+    {
+        selected = [x, y];
+    }
+    else
+    {
+        if ((selected[0] != x) || (selected[1] != y))
+        {
+            patch.links.push([selected, [x, y]]);
+        }
+        selected = null;
+    }
+    draw();
+}
+var last = null;
+var tear=(x, y)=> //RMB, LMB undo???
+{
+    if (!selected)
+    {
+        selected = [x, y];
+    }
+    else
+    {
+        if ((selected[0] != x) || (selected[1] != y))
+        {
+            patch.links.pop([selected, [x, y]]);
+        }
+        selected = null;
+    }
+    draw();
+}
+
+var rect = null;
+var size=()=>
+{
+    rect = window.getComputedStyle(canvas);
+    canvas.width = parseFloat(rect.width);
+    canvas.height = parseFloat(rect.height);
+}
+var draw=()=>
+{
+    size();
+
+    ctx.fillStyle = "#7F7F7F7F";
+    ctx.strokeStyle = "#FF00407F";
+    var cx = 0;
+    var cy = 0;
+    var ow = canvas.width / patch.X;
+    var oh = canvas.height / patch.Y;
+    var hw = ow / 2.0;
+    var hh = oh / 2.0;
+    var qw = hw / 2.0;
+    var qh = hh / 2.0;
+    var nn = patch.X * patch.Y;
+    for (var i = 0; i < nn; ++i)
+    {
+        cx = (parseInt(i % patch.X) * ow) + qw;
+        cy = (parseInt(i / patch.Y) * oh) + qh;
+        ctx.fillRect(cx, cy, hw, hh);
+    }
+
+    ctx.lineWidth = 20.0;
+    ctx.lineCap = "round";
+    var nl = patch.links.length;
+    for (var i = 0; i < nl; ++i)
+    {
+        try
+        {
+            ctx.moveTo(((patch.links[i][0][0] - 1) * ow) + hw, ((patch.links[i][0][1] - 1) * oh) + hh);
+            ctx.lineTo(((patch.links[i][1][0] - 1) * ow) + hw, ((patch.links[i][1][1] - 1) * oh) + hh);
+            ctx.stroke();
+        }
+        catch (error) { console.log(error); }
+    }
+}
+    </script>
+    <style>
+      * { background: #101010; }
+      canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <canvas/>
+    <button id="load">Load</button>
+    <button id="save">Save</button>
+  </body>
+</html>
