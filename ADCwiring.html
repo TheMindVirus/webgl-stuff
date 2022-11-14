@@ -1,0 +1,114 @@
+<script>
+window.onload = function()
+{
+    u = 50;
+    canvas = document.getElementsByTagName("canvas")[0];
+    canvas.width = 1920;
+    canvas.height = 1080;
+    ctx = canvas.getContext("2d");
+    ctx.lineWidth = 1;
+    ctx.shadowBlur = 5;
+    ctx.fillStyle = "#F03";
+    ctx.strokeStyle = "#F79";
+    ctx.shadowColor = "#F03";
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    for (var i = 0; i < 16; ++i) { ctx.fillRect(u + ((1.5*u) * i), u, u, u); }
+    for (var i = 0; i < 4;  ++i) { ctx.fillRect((4.5*u) + ((5*u) * i), (20*u), u, u); }
+    /*
+    for (var i = 0; i < 16; ++i)
+    {
+        var x1 = u + ((1.5*u) * i) + (0.5*u);
+        var x2 = (4.5*u) + ((5*u) * i) + (0.5*u);
+        var y1 = u + (0.5*u);
+        var y2 = (20*u) + (0.5*u);
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+    }
+    */
+
+    //0
+    //No Connection
+
+    //1
+    drawLine(1, 0);
+
+    //2
+    drawLine(2, 1);
+
+    //3
+    drawLine(3, 0);
+    drawLine(3, 1);
+
+    //4
+    drawLine(4, 2);
+
+    //5
+    drawLine(5, 0);
+    drawLine(5, 2);
+
+    //6
+    drawLine(6, 1);
+    drawLine(6, 2);
+
+    //7
+    drawLine(7, 0);
+    drawLine(7, 1);
+    drawLine(7, 2);
+
+    //8
+    drawLine(8, 3);
+
+    //9
+    drawLine(9, 0);
+    drawLine(9, 3);
+
+    //10
+    drawLine(10, 1);
+    drawLine(10, 3);
+
+    //11
+    drawLine(11, 0);
+    drawLine(11, 1);
+    drawLine(11, 3);
+
+    //12
+    drawLine(12, 2);
+    drawLine(12, 3);
+
+    //13
+    drawLine(13, 0);
+    drawLine(13, 2);
+    drawLine(13, 3);
+
+    //14
+    drawLine(14, 1);
+    drawLine(14, 2);
+    drawLine(14, 3);
+
+    //15
+    drawLine(15, 0);
+    drawLine(15, 1);
+    drawLine(15, 2);
+    drawLine(15, 3);
+}
+
+var drawLine = function(A, B)
+{
+    var x1 = u + ((1.5*u) * A) + (0.5*u);
+    var x2 = (4.5*u) + ((5*u) * B) + (0.5*u);
+    var y1 = u + (0.5*u);
+    var y2 = (20*u) + (0.5*u);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+}
+</script>
+<style>
+    * { margin: auto; background: black; }
+    canvas { width: 100%; height: 100%; image-rendering: crisp-edges; }
+</style>
+<canvas/>
