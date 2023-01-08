@@ -1,0 +1,315 @@
+<title>Rackit Edge</title>
+<script>
+var patch_t = 
+{
+    "X": 10,
+    "Y": 5,
+    "links": [],
+};
+//Object.freeze(patch_t);
+
+var patch_t2 = 
+{
+    "X": 10,
+    "Y": 5,
+    "links": [],
+};
+
+var selected = null;
+var last = null;
+
+var ix = 0;
+var iy = 0;
+
+var pos1 = 0, pos2 = 0, pos3 = 0, pos4, w, h, t = 0;
+var dragElement = null;
+var windowList = [];
+
+window.onload = function()
+{
+    setup();
+    setInterval(loop, 10);
+}
+
+setup = function()
+{
+    var hwnd1 = register("DGW", "Rackit Edge 1");
+    var hwnd2 = register("DGW", "Rackit Edge 2");
+    hwnd2.patch.X = 5;
+    hwnd2.patch.Y = 10;
+    hwnd2.patch.links.push([[1, 2], [2, 4]]);
+    console.log(hwnd1.patch);
+    console.log(hwnd2.patch);
+}
+
+loop = function()
+{
+    for (var hwnd = 0; hwnd < windowList.length; ++hwnd)
+    {
+        canvas = windowList[hwnd].querySelector("#content");
+        ctx = canvas.getContext("2d");
+        style = window.getComputedStyle(canvas);
+        w = canvas.width = parseFloat(style.width);
+        h = canvas.height = parseFloat(style.height);
+
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, w, h);
+
+        nx = windowList[hwnd].patch.X;
+        ny = windowList[hwnd].patch.Y;
+
+        hny = h / ny;
+        for (var i = 0; i < ny; ++i)
+        {
+            var hnyi = hny * i;
+            var hnyii = hny * (i + 1);
+
+            var gradient = ctx.createLinearGradient(0, hnyi, 0, hnyii);
+            gradient.addColorStop(0.00, "#333");
+            gradient.addColorStop(0.05, "#222");
+            gradient.addColorStop(0.95, "#111");
+            gradient.addColorStop(1.00, "#000");
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, hnyi, w, hnyii);
+        }
+        rackit(hwnd);
+    }
+}
+
+blend = function(dst, src)
+{
+    var dst_a = parseFloat((dst >> 24) & 0xFF) / 0xFF;
+    var dst_b = parseFloat((dst >> 16) & 0xFF) / 0xFF;
+    var dst_g = parseFloat((dst >>  8) & 0xFF) / 0xFF;
+    var dst_r = parseFloat((dst      ) & 0xFF) / 0xFF;
+    var src_a = parseFloat((src >> 24) & 0xFF) / 0xFF;
+    var src_b = parseFloat((src >> 16) & 0xFF) / 0xFF;
+    var src_g = parseFloat((src >>  8) & 0xFF) / 0xFF;
+    var src_r = parseFloat((src      ) & 0xFF) / 0xFF;
+    var ret_a = parseInt((dst_a + src_a) * 0.5 * 0xFF);
+    var ret_b = parseInt((dst_b + src_b) * 0.5 * 0xFF);
+    var ret_g = parseInt((dst_g + src_g) * 0.5 * 0xFF);
+    var ret_r = parseInt((dst_r + src_r) * 0.5 * 0xFF);
+    return (ret_a * 0x01000000) + (ret_b * 0x00010000) + (ret_g * 0x00000100) + ret_r;
+}
+
+click = function(event, element)
+{
+    var style = window.getComputedStyle(element);
+    ix = 1 + parseInt((event.offsetX / parseFloat(style.width)) * element.patch.X);
+    iy = 1 + parseInt((event.offsetY / parseFloat(style.height)) * element.patch.Y);
+    if (event.button == 0) { link(ix, iy, element.patch); }
+    if ((event.button == 2) && (event.pointerId == 1)) { tear(ix, iy, element.patch); } //specific canvas? 2 patches
+    console.log(ix, iy, event.offsetX, event.offsetY, element.patch);
+}
+
+link = function(x, y, patch)
+{
+    if (!selected) { selected = [x, y]; }
+    else
+    {
+        if ((selected[0] != x) || (selected[1] != y)) { patch.links.push([selected, [x, y], patch]); }
+        selected = null;
+    }
+}
+
+tear = function(x, y, patch)
+{
+    if (!selected) { selected = [x, y]; }
+    else
+    {
+        if ((selected[0] != x) || (selected[1] != y))
+        {
+            //patch.links.pop([selected, [x, y]]);
+            for (var i = 0; i < patch.links.length; ++i)
+            {
+                if (((patch.links[i][0][0] == x)
+                &&   (patch.links[i][0][1] == y)
+                &&   (patch.links[i][1][0] == selected[0])
+                &&   (patch.links[i][1][1] == selected[1]))
+                ||  ((patch.links[i][0][0] == selected[0])
+                &&   (patch.links[i][0][1] == selected[1])
+                &&   (patch.links[i][1][0] == x)
+                &&   (patch.links[i][1][1] == y))) //from specific patch?
+                { patch.links.splice(i, 1); }
+            }
+        }
+        selected = null;
+    }
+}
+
+rackit = function(hwnd)
+{
+    ctx.shadowColor = "#FF0040FF";
+    ctx.shadowBlur = 10.0;
+
+    var cx = 0;
+    var cy = 0;
+    var ow = w / nx;
+    var oh = h / ny;
+    var hw = ow / 2.0;
+    var hh = oh / 2.0;
+    var qw = hw / 2.0;
+    var qh = hh / 2.0;
+    var nn = nx * ny;
+    for (var i = 0; i < nn; ++i)
+    {
+        cx = (parseInt(i % nx) * ow) + hw;
+        cy = (parseInt(i / nx) * oh) + hh;
+        //ctx.fillRect(cx, cy, hw, hh);
+        hexagon(cx, cy, hw, hh);
+    }
+    if (selected)
+    {
+        cx = parseInt((selected[0] - 1) * ow) + hw;
+        cy = parseInt((selected[1] - 1) * oh) + hh;
+        for (var i = 0; i < 7; ++i) { hexagon(cx, cy, hw, hh); }
+    }
+
+    ctx.strokeStyle = "#FF0040FF";
+    ctx.lineWidth = 20.0;
+    ctx.lineCap = "round";
+    var sag = hny * 3;
+    var nl = windowList[hwnd].patch.links.length;
+    for (var i = 0; i < nl; ++i)
+    {
+        var nx1 = ((windowList[hwnd].patch.links[i][0][0] - 1) * ow) + hw;
+        var ny1 = ((windowList[hwnd].patch.links[i][0][1] - 1) * oh) + hh;
+        var nx2 = ((windowList[hwnd].patch.links[i][1][0] - 1) * ow) + hw;
+        var ny2 = ((windowList[hwnd].patch.links[i][1][1] - 1) * oh) + hh;
+        var nxm = (nx1 + nx2) * 0.5;
+        var nym = ((ny1 + ny2) * 0.5) + sag;
+        ctx.beginPath();
+        ctx.moveTo(nx1, ny1);
+        ctx.bezierCurveTo(nx1, ny1, nxm, nym, nx2, ny2);
+        ctx.stroke();
+    }
+}
+
+hexagon = function(cx, cy, hw, hh)
+{
+    var qw = hw / 2.0;
+    var qh = hh / 2.0;
+    var ew = qw / 2.0;
+    var eh = qh / 2.0;
+    var hm = Math.min(hw, hh);
+    var qm = Math.min(qw, qh);
+    var xm = Math.min(ew, eh);
+    var ym = Math.sqrt((qm * qm) - (xm * xm));
+
+    ctx.beginPath();
+    ctx.moveTo(cx - qm, cy     );
+    ctx.lineTo(cx - xm, cy + ym);
+    ctx.lineTo(cx + xm, cy + ym);
+    ctx.lineTo(cx + qm, cy     );
+    ctx.lineTo(cx + xm, cy - ym);
+    ctx.lineTo(cx - xm, cy - ym);
+    ctx.closePath();
+    ctx.fillStyle = "#7F7F7F7F";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, xm, 0, 2 * Math.PI);
+    ctx.fillStyle = "#0000007F";
+    ctx.fill();
+}
+
+var offset = 200; //var xxxxx = 0;
+register = function(name, title)
+{
+    //name = "__" + name + "__";
+    var window = document.createElement("div");
+    window.id = window.className = name;
+    window.onmousedown = function() { movetotop(null, window); };
+
+    var header = document.createElement("div");
+    header.id = header.className = "header";
+    header.onmousedown = ondragstart;
+
+    var p = document.createElement("p");
+    p.innerText = title;
+    header.appendChild(p);
+    window.appendChild(header);
+
+    //window.patch = patch_t; //passes by reference
+    //if (xxxxx == 0) { window.patch = new Object(patch_t); xxxxx += 1; } //passes by reference
+    //else { window.patch = new Object(patch_t2); } //passes by reference
+    //window.patch = Object.create(patch_t); //creates blank object
+    //window.patch = Object.assign(patch_t); //passes by reference
+    //window.patch = Object.fromEntries(patch_t); //object is not iterable
+    //window.patch = Object.fromEntries(Object.entries(patch_t).map(function([key, val])
+    //{ return [key, val]; })); //shallow copied lists instead of deep copy
+    //window.patch = Object.fromEntries(Object.entries(patch_t).map(function([key, val])
+    //{ return {...[key, val]}; })); //shallow copied lists instead of deep copy
+    //window.patch = {...patch_t}; //shallow copied lists instead of deep copy
+    //window.patch = ...patch_t; //invalid syntax
+
+    window.patch = JSON.parse(JSON.stringify(patch_t));
+    //deep copies nested lists by enforcing serialisation/deserialisation
+
+    var content = document.createElement("canvas");
+    content.id = content.className = "content";
+    content.onclick = function(event) { click(event, window); }; //must be after patch
+    content.oncontextmenu = function(event) { event.preventDefault(); click(event, window); };
+    window.appendChild(content);
+    
+    document.body.appendChild(window);
+    windowList.push(window);
+    movetotop(null, windowList[windowList.length - 1]);
+    windowList[windowList.length - 1].style.top = offset;
+    windowList[windowList.length - 1].style.left = offset;
+    offset += 200;
+
+    return windowList[windowList.length - 1];
+}
+
+movetotop = function(event, element)
+{
+    var pos = windowList.findIndex(function(e) { if (e && element) { return e == element; } return false; });
+    if (pos < 0) { console.log("[WARN]: Null Window Detected"); return; }
+    windowList.splice(pos, 1);
+    windowList.push(element);
+    for (var i = 0; i < windowList.length; ++i) { if (windowList[i] != null) { windowList[i].style.zIndex = i; } }
+}
+
+ondragstart = function(event)
+{
+    event.preventDefault();
+    dragElement = event.target.parentElement;
+    if (dragElement != null) { dragElement = dragElement.parentElement; }
+    movetotop(null, dragElement);
+    pos3 = event.clientX;
+    pos4 = event.clientY;
+    document.onmousemove = ondragmove;
+    document.onmouseup = ondragstop;
+}
+
+ondragmove = function(event)
+{
+    event.preventDefault();
+    if (dragElement == null) { return; }
+    pos1 = pos3 - event.clientX;
+    pos2 = pos4 - event.clientY;
+    pos3 = event.clientX;
+    pos4 = event.clientY;
+    dragElement.style.top = (dragElement.offsetTop - pos2) + "px";
+    dragElement.style.left = (dragElement.offsetLeft - pos1) + "px";
+}
+
+ondragstop = function()
+{
+    document.onmousemove = null;
+    document.onmouseup = null;
+    dragElement = null;
+}
+</script>
+<style>
+* { box-sizing: border-box; margin: auto; text-align: center; font-family: sans-serif; overflow: hidden; font-weight: bold; font-style: italic; }
+body { background: black; }
+#DGW { position: absolute; top: 350px; left: 350px; width: 640px; height: 480px; background: #0900007F; box-shadow: 0 0 15px #FF0033FF, inset 0 0 15px #FF0033FF; border: 1px #FF0033FF solid; backdrop-filter: blur(5px); user-select: none; transform: perspective(500px) rotate3d(0.0, 1.0, 0.5, 60deg); }
+#DGW > .header { position: relative; width: 100%; height: 35px; cursor: grab; background: #FF0033FF; }
+#DGW > .header > p { position: relative; width: 100%; height: 100%; padding: 10px; font-weight: bold; user-select: none; }
+#DGW > .content { position: absolute; top: 35px; left: 0; width: 100%; height: calc(100% - 35px); border: none; opacity: 0.9; filter: saturate(150%); color: #FF0033FF; background:#00000000; }
+#overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none; }
+</style>
+<canvas id="overlay" class="overlay"></canvas>
