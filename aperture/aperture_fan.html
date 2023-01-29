@@ -1,0 +1,119 @@
+<script>
+window.onload = function()
+{
+    canvas = document.createElement("canvas");
+    canvas.style.position = "fixed";
+    canvas.style.top = 0;
+    canvas.style.left = 0;
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    document.body.appendChild(canvas);
+    ctx = canvas.getContext("2d");
+    w = 0; h = 0; hw = 0; hh = 0;
+    p = 0; t = 0;
+    range1 = 0.5; range2 = 0.5; range3 = 0.5;
+    document.querySelector("#range1").value = range1;
+    document.querySelector("#range2").value = range2;
+    document.querySelector("#range3").value = range3;
+    window.onresize();
+    tau = 2 * Math.PI;
+    black = "#000000FF";
+    navy = "#000011FF";
+    cyan = "#00FFFFFF";
+    red = "#FF0033FF";
+    setInterval(render, 1);
+}
+window.onresize = function()
+{
+    style = window.getComputedStyle(canvas);
+    w = canvas.width = parseFloat(style.width);
+    h = canvas.height = parseFloat(style.height);
+    hw = w / 2;
+    hh = h / 2;
+}
+var render = function()
+{
+    p += 0.005; p %= tau;
+
+    ox = hw; oy = hh;
+    r = ((hw < hh) ? hw : hh) - 100;
+    d = r * 2;
+    ds = 5;
+
+    ctx.fillStyle = black;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.beginPath();
+    ctx.arc(ox, oy, r, 0, tau);
+    ctx.closePath();
+
+    ctx.lineWidth = 5;
+    ctx.fillStyle = navy;
+    ctx.strokeStyle = cyan;
+    ctx.fill();
+    ctx.stroke();
+
+    t = 0.2;
+    ctx.beginPath();
+    ctx.arc(ox, oy, r, p - t, p + t);
+    ctx.closePath();
+
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = black;
+    ctx.stroke();
+
+    t = 10;
+    cx = ox + (r * Math.cos(p));
+    cy = oy + (r * Math.sin(p));
+    ctx.beginPath();
+    ctx.moveTo(cx - t, cy - t);
+    ctx.lineTo(cx + t, cy + t);
+    ctx.moveTo(cx + t, cy - t);
+    ctx.lineTo(cx - t, cy + t);
+    ctx.closePath();
+
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = red;
+    ctx.stroke();
+
+    var q = 0;
+    var s = r * range1;
+    var n = parseInt(32 * range2);
+    var po = tau * (2.0 * range3); //(tau / n) * (n - (tau / 2));
+    cx = ox + (r * Math.cos(p - po));
+    cy = oy + (r * Math.sin(p - po));
+    ctx.moveTo(cx, cy);
+    cx = ox + (s * Math.cos(p));
+    cy = oy + (s * Math.sin(p));
+    ctx.beginPath();
+    for (var i = 0; i < n; ++i)
+    {
+        q = (tau / n) * i;
+        cx = ox + (r * Math.cos(p + q - po));
+        cy = oy + (r * Math.sin(p + q - po));
+        ctx.moveTo(cx, cy);
+        cx = ox + (s * Math.cos(p + q));
+        cy = oy + (s * Math.sin(p + q));
+        ctx.lineTo(cx, cy);
+    }
+    ctx.closePath();
+
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = red;
+    ctx.stroke();
+}
+
+var range_1 = function(event, sender) { range1 = sender.value; document.title = sender.value; }
+var range_2 = function(event, sender) { range2 = sender.value; document.title = sender.value; }
+var range_3 = function(event, sender) { range3 = sender.value; document.title = sender.value; }
+</script>
+<style>
+* { box-sizing: border-box; margin: auto; }
+.range { position: fixed; left: 2.5%; width: 95%; height: 2.5%; z-index: 9999; }
+#range1 { bottom: 7.5%; }
+#range2 { bottom: 5.0%; }
+#range3 { bottom: 2.5%; }
+</style>
+<input id="range1" class="range" type="range" title="range" oninput="range_1(event, this);" min="0.00" max="1.00" step="0.000001" value="1.00"></input>
+<input id="range2" class="range" type="range" title="range" oninput="range_2(event, this);" min="0.00" max="1.00" step="0.000001" value="1.00"></input>
+<input id="range3" class="range" type="range" title="range" oninput="range_3(event, this);" min="0.00" max="1.00" step="0.000001" value="1.00"></input>

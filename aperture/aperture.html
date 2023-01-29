@@ -1,0 +1,98 @@
+<script>
+window.onload = function()
+{
+    canvas = document.createElement("canvas");
+    canvas.style.position = "fixed";
+    canvas.style.top = 0;
+    canvas.style.left = 0;
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    document.body.appendChild(canvas);
+    ctx = canvas.getContext("2d");
+    w = 0; h = 0; hw = 0; hh = 0;
+    n = 0; p = 0; t = 0; s = 0;
+    range1 = 0.3; range2 = 0.65; range3 = 1.0;
+    document.querySelector("#range1").value = range1;
+    document.querySelector("#range2").value = range2;
+    document.querySelector("#range3").value = range3;
+    window.onresize();
+    tau = 2 * Math.PI;
+    black = "#000000FF";
+    red = "#FF0040FF";
+    setInterval(render, 1);
+}
+window.onresize = function()
+{
+    style = window.getComputedStyle(canvas);
+    w = canvas.width = parseFloat(style.width);
+    h = canvas.height = parseFloat(style.height);
+    hw = w / 2;
+    hh = h / 2;
+}
+var render = function()
+{
+    p += 0.005; p %= tau;
+
+    ox = hw; oy = hh;
+    r = ((hw < hh) ? hw : hh) - 100;
+    tn = tau / n;
+    d = r * 2;
+    ds = 5;
+
+    n = parseInt(32 * range1);
+    s = r * parseFloat(range2);
+    po = parseFloat(range3);
+
+    ctx.fillStyle = black;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = red;
+
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = red;
+
+    r0 = 0.05, r1 = 0, r2 = 0;
+    for (var i = 0; i < n; ++i)
+    {
+        r1 = (tn * i) + p + r0;
+        r2 = (tn * (i + 1)) + p - r0;
+        q = tn * i;
+
+        cx1a = ox + (r * Math.cos(p + q - tn + r0));
+        cy1a = oy + (r * Math.sin(p + q - tn + r0));
+        cx2a = ox + (s * Math.cos(p + q - tn + r0 + po));
+        cy2a = oy + (s * Math.sin(p + q - tn + r0 + po));
+        cx1b = ox + (r * Math.cos(p + q + r0));
+        cy1b = oy + (r * Math.sin(p + q + r0));
+        cx2b = ox + (s * Math.cos(p + q - r0 + po));
+        cy2b = oy + (s * Math.sin(p + q - r0 + po));
+
+        ctx.beginPath();
+        ctx.arc(ox, oy, r, r1, r2);
+        //ctx.moveTo(cx1a, cy1a);
+        //ctx.lineTo(cx2b, cy2b);
+        //ctx.moveTo(cx1b, cy1b);
+        ctx.lineTo(cx2b, cy2b);
+        ctx.lineTo(cx1b, cy1b);
+        ctx.stroke();
+
+        //ctx.fillStyle = red;
+        //ctx.fill();
+    }
+}
+
+var range_1 = function(event, sender) { range1 = sender.value; document.title = sender.value; }
+var range_2 = function(event, sender) { range2 = sender.value; document.title = sender.value; }
+var range_3 = function(event, sender) { range3 = sender.value; document.title = sender.value; }
+</script>
+<style>
+* { box-sizing: border-box; margin: auto; }
+.range { position: fixed; left: 2.5%; width: 95%; height: 2.5%; z-index: 9999; }
+#range1 { bottom: 7.5%; }
+#range2 { bottom: 5.0%; }
+#range3 { bottom: 2.5%; }
+</style>
+<input id="range1" class="range" type="range" title="range" oninput="range_1(event, this);" min="0.00" max="1.00" step="0.000001" value="1.00"></input>
+<input id="range2" class="range" type="range" title="range" oninput="range_2(event, this);" min="0.00" max="1.00" step="0.000001" value="1.00"></input>
+<input id="range3" class="range" type="range" title="range" oninput="range_3(event, this);" min="0.00" max="1.00" step="0.000001" value="1.00"></input>
