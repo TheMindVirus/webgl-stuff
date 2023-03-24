@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>trails</title>
+    <script>
+      window.onload = function()
+      {
+          w = 0; h = 0; x = 0; y = 0; x_prev = 0; y_prev = 0;
+          dir_x = 0; dir_y = 0; ready = 0;
+          canvas = document.getElementsByTagName("canvas")[0];
+          ctx = canvas.getContext("2d");
+          window.onresize();
+          canvas.onmousemove = mouse;
+          ctx.fillStyle = "#000000FF";
+          ctx.fillRect(0, 0, w, h);
+          setInterval(render, 0);
+      }
+
+      window.onresize = function()
+      {
+          style = window.getComputedStyle(canvas);
+          w = canvas.width = parseFloat(style.width);
+          h = canvas.height = parseFloat(style.height);
+      }
+
+      render = function()
+      {
+          if (!ready) { return; }
+          ctx.fillStyle = "#00000010";
+          //ctx.fillRect(0, 0, w, h);
+
+          grd = ctx.createLinearGradient(x - dir_x, y + dir_y, x + dir_x, y - dir_y);
+          grd.addColorStop(0.0, "#FF0040FF");
+          grd.addColorStop(0.5, "#0000007F");
+          grd.addColorStop(1.0, "#FF0040FF");
+
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = grd; //"#FF0040FF";
+          ctx.shadowColor = "#FF0040FF";
+          ctx.shadowBlur = 10;
+          ctx.beginPath();
+          ctx.moveTo(x - dir_x, y + dir_y);
+          ctx.lineTo(x + dir_x, y - dir_y);
+          ctx.lineTo(x_prev - dir_x, y_prev + dir_y);
+          ctx.lineTo(x_prev + dir_x, y_prev - dir_y);
+          ctx.closePath();
+          ctx.stroke();
+          ctx.fill();
+
+          ctx.shadowColor = "#00000000";
+      }
+
+      mouse = function(event)
+      {
+          if (ready) { x_prev = x; y_prev = y; }
+          x = event.clientX;
+          y = event.clientY;
+          if (!ready) { x_prev = x; y_prev = y; }
+          dir_x = x - x_prev;
+          dir_y = y - y_prev;
+          if (!ready) { ready = 1; }
+      }
+    </script>
+    <style>
+      * { box-sizing: border-box; margin: auto; font-family: Orbitron, Helvetica, sans-serif; overflow: hidden; }
+      body { background: black; color: #FF0040FF; }
+      canvas { position: fixed; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <canvas></canvas>
+  </body>
+</html>
