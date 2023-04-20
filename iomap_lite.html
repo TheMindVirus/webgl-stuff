@@ -1,0 +1,199 @@
+<title>iomap_lite</title>
+<script>
+
+divimg = "data:image/png;base64,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";
+dragelement = null;
+canvas = null;
+ctx = null;
+
+//render_scale = 2.0;
+
+w = 0;
+h = 0;
+pos1 = 0;
+pos2 = 0;
+pos3 = 0;
+pos4 = 0;
+
+driveList =
+[
+    { id: "A1", name: "SDRAM (ARM)",  x: 100, y: 100, value: 0.99, start: "0xC000_0000", end: "0xFFFF_FFFF", },
+    { id: "A2", name: "L2 Non-Alloc", x: 100, y: 200, value: 0.77, start: "0x8000_0000", end: "0xC000_0000", },
+    { id: "A3", name: "Peripherals",  x: 100, y: 300, value: 0.55, start: "0x7C00_0000", end: "0x8000_0000", },
+    { id: "A4", name: "Reserved",     x: 100, y: 400, value: 0.33, start: "0x4000_0000", end: "0x7C00_0000", },
+    { id: "A5", name: "L2 Alloc",     x: 100, y: 500, value: 0.11, start: "0x0000_0000", end: "0x4000_0000", },
+
+    { id: "A6", name: "Paging",       x: 250, y: 100, value: 0.50, start: "", end: "", },
+
+    { id: "B1", name: "PCIe",         x: 400, y: 100, value: 0.99, start: "0x6_0000_0000", end: "0x7_FFFF_FFFF", },
+    { id: "B2", name: "Reserved",     x: 400, y: 200, value: 0.88, start: "0x5_0000_0000", end: "0x6_0000_0000", },
+    { id: "B3", name: "ARM Local",    x: 400, y: 300, value: 0.77, start: "0x4_C000_0000", end: "0x5_0000_0000", },
+    { id: "B4", name: "L2 Non-Alloc", x: 400, y: 400, value: 0.66, start: "0x4_8000_0000", end: "0x4_C000_0000", },
+    { id: "B5", name: "Peripherals",  x: 400, y: 500, value: 0.55, start: "0x4_7C00_0000", end: "0x4_8000_0000", },
+    { id: "B6", name: "Reserved",     x: 400, y: 600, value: 0.44, start: "0x4_4000_0000", end: "0x4_7C00_0000", },
+    { id: "B7", name: "L2 Alloc",     x: 400, y: 700, value: 0.33, start: "0x4_0000_0000", end: "0x4_4000_0000", },
+    { id: "B8", name: "SDRAM (ARM)",  x: 400, y: 800, value: 0.22, start: "0x0_4000_0000", end: "0x4_0000_0000", },
+    { id: "B9", name: "SDRAM (VC)",   x: 400, y: 900, value: 0.11, start: "config.txt",    end: "0x0_4000_0000", },
+
+    { id: "B10", name: "SDRAM (ARM)", x: 400, y: 1000, value: 0.00, start: "0x0_0000_0000",   end: "config.txt", },
+
+    { id: "C1", name: "PCIe",         x: 700, y: 100, value: 0.99, start: "0x6_0000_0000", end: "0x7_FFFF_FFFF", },
+    { id: "C2", name: "Reserved",     x: 700, y: 200, value: 0.88, start: "0x4_C000_0000", end: "0x6_0000_0000", },
+    { id: "C3", name: "L2 Non-Alloc", x: 700, y: 300, value: 0.77, start: "0x4_8000_0000", end: "0x4_C000_0000", },
+    { id: "C4", name: "Reserved",     x: 700, y: 400, value: 0.66, start: "0x4_4000_0000", end: "0x4_8000_0000", },
+    { id: "C5", name: "L2 Alloc",     x: 700, y: 500, value: 0.55, start: "0x4_0000_0000", end: "0x4_4000_0000", },
+    { id: "C6", name: "SDRAM (ARM)",  x: 700, y: 600, value: 0.44, start: "0x1_0000_0000", end: "0x4_0000_0000", },
+    { id: "C7", name: "ARM Local",    x: 700, y: 700, value: 0.33, start: "0x0_FF80_0000", end: "0x1_0000_0000", },
+    { id: "C8", name: "Peripherals",  x: 700, y: 800, value: 0.22, start: "0x0_FC00_0000", end: "0x0_FF80_0000", },
+    { id: "C9", name: "SDRAM (ARM)",  x: 700, y: 900, value: 0.11, start: "0x0_4000_0000", end: "0x0_FC00_0000", },
+
+    { id: "C10", name: "SDRAM (VC)",  x: 700, y: 1000, value: 0.00, start: "config.txt",    end: "0x0_4000_0000", },
+    { id: "C11", name: "SDRAM (ARM)", x: 700, y: 1100, value: 0.00, start: "0x0_0000_0000", end: "config.txt", },
+];
+
+cableList =
+[
+    { id1: "A1", id2: "A6" }, { id1: "A6", id2: "B8" }, { id1: "A6", id2: "B10" },
+    { id1: "A2", id2: "B4" }, { id1: "A3", id2: "B5" }, { id1: "A5", id2: "B7" },
+    { id1: "B1", id2: "C1" }, { id1: "B4", id2: "C3" }, { id1: "B7", id2: "C5" },
+    { id1: "B3", id2: "C7" }, { id1: "B5", id2: "C8" }, { id1: "B9", id2: "C10" },
+];
+
+window.onload = function()
+{
+    for (var i = 0; i < driveList.length; ++i)
+    {
+        var div = document.createElement("div");
+        div.id = driveList[i].id;
+        div.name = driveList[i].name;
+        div.style.left = driveList[i].x + "px";
+        div.style.top = driveList[i].y + "px";
+        div.onmousedown = ondragstart;
+
+        var img = document.createElement("img");
+        img.src = divimg; img.alt = "";
+        div.appendChild(img);
+
+        var bar = document.createElement("progress");
+        bar.style.width = "100%";
+        bar.style.accentColor = "#FF0033FF";
+        bar.style.position = "absolute";
+        bar.value = driveList[i].value;
+        bar.style.top = "27px";
+        bar.style.left = "0px";
+        div.appendChild(bar);
+
+        var map = document.createElement("p");
+        map.innerText = driveList[i].name;
+        map.style.position = "absolute";
+        map.style.textAlign = "center";
+        map.style.color = "#FF0040FF";
+        map.style.top = "42px";
+        div.appendChild(map);
+
+        var ad1 = document.createElement("p");
+        ad1.innerText = driveList[i].start;
+        ad1.style.color = "#FFFFFFFF";
+        ad1.style.position = "absolute";
+        ad1.style.textAlign = "center";
+        ad1.style.fontSize = "10pt";
+        ad1.style.top = "60px";
+        div.appendChild(ad1);
+
+        var ad2 = document.createElement("p");
+        ad2.innerText = driveList[i].end;
+        ad2.style.color = "#FFFFFFFF";
+        ad2.style.position = "absolute";
+        ad2.style.textAlign = "center";
+        ad2.style.fontSize = "10pt";
+        ad2.style.top = "75px";
+        div.appendChild(ad2);
+
+        document.body.appendChild(div);
+    }
+    canvas = document.getElementsByTagName("canvas")[0];
+    ctx = canvas.getContext("2d");
+    window.onresize();
+    setInterval(render, 0);
+}
+
+window.onresize = function()
+{
+    var style = window.getComputedStyle(canvas);
+    w = canvas.width = parseFloat(style.width) * 2.0;
+    h = canvas.height = parseFloat(style.height) * 2.0;
+}
+
+ondragstart = function(event)
+{
+    event.preventDefault();
+    pos3 = event.clientX;
+    pos4 = event.clientY;
+    dragelement = event.target;
+    document.onmousemove = ondragmove;
+    document.onmouseup = ondragstop;
+}
+
+ondragmove = function(event)
+{
+    event.preventDefault();
+    pos1 = pos3 - event.clientX;
+    pos2 = pos4 - event.clientY;
+    pos3 = event.clientX;
+    pos4 = event.clientY;
+    dragelement.style.left = (dragelement.offsetLeft - pos1) + "px";
+    dragelement.style.top = (dragelement.offsetTop - pos2) + "px";
+}
+
+ondragstop = function()
+{
+    document.onmousemove = null;
+    document.onmouseup = null;
+}
+
+point = function(element, mode)
+{
+    var rect = element.getBoundingClientRect();
+    if (mode == 1) { return { x: rect.right + 5, y: rect.top + 10 }; }
+    else if (mode == 2) { return { x: rect.left - 5, y: rect.top + 10 }; }
+    else { return rect; }
+}
+
+interpolate = function(pos, cx, cy) { return { x: pos.x + cx, y: pos.y + cy }; }
+
+render = function()
+{
+    ctx.fillStyle = "#000000FF";
+    ctx.fillRect(0, 0, w, h);
+    ctx.strokeStyle = "#FF0040FF";
+    ctx.shadowColor = "#FF0040FF";
+    ctx.shadowBlur = 0.5;
+    ctx.lineWidth = 0.5;
+    ctx.lineCap = "round";
+
+    for (var i = 0; i < cableList.length; ++i)
+    {
+        var pt1 = point(document.getElementById(cableList[i].id1), 1);
+        var pt2 = point(document.getElementById(cableList[i].id2), 2);
+        var pta = interpolate(pt1,  50, 0);
+        var ptb = interpolate(pt2, -50, 0);
+
+        ctx.beginPath();
+        ctx.moveTo(pt1.x, pt1.y);
+        ctx.bezierCurveTo(pta.x, pta.y, ptb.x, ptb.y, pt2.x, pt2.y);
+        ctx.stroke();
+    }
+}
+</script>
+<style>
+    * { box-sizing: border-box; margin: auto; font-family: Orbitron, Helvetica, sans-serif; user-select: none; white-space: nowrap; }
+    body { background: black; color: #FF0033FF; }
+    canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; image-rendering: pixelated; transform: scale(200%) translate(25%, 25%); filter: blur(0.6px); }
+    div { position: absolute; width: content; height: content; z-index: 10000; text-align: text-top; }
+    div > * { pointer-events: none; }
+    h1 { position: fixed; background: #000000AF; width: 100%; height: content; padding-top: 30px; padding-bottom: 30px; text-align: center; z-index: 10001; }
+    h2 { position: fixed; background: #000000AF; width: 100%; height: content; padding-top: 30px; padding-bottom: 30px; text-align: center; z-index: 10001; bottom: 0; }
+</style>
+<canvas></canvas>
+<h1>BCM2711 ARM PERIPHERALS</h1>
+<h2>LEGACY____FULL 35-BIT MAP____LOW-PERIPHERAL-MODE</h2>
