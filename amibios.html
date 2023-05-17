@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AMI BIOS</title>
+    <script>
+      window.onload = function(event)
+      {
+        console.log(event);
+        content = document.getElementById("content");
+        upperbox = document.getElementById("upperbox");
+        lowerbox = document.getElementById("lowerbox");
+        draw_bios();
+      }
+
+      document.onkeypress = function(event)
+      {
+        console.log(event);
+        //Up Down Left Right Enter Backspace Esc
+        //[F1-F12] - without alternate mapping, possibly with Alt+F4 remap
+      }
+
+      draw_bios = function(event)
+      {
+        //content.innerHTML += "<h2>Som<span value>et</span>hing</h2>";
+        content.innerHTML += "<h2>BIOS Information</h2>";
+        content.innerHTML += "<h2>BIOS Vendor<span value>Something</span></h2>";
+        content.innerHTML += "<h2>Version<span value>Something</span></h2>";
+        content.innerHTML += "<h2>GOP Version<span value>Something</span></h2>";
+        content.innerHTML += "<h2>EC Version<span value>Darkside</span></h2>";
+        content.innerHTML += "</br></br>";
+        content.innerHTML += "<h2>Processor Information<span value>AMD(TM) Threadripper(TM)</span></h2>";
+        content.innerHTML += "<h2>_<span value>Milan(TM) X(TM)</span></h2>";
+        content.innerHTML += "<h2>_<span value><span red>Extreme(TM) Overclocking(TM)</span></span></h2>";
+        content.innerHTML += "<h2>_<span value>CPU @ 10.99GHz</span></h2>";
+        content.innerHTML += "</br></br>";
+        content.innerHTML += "<h2>Memory Information</h2>";
+        content.innerHTML += "<h2>Total Memory<span value>LotsOfMB</span>";
+        content.innerHTML += "</br></br>";
+        content.innerHTML += "<h2>System Information</h2>";
+        content.innerHTML += "<h2>Serial Number<span value>ABCDEFGHIJKLMNOPQRSTUVWXYZ</span>";
+        content.innerHTML += "</br></br>";
+        content.innerHTML += "<h2><span white>System Date</span><span value blue>[Wed <span white>00</span>/00/0000]</span></h2>";
+        content.innerHTML += "<h2><span blue>Serial Number<span value>[00:00:00]</span></span>";
+        content.innerHTML += "</br></br>";
+        content.innerHTML += "<h2>Access Level<span value>Administrator</span></h2>";
+
+        upperbox.innerHTML += "<h2>Set the Date. Use Tab to</h2>";
+        upperbox.innerHTML += "<h2>switch between Date elements.</h2>";
+        upperbox.innerHTML += "<h2>Default Ranges:</h2>";
+        upperbox.innerHTML += "<h2>Year: 2023-2077</h2>";
+        upperbox.innerHTML += "<h2>Months: 1-12</h2>";
+        upperbox.innerHTML += "<h2>Days: dependent on month</h2>";
+        upperbox.innerHTML += "<h2>_____ 28 | 29 | 30 | 31</h2>";
+
+        lowerbox.innerHTML += "<h2>🡺🡸: Select Screen</h2>";
+        lowerbox.innerHTML += "<h2>🡹🡻: Select Item</h2>";
+        lowerbox.innerHTML += "<h2>Enter: Select</h2>";
+        lowerbox.innerHTML += "<h2>+/-: Change Opt.</h2>";
+        lowerbox.innerHTML += "<h2>F1: General Help</h2>";
+        lowerbox.innerHTML += "<h2>F9: Last Known Good</h2>";
+        lowerbox.innerHTML += "<h2>F10: Save & Exit</h2>";
+        lowerbox.innerHTML += "<h2>ESC: Exit Without Saving</h2>";
+      }
+    </script>
+    <style>
+      * { box-sizing: border-box; margin: auto; font-family: courier, monospace, sans-serif; overflow: hidden; }
+      body { background: #0000AA; }
+      span[red] { color: #FF0033; text-shadow: 0 0 10px white; filter: saturate(9001%); }
+      span[blue] { color: #0000AA; }
+      span[white] { color: white; }
+      span[yellow] { color: yellow; }
+      span[value] { position: absolute; left: 500px; }
+      #topbar { text-align: center; color: white; }
+      #tabs { text-align: left; padding: 10px; }
+      #tabs > * { display: inline-block; float: left; padding-top: 5px; padding-left: 10px; padding-right: 10px; }
+      #tabs > *[selected] { background: #AAAAAA; color: black; }
+      #tabs > *:not([selected]) { color: yellow; }
+      #container { position: fixed; top: 80px; left: 10px; width: calc(100% - 20px); height: calc(100% - 125px); border: 10px #AAAAAA solid; padding: 5px; }
+      #content { position: absolute; top: 8px; left: 8px; width: calc(50% - 8px); height: calc(100% - 16px); padding: 30px; background: #AAAAAA; }
+      #upperbox { position: absolute; top: 8px; left: calc(50% + 8px); width: calc(50% - 16px); height: calc(50% - 8px); padding: 30px; background: #AAAAAA; color: #0000AA; }
+      #lowerbox { position: absolute; top: calc(50% + 8px); left: calc(50% + 8px); width: calc(50% - 16px); height: calc(50% - 16px); padding: 30px; background: #AAAAAA; color: #0000AA; }
+      #ribbon { position: fixed; bottom: 5px; width: 100%; text-align: center; color: white; }
+    </style>
+  </head>
+  <body> <!--TODO: Implement Canvas Scaling-->
+    <div id="topbar">
+      <h1>Aptio Setup Utility - Intel AMT (V) 2023 - W3BIOS [Pre-Alpha, Debug]</h1>
+      <div id="tabs">
+        <div id="tab1" class="tab" selected><h2>Main</h2></div>
+        <div id="tab2" class="tab"><h2>Advanced</h2></div>
+        <div id="tab3" class="tab"><h2>Boot</h2></div>
+        <div id="tab4" class="tab"><h2>Security</h2></div>
+        <div id="tab5" class="tab"><h2>Save & Exit</h2></div>
+      </div>
+    </div>
+    <div id="container">
+      <div id="page1" class="page">
+        <div id="content"></div>
+        <div id="upperbox"></div>
+        <div id="lowerbox"></div>
+      </div>
+    </div>
+    <div id="ribbon">
+      <h1>Version 0.00.0000. - (V) 2023 - Intel AMT</h1>
+    </div>
+  </body>
+</html>
