@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>][REDLINE_BIOS][</title>
+    <script>
+      var tab_index = 0;
+      var item_index = 0;
+
+      window.onload = function(event)
+      {
+        console.log(event);
+        topbar = document.getElementById("tabs");
+        content = document.getElementById("content");
+        upperbox = document.getElementById("upperbox");
+        lowerbox = document.getElementById("lowerbox");
+        draw_bios();
+      }
+
+      document.onkeydown = function(event)
+      {
+        console.log(event);
+        //Up Down Left Right Enter Backspace Esc
+        //[F1-F12] - without alternate mapping, possibly with Alt+F4 remap
+        var items = content.children.length;
+        var tabs = topbar.children.length;
+        if (event.key == "ArrowUp") { item_index -= 1; if (item_index < 0) { item_index = items - 1; } item_index %= items; }
+        if (event.key == "ArrowDown") { item_index += 1; item_index %= items; }
+        if (event.key == "ArrowLeft") { tab_index -= 1; if (tab_index < 0) { tab_index = tabs - 1; } tab_index %= tabs; }
+        if (event.key == "ArrowRight") { tab_index += 1; tab_index %= tabs; }
+        for (var i = 0; i < items; ++i) { if (i == item_index) { content.children[i].setAttribute("selected", null); } else { try { content.children[i].removeAttribute("selected"); } catch(e) { } } }
+        for (var t = 0; t < tabs; ++t) { if (t == tab_index) { topbar.children[t].setAttribute("selected", null); } else { try { topbar.children[t].removeAttribute("selected"); } catch(e) { } } }
+      }
+
+      draw_bios = function(event)
+      {
+        //content.innerHTML += "<h2>Som<span value>et</span>hing</h2>";
+        content.innerHTML += "<h2 selected>BIOS Information</h2>";
+        content.innerHTML += "<h2>BIOS Vendor<span value>Something</span></h2>";
+        content.innerHTML += "<h2>Version<span value>Something</span></h2>";
+        content.innerHTML += "<h2>GOP Version<span value>Something</span></h2>";
+        content.innerHTML += "<h2>EC Version<span value orange>Darkside</span></h2>";
+        content.innerHTML += "</br></br>";
+        content.innerHTML += "<h2>Processor Information<span value>AMD(TM) Threadripper(TM)</span></h2>";
+        content.innerHTML += "<h2>_<span value>Milan(TM) X(TM)</span></h2>";
+        content.innerHTML += "<h2>_<span value><span aura>Extreme(TM) Overclocking(TM)</span></span></h2>";
+        content.innerHTML += "<h2>_<span value>CPU @ 10.99GHz</span></h2>";
+        content.innerHTML += "</br></br>";
+        content.innerHTML += "<h2>Memory Information</h2>";
+        content.innerHTML += "<h2>Total Memory<span value>LotsOfPB <span purple>[unchecked]</span></span>";
+        content.innerHTML += "</br></br>";
+        content.innerHTML += "<h2>System Information</h2>";
+        content.innerHTML += "<h2>Serial Number<span value aura>ZYXWVUTSRQPONMLKJIHGFEDCBA</span>";
+        content.innerHTML += "</br></br>";
+        content.innerHTML += "<h2><span ice>System Date</span><span value ice>[<span yellow>Sun</span> <span white>00</span>/00/0000]</span></h2>";
+        content.innerHTML += "<h2><span ice>System Time</span><span value ice>[00:00:00]</span>";
+        content.innerHTML += "</br></br>";
+        content.innerHTML += "<h2>Access Level<span value><span orange>Intern</span></span></h2>";
+
+        upperbox.innerHTML += "<h2><span aura>Set the Date. Use Any to</span></h2>";
+        upperbox.innerHTML += "<h2><span aura>switch between Date elements.</span></h2>";
+        upperbox.innerHTML += "<h2>Default Ranges:</h2>";
+        upperbox.innerHTML += "<h2>Year: 2023-2077</h2>";
+        upperbox.innerHTML += "<h2>Months: 1-12</h2>";
+        upperbox.innerHTML += "<h2>Days: dependent on month</h2>";
+        upperbox.innerHTML += "<h2>_____ 28 | 29 | 30 | 31</h2>";
+
+        lowerbox.innerHTML += "<h2><span aura>🡺🡸: </span> Select Tab</h2>";
+        lowerbox.innerHTML += "<h2><span aura>🡹🡻: </span> Select Entry</h2>";
+        lowerbox.innerHTML += "<h2><span aura>Enter: </span>Nothing</h2>";
+        lowerbox.innerHTML += "<h2><span aura>+/-: </span>Nothing</h2>";
+        lowerbox.innerHTML += "<h2><span aura>F1-F12: </span>Nothing</h2>";
+        lowerbox.innerHTML += "<h2><span aura>Alt-F4: </span><span orange>Rage Quit</span></h2>";
+      }
+    </script>
+    <style>
+      * { box-sizing: border-box; margin: auto; font-family: courier, monospace, sans-serif; overflow: hidden; }
+      body { background: #000000; }
+      span[aura] { color: #fff0aa; text-shadow: 0 0 10px white; }
+      span[ice] { color: #00FFFF; text-shadow: 0 0 3px white; }
+      span[white] { color: white; }
+      span[yellow] { color: yellow; }
+      span[orange] { color: #ff9933; text-shadow: 0 0 10px black; }
+      span[purple] { color: #7700ff; text-shadow: 0 0 10px black; }
+      span[value] { position: absolute; left: 500px; }
+      #topbar { text-align: center; color: cyan; } /* color: #C92077; } */
+      #tabs { text-align: left; padding: 10px; }
+      #tabs > * { display: inline-block; float: left; padding-top: 5px; padding-left: 10px; padding-right: 10px; }
+      #tabs > *[selected] { background: #FF0033; color: black; }
+      #tabs > *:not([selected]) { color: white; }
+      #container { position: fixed; top: 80px; left: 10px; width: calc(100% - 20px); height: calc(100% - 125px); border: 10px #FF0033 solid; padding: 5px; color: #999999; }
+      #content { position: absolute; top: 8px; left: 8px; width: calc(50% - 8px); height: calc(100% - 16px); padding: 30px; background: #111111; }
+      #upperbox { position: absolute; top: 8px; left: calc(50% + 8px); width: calc(50% - 16px); height: calc(50% - 8px); padding: 30px; background: #333333; color: #00FFFF; }
+      #lowerbox { position: absolute; top: calc(50% + 8px); left: calc(50% + 8px); width: calc(50% - 16px); height: calc(50% - 16px); padding: 30px; background: #222222; color: #00FFFF; }
+      #ribbon { position: fixed; bottom: 5px; width: 100%; text-align: center; color: white; }
+      #content > *[selected] { color: white; }
+    </style>
+  </head>
+  <body> <!--TODO: Implement Canvas Scaling-->
+    <div id="topbar">
+      <h1>Redline Setup Utility - AMI-AMD (V) 2023 - W3BIOS [Pre-Alpha, Debug]</h1>
+      <div id="tabs">
+        <div id="tab1" class="tab" selected><h2>Main</h2></div>
+        <div id="tab2" class="tab"><h2>Advanced</h2></div>
+        <div id="tab3" class="tab"><h2>Boot Options</h2></div>
+        <div id="tab4" class="tab"><h2>GPU POST</h2></div>
+        <div id="tab5" class="tab"><h2>Accelerators</h2></div>
+        <div id="tab6" class="tab"><h2>Misc.</h2></div>
+        <div id="tab6" class="tab" style="float: right;"><h2><><</h2></div>
+      </div>
+    </div>
+    <div id="container">
+      <div id="page1" class="page">
+        <div id="content"></div>
+        <div id="upperbox"></div>
+        <div id="lowerbox"></div>
+      </div>
+    </div>
+    <div id="ribbon">
+      <h1>Version 0.00.0001. - (V) 2023 - AMI-AMD</h1>
+    </div>
+  </body>
+</html>
