@@ -1,0 +1,76 @@
+<title>[IPMI]: HW_MONITOR</title>
+<script>
+window.onload = function(event)
+{
+  upperbox = document.getElementById("upperbox");
+  lowerbox = document.getElementById("lowerbox");
+  content = document.getElementById("content");
+
+  upperbox.innerHTML += "<h2>CPU_FAN<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>N/A</span></span></h2>";
+  upperbox.innerHTML += "<h2>CPU_OPT<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>N/A</span></span></h2>";
+  upperbox.innerHTML += "<h2>CHA_FAN1<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>N/A</span></span></h2>";
+  upperbox.innerHTML += "<h2>CHA_FAN2<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>N/A</span></span></h2>";
+  upperbox.innerHTML += "<h2>CHA_FAN3<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>N/A</span></span></h2>";
+  upperbox.innerHTML += "<h2>CHA_FAN4<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>N/A</span></span></h2>";
+  upperbox.innerHTML += "<h2>CHA_FAN5<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>N/A</span></span></h2>";
+  upperbox.innerHTML += "<h2>CHA_FAN6<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>2100 RPM</span></span></h2>";
+  upperbox.innerHTML += "<h2>SOC_FAN<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>2700 RPM</span></span></h2>";
+  upperbox.innerHTML += "<h2>CHIPSET_FAN<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>N/A</span></span></h2>";
+
+  lowerbox.innerHTML += "<h2>CPU Temp.<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>41 °C</span></span></h2>";
+  lowerbox.innerHTML += "<h2>T_SENSOR Temp.<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>N/A</span></span></h2>";
+  lowerbox.innerHTML += "<h2>DIMMA1 Temp<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>N/A</span></span></h2>";
+  lowerbox.innerHTML += "<h2>DIMMA1 Temp<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>N/A</span></span></h2>";
+  lowerbox.innerHTML += "<h2>DIMMA1 Temp<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>N/A</span></span></h2>";
+  lowerbox.innerHTML += "<h2>DIMMA1 Temp<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>N/A</span></span></h2>";
+  lowerbox.innerHTML += "<h2>DIMMA1 Temp<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>N/A</span></span></h2>";
+  lowerbox.innerHTML += "<h2>DIMMA1 Temp<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>N/A</span></span></h2>";
+  lowerbox.innerHTML += "<h2>DIMMA1 Temp<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>N/A</span></span></h2>";
+  lowerbox.innerHTML += "<h2>DIMMA1 Temp<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>N/A</span></span></h2>";
+  lowerbox.innerHTML += "<h2>DIMMA1 Temp<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>46 °C</span></span></h2>";
+
+  content.innerHTML += "<h2>+VCORE<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>1.384 V</span></span></h2>";
+  content.innerHTML += "<h2>+VSOC<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>0.942 V</span></span></h2>";
+  content.innerHTML += "<h2>+VDDIO_ABCD<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>1.218 V</span></span></h2>";
+  content.innerHTML += "<h2>+VDDIO_EFGH<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>1.218 V</span></span></h2>";
+  content.innerHTML += "<h2>+CPU_1.8V<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>1.770 V</span></span></h2>";
+  content.innerHTML += "<h2>+CPU_3.3V<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>3.424 V</span></span></h2>";
+  content.innerHTML += "<h2>+PCH_CLD0<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>1.188 V</span></span></h2>";
+  content.innerHTML += "<h2>+CPU_1.8V_S5<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>1.820 V</span></span></h2>";
+  content.innerHTML += "<h2>+12V<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>12.240 V</span></span></h2>";
+  content.innerHTML += "<h2>+5V<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>5.016 V</span></span></h2>";
+  content.innerHTML += "<h2>+3.3V<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>3.328 V</span></span></h2>";
+  content.innerHTML += "<h2>+5V_ALW<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>4.968 V</span></span></h2>";
+  content.innerHTML += "<h2>+3.3V_ALW<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>3.296 V</span></span></h2>";
+  content.innerHTML += "<h2>VBAT<span spacer>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span value>3.280 V</span></span></h2>";
+}
+
+window.resize = function(event)
+{
+  window.style.width = "640px";
+  window.style.height = "480px";
+}
+
+document.onkeydown = function(event) { if (event.key == "q") { close(); } }
+</script>
+<style>
+  * { box-sizing: border-box; margin: auto; font-family: courier, monospace, sans-serif; overflow: auto; }
+  body { background: #0000AA; color: #AAAAAA; min-width: 640px; min-height: 480px; }
+  span[spacer] { position: absolute; left: 25vw; }
+  #banner { text-align: center; }
+  #container { position: fixed; top: 60px; left: 10px; width: calc(100% - 28px); height: calc(100% - 125px); padding: 5px; }
+  #upperbox { position: absolute; top: 8px; left: 8px; width: calc(50% - 36px); height: calc(50% - 28px); margin: 10px; padding: 30px; border: 7px white solid; font-size: 0.8vw; }
+  #lowerbox { position: absolute; top: calc(50% + 8px); left: 8px; width: calc(50% - 36px); height: calc(50% - 36px); margin: 10px; padding: 30px; border: 7px white solid; font-size: 0.8vw; }
+  #content { position: absolute; top: 8px; left: 50%; width: calc(50% - 16px); height: calc(100% - 36px); margin: 10px; padding: 30px; border: 7px white solid; font-size: 0.8vw; }
+  #ribbon { position: fixed; bottom: 5px; width: 100%; }
+  #upperbox-label { position: absolute; top: 1px; left: 50px; padding: 5px; padding-left: 20px; padding-right: 20px; font-size: 20pt; font-weight: bold; background: #0000AA; z-index: 9999; }
+  #lowerbox-label { position: absolute; top: calc(50% + 1px); left: 50px; padding: 5px; padding-left: 20px; padding-right: 20px; font-size: 20pt; font-weight: bold; background: #0000AA; z-index: 9999; }
+  #content-label { position: absolute; top: 1px; left: calc(50% + 50px); padding: 5px; padding-left: 20px; padding-right: 20px; font-size: 20pt; font-weight: bold; background: #0000AA; z-index: 9999; }
+</style>
+<div id="banner"><h1>ASUSTek. IPMI Hardware Monitor</h1></div>
+<div id="container">
+  <div id="upperbox" style=""></div><div id="upperbox-label">Fan Speed</div>
+  <div id="lowerbox"></div><div id="lowerbox-label">Temperature</div>
+  <div id="content"></div><div id="content-label">Voltage</div>
+</div>
+<div id="ribbon"><h1>[q]: Exit</h1></div>
