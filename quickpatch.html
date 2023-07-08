@@ -1,0 +1,171 @@
+<title>quickpatch</title>
+<script>
+var MIDI = null;
+var patch = [];
+
+var ctrl = false;
+var shift = false;
+var unmap = false;
+var map = false;
+var tmp = null;
+
+window.onload = function()
+{
+    console.log("//Ctrl+Click to Patch");
+    console.log("//Shift+Click to Unpatch //!!!AS_YET_UNTESTED!!!");
+
+    try { patch = JSON.parse(localStorage.getItem("patch")); }
+    catch (error) { console.log(error); patch = null; }
+    if ((patch == "null") || (patch == null)) { patch = []; }
+
+    var controls = document.getElementsByClassName("control");
+    for (var i = 0; i < controls.length; ++i)
+    {
+        var value = localStorage.getItem(controls[i].id);
+        if ((value == "null") || (value == null)) { value = 0.0; }
+        controls[i].value = value;
+        controls[i].oninput = _oninput;
+        controls[i].onclick = _onpatch;
+    }
+
+    //navigator.permissions.query({ name: "midi", sysex: true }).then(function(result) { console.log(result.state); });
+    //if (navigator.requestMIDIAccess) { navigator.requestMIDIAccess({ sysex: true }).then(_onMIDIsetup, _onMIDIerror); }
+    if (navigator.requestMIDIAccess) { navigator.requestMIDIAccess().then(_onMIDIsetup, _onMIDIerror); }
+    else { console.log("[WARN]: Error Initialising WebMIDI"); }
+}
+
+document.onkeydown = function(event)
+{
+    if (event.key == "Shift") { if (!shift && unmap) { unmap = false; DisplayState("Resume"); }; shift = true; }
+    if (event.key == "Control") { if (!ctrl && map) { map = false; DisplayState("Resume"); }; ctrl = true; }
+}
+
+document.onkeyup = function(event)
+{
+    if (event.key == "Shift") { shift = false; }
+    if (event.key == "Control") { ctrl = false; }
+}
+
+var _oninput = function(event)
+{
+    document.title = parseFloat(event.target.value);
+    localStorage.setItem(event.target.id, event.target.value);
+}
+
+var _onpatch = function(event)
+{
+    //if ctrl held then wait for next control change
+    if (shift) { DisplayState("Unpatch"); tmp = event.target.id; map = false; unmap = true; }
+    if (ctrl) { DisplayState("Patch"); tmp = event.target.id; map = true; unmap = false; }
+
+    //console.log(event.target);
+    //patch += [event.target.id, ];
+    //console.log(patch);
+    //localStorage.setItem("patch", patch);
+}
+
+var _onMIDIsetup = function(event)
+{
+    if (MIDI != null)
+    {
+        var inputs = MIDI.inputs.values();
+        for (var input = inputs.next(); input && !input.done; input = inputs.next())
+        {
+            input.value.onmidimessage = null;
+        }
+    }
+    MIDI = event;
+    MIDI.onstatechange = _onMIDIstate;
+    var inputs = MIDI.inputs.values();
+    for (var input = inputs.next(); input && !input.done; input = inputs.next())
+    {
+        input.value.onmidimessage = _onMIDIevent;
+    }
+}
+
+var _onMIDIstate = function(event)
+{
+    console.log(event);
+}
+
+var _onMIDIevent = function(event)
+{
+    console.log(event);
+    for (var i = 0; i < patch.length; ++i)
+    {
+        try
+        {
+            if (patch[i][1] == event.data[1])
+            {
+                document.getElementById(patch[i][0]).value = event.data[2];
+                localStorage.setItem(patch[i][0], event.data[2]);
+            }
+        }
+        catch(error) { _onMIDIerror(event); continue; }
+    }
+    if (map && tmp)
+    {
+        patch.push([tmp, event.data[1]]);
+        localStorage.setItem("patch", JSON.stringify(patch));
+        tmp = null; map = false; DisplayState("Resume");
+    }
+    if (unmap && tmp) //!!!AS_YET_UNTESTED!!!
+    {
+        var keep = [];
+        for (var i = 0; i < patch.length; ++i)
+        {
+            try { if (!((patch[i][0] == tmp) && (patch[i][1] == event.data[1]))) { keep.push(i); } }
+            catch(error) { _onMIDIerror(event); continue; }
+        }
+        var newpatch = []; console.log(keep);
+        for (var i = 0; i < keep.length; ++i) { newpatch.push(patch[keep[i]]); } console.log(newpatch);
+        patch = newpatch; localStorage.setItem("patch", JSON.stringify(patch));
+        tmp = null; unmap = false; DisplayState("Resume");
+    }
+}
+
+var _onMIDIerror = function(event)
+{
+    console.log(event);
+}
+
+var ClearPatch = function()
+{
+    patch = [];
+    localStorage.setItem("patch", JSON.stringify(patch));
+    map = false; unmap = false; DisplayState("Resume");
+    return true;
+}
+
+var SendCC = function(param, value)
+{
+    var outputs = MIDI.outputs.values();
+    for (var output = outputs.next(); output && !output.done; output = outputs.next())
+    {
+        output.send([176, param, value]);
+    }
+}
+
+var DisplayState = function(message)
+{
+    var msg = "[MIDI]: " + message;
+    console.log(msg); document.title = msg;
+}
+
+</script>
+<style>
+ body { background: #121212; }
+ input { appearance: none; position: relative; width: 100%; height: 1vh; border-radius: 5px; margin-top: 2%; margin-bottom: 2%; }
+ input::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; background: rgba(0.0, 0.0, 0.0, 1.0); width: 30px; height: 30px; border-radius: 15px; border: 2px rgba(255.0, 255.0, 255.0, 0.7) solid; }
+ input::-moz-range-thumb { -webkit-appearance: none; appearance: none; background: rgba(0.0, 0.0, 0.0, 1.0); width: 30px; height: 30px; border-radius: 15px; border: 2px rgba(255.0, 255.0, 255.0, 0.7) solid; }
+</style>
+<body>
+  <input class="control" type="range" min="0" max="127" step="1" value="0" id="slider_0"></input>
+  <input class="control" type="range" min="0" max="127" step="1" value="0" id="slider_1"></input>
+  <input class="control" type="range" min="0" max="127" step="1" value="0" id="slider_2"></input>
+  <input class="control" type="range" min="0" max="127" step="1" value="0" id="slider_3"></input>
+  <input class="control" type="range" min="0" max="127" step="1" value="0" id="slider_4"></input>
+  <input class="control" type="range" min="0" max="127" step="1" value="0" id="slider_5"></input>
+  <input class="control" type="range" min="0" max="127" step="1" value="0" id="slider_6"></input>
+  <input class="control" type="range" min="0" max="127" step="1" value="0" id="slider_7"></input>
+</body>
