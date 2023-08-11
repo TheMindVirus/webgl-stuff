@@ -1,0 +1,132 @@
+<title>BeybladeTachometer</title>
+<button fullscreen onclick="play(this);">Play</button>
+<video fullscreen controls>
+  <source src="IMG_6536.mp4"></source>
+</video>
+<canvas></canvas>
+<h1 fixed right>Readout</h1>
+<div marker></div>
+<style>
+  * { font-family: sans-serif; font-size: 50pt; font-weight: bold; background: blue; color: yellow; }
+  [fullscreen] { position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
+  button { z-index: 9999; border: none; user-select: none; }
+  [fixed] { position: fixed; width: content; height: content; }
+  [right] { right: 0; }
+  //canvas { display: none; }
+  canvas { position: fixed; z-index: 9999; }
+  [marker] { position: fixed; top: 0; left: 0; width: 10px; height: 10px; background: yellow; z-index: 9999; }
+</style>
+<script>
+var x = 0.55;
+var y = 0.42;
+
+var xo = 0;
+var yo = 0;
+
+var iw = 0;
+var ih = 0;
+
+var tw = 0;
+var th = 0;
+
+var ar = 0;
+var br = 0;
+
+var ax = 0;
+var ay = 0;
+
+var video = null;
+var readout = null;
+
+var count = 0;
+var resetRate = 100; //ms
+var tachometer = 0;
+
+var canvas = null;
+var ctx = null;
+
+var previous = 0;
+var refreshRate = 0; //ms
+var tolerance = 0.000001;
+
+var play = function(element)
+{
+    element.remove();
+
+    video = document.getElementsByTagName("video")[0];
+    video.onloadedmetadata = getDimension;
+    video.srcObject = video.srcObject;
+    video.loop = true;
+    video.play();
+
+    window.onresize = setMarker;
+    window.onresize();
+
+    readout = document.getElementsByTagName("h1")[0];
+    readout.innerText = tachometer;
+    setInterval(resetTachometer, resetRate);
+    setInterval(refreshTachometer, refreshRate);
+
+    canvas = document.getElementsByTagName("canvas")[0];
+    ctx = canvas.getContext("2d", { willReadFrequently: true });
+}
+
+var getDimension = function(event)
+{
+    iw = event.target.videoWidth;
+    ih = event.target.videoHeight;
+    setMarker();
+}
+
+var setMarker = function()
+{
+    tw = document.body.clientWidth;
+    th = document.body.clientHeight;
+
+    ar = iw / ih;
+    br = tw / th;
+
+    if (ar <= 1) { ax = iw / (ih / th); ay = th; }
+    else { ay = ih / (iw / tw); ax = tw; } //untested
+
+    xo = (tw - ax) / 2;
+    yo = (th - ay) / 2;
+
+    marker = document.getElementsByTagName("div")[0];
+    var style = window.getComputedStyle(marker);
+    mw = parseFloat(style.width) / 2; mh = parseFloat(style.height) / 2;
+    marker.style.top = ((y * ay) + yo) - mw; marker.style.left = ((x * ax) + xo) - mh;
+}
+
+var resetTachometer = function()
+{
+    tachometer = (count / (resetRate / 1000)).toFixed(6);
+    readout.innerText = tachometer;
+    count = 0;
+}
+
+var refreshTachometer = function()
+{
+    canvas.width = iw;
+    canvas.height = ih;
+    canvas.style.width = ax / 2;
+    canvas.style.height = ay / 2;
+    ctx.drawImage(video, 0, 0);
+    var pixel = ctx.getImageData(iw - 1, ih - 1, 1, 1).data;
+    //var pixel = ctx.getImageData(324, 216, 1, 1).data;
+    //var pixel = ctx.getImageData(parseInt(x * iw), parseInt(y * ih), 1, 1).data;
+    //var pixel = ctx.getImageData(parseInt(x * ax), parseInt(y * ay), 1, 1).data;
+    var pixel = [0, 0, 0, 0];
+    //try { pixel = ctx.getImageData(parseInt(x * ax), parseInt(y * ay), 1, 1).data; } catch { }
+    try { pixel = ctx.getImageData(parseInt(x * iw), parseInt(y * ih), 1, 1).data; } catch { }
+    marker.style.background = "rgba(" + pixel[0] + ", " + pixel[1] + ", " + pixel[2] + ", " + pixel[3] + ")";
+    //console.log(marker.style.background);
+    var intensity = ((pixel[0] + pixel[1] + pixel[2]) / 3.0) * (100 / 255);
+    //console.log(pixel);
+    console.log(intensity);
+    current = intensity;
+    if (Math.abs(current - previous) > tolerance) { count += 1; }
+    previous = current;
+}
+
+</script>
