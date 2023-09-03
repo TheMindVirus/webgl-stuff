@@ -1,0 +1,245 @@
+<title>iomap_sap_hana</title>
+<script>
+
+w = 0;
+h = 0;
+pos1 = 0;
+pos2 = 0;
+pos3 = 0;
+pos4 = 0;
+
+canvas = null;
+ctx = null;
+
+render_scale = 4.0;
+render_blur = 0.5 / render_scale;
+
+line_width = 2.0;
+line_blur = 10.0;
+
+max_height = 1500;
+drag_element = null;
+div_img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFMAAAAcCAYAAAAdvIO5AAAAAXNSR0IArs4c6QAABuhJREFUaEPtmVtsVEUYx3+73e1td6GrBQoFLIgFDIaKmIJgQClCU4NITCTxEl6MTyaGB/EWgjEoauITjyZqQhRUTDRyURJCCYWihaApidaWGgqlBdrS7v121nyze5azh9LutlvYGOfl7HZn5nzzm/93mamF/1vOCFhyNtMETfQNsx98FNe6AiwFLQQOb6KjdYJeNe5p8wrmp8ysfBzn0zWUTrdhsSZX9zxQnfzcBuyTz1HiWiuBq40M/vQ63RfHTSIHE9xVmD8yb8lKSte7sRcbwcWIM0CUQqxMoiBtmR5iBNC4FxsFKPNTgAeIBE/jv3iO8IG3uDiQAz5ZTXHHYH7J3OpaStfPp6jcYKFSnQDSgMkmcJmuZJAYEGcyNn1ICnA7wf5m/IdeovOvTOcba78JgfkxVRWPUdTwCKUzirHajaoLo9FPDBdWHGOEN9pifcQQwOXYlLqN6g2iRc7h6zmF/+BWLl0eba5sfs8JzO+Zs3g5zvUVFDrMca6PKDYsY1ZdNosZqe8QMWQjy9H39mZ46CPqP87QoU10/j6e92UNczdz7ltBcUMNpRVmd/WjEUEzutt4bJvwsaJeicjOhIekQoN8OU+wt4mhw6/S1ZGpISPC3MGM8pU4G2opmeXEVmhUXZQ4/UQpxaobk+k787aflxhepV6b8iYjYC/R8Bn8l5sYPPgOV3uHW0QazL3cv6iW4rVVFLvN7tpOUMWf2ehM85ZJTg27SAg/cRagFxw3FdxFaKgF3xE9PCiYkmlfxv3i34SenULBorKbWVEZJipsJUAZBVRRlFNj832yTkJI3K+hVFdryuQgGsUUHP6Mvi2v0NmrYL5HxRPbqTz6Ht3s4IrahaWUUouDZThuO5G4uRsbJYmM+Z9og0QpwkqxaU26oJrxcRoff+DnNaayhfL3LZzZLou/BeYueliJk2nYlSJ/xUcvEZbgUIBX4FTP4RR6gyiWPMjcme6qJCA5INxj8kQZf4kwLfhpwosAFIU+ikMJbLVi4EjF1Q+5vPJteq7dAvMIQ+ykklkUEibOdwywm6v0Ek2zsQIby3CqyQWuKDiZFVP9ZDPERRx5kKSk9vSkJ5eUnZJ4zhGgGS9N+GjBp0DJmlbhUuJaREna+mVtPUSYSSGfcGXdG3T/omC+yWz3h0xp/oLr1VvpYgUuKrCrXTuJlw5CJpTD730NJWrHdMASZ8wtUT7JaSX9mJipmjLtZyp70oZJ/Bdg4q6iOvkuoU2giefJ0+x5AlyU2oiHE0m1bqOCd5nODwy8sJELX6Wy+VkW1s3E9kgJ1i0tBBYcx6MGnsRHkHima0jr58SqdlcHLJ9lk8xN1GvHcss5PNOXDlOQp4ZeJ6oUp4MTIAJGbNLhiduak66ErGN4FQMBLvClybjVuFiFkydxSYXTFiO+y8bZz2+pMyWzz6dw9Vzsbjf2kihsbsY7XyY9lpx4rHDFmCoKDbE3ESLMwV5OKn3EmDTMkVOULQs1HBXTsquoTJQj8ARcOyFkUwWc7rbyNL/zH0JqfTJOIP5JUM0r3ibw1uBSTycFqrgPE4v1Ews24j+wOXktOOoJ6ABzl9biqnNjLbFi3RxEq5adyhVcuZqQcCALTIQHh7GmG1GcUvsKMAEgAAWkbLQez0U9AnG4suYcfqU43W0vEVHvEncXpa5jsnomFZsEqEWO4jtcT9tvwxk2KkzjIDmD11O2wXh5kWu48j6pZwWCqHYjZTxEiUqGeqzSXVZcWFe7qEaPd4YCW/0u9aDAE8VJdpZ5bqibpoSn1DEppbwK7KljpajvPIHebwjs25XBlV5WMM27cYLqx5fjqLNilXnUdZoYnkvlPkcZ33I/e+jjJf5Jc71EmZJIlsYmMVGA6eDEHj00zcSu4IlqZWwVRW0a2t4BtMB1Yv5O/KfquTCs8kaL4eOCaZz8AyrvXYvruaU4KpN/zwlcUedvLERimsQxCQfmZCElig5P4p6UOXoTl08kjETMW0Cxgic3RdeI+TsIN22g/exooDL5PWcwzS/bydRp9bg3PYxz+njgSqK5xmLixNWBQJpAlQzdmHRZSTJ6kxChZ1tRoNSHcWgLoe3pJuz5k8CJBi60ZAIn2z4TBtNsyEfMmvEUzo2Gq7uMleuhRh0InqeD43jpMVS9eqYW5dXhUglMbnuixL/2EA11EO4/wND+HXRfzxZOtv3vGEyzYfLPsydwPZMJXHFzUdgDtKpjnrj6Gial4NmwKNf1o0XaCfcfpG//7a7JsgWUTf+7BjMbuL7kP9Ck9JlHkVxEtAXQ9nQRGewh5DlN8OdtdHVns/CJ6Js3MEeCq6HFB4mFrhD1tBLobcfXeDeUN9oG5C3M0QzPx9//h5nDXfkXrPbgO10nLekAAAAASUVORK5CYII=";
+
+drive_list =
+[
+    { id: "A1", name: "JDBC",               x:  100, y:  150, value: 0.50, tag: "VK_HANA_CLIENT", },
+    { id: "A2", name: "ODBC",               x:  300, y:  150, value: 0.50, tag: "VK_HANA_CLIENT", },
+    { id: "A3", name: "Python DB API",      x:  500, y:  150, value: 0.50, tag: "VK_HANA_CLIENT", },
+    { id: "A4", name: "ODBO/MDX",           x:  700, y:  150, value: 0.50, tag: "VK_HANA_CLIENT", },
+    { id: "A5", name: "DBSL",               x:  900, y:  150, value: 0.50, tag: "VK_HANA_CLIENT", },
+    { id: "A6", name: "XML/A",              x: 1100, y:  150, value: 0.50, tag: "VK_HANA_CLIENT", },
+
+    { id: "B1", name: "Network Protocol",   x:  100, y:  250, value: 0.50, tag: "VK_HANA_CLIENT", },
+    { id: "B2", name: "SQLDBC",             x:  600, y:  250, value: 0.50, tag: "VK_HANA_CLIENT", },
+    { id: "B3", name: "HTTP/HTTPS",         x: 1100, y:  250, value: 0.50, tag: "VK_HANA_CLIENT", },
+
+    { id: "C1", name: "Session MGMT",       x:  350, y:  350, value: 0.50, tag: "VK_SAP_INDEX_SERVER", },
+    { id: "C2", name: "XS-Engine",          x:  900, y:  350, value: 0.50, tag: "VK_SAP_XS_ENGINE_DB", },
+
+    { id: "D1", name: "Auth MGMT",          x:  100, y:  450, value: 0.50, tag: "VK_SAP_INDEX_SERVER", },
+    { id: "D2", name: "SQL Preprocessor",   x:  600, y:  450, value: 0.50, tag: "VK_SAP_SQL_PROCESSOR", },
+    { id: "D3", name: "Transact MGMT",      x: 1100, y:  450, value: 0.50, tag: "VK_SAP_INDEX_SERVER", },
+
+    { id: "E1", name: "Subroutines",        x:  300, y:  550, value: 0.50, tag: "VK_SAP_SQL_PROCESSOR", },
+    { id: "E2", name: "Templating",         x:  600, y:  550, value: 0.50, tag: "VK_SAP_SQL_PROCESSOR", },
+    { id: "E3", name: "Dimensions [MDX]",   x:  900, y:  550, value: 0.50, tag: "VK_SAP_SQL_PROCESSOR", },
+
+    { id: "F1", name: "Meta MGMT",          x:  100, y:  650, value: 0.50, tag: "VK_SAP_INDEX_SERVER", },
+    { id: "F2", name: "SQL Postprocessor",  x:  600, y:  650, value: 0.50, tag: "VK_SAP_SQL_PROCESSOR", },
+    { id: "F3", name: "XS-Engine",          x: 1100, y:  650, value: 0.50, tag: "VK_SAP_XS_ENGINE_DB", },
+
+    { id: "G1", name: "Disk Storage",       x:  350, y:  750, value: 0.50, tag: "VK_SAP_INDEX_SERVER", },
+    { id: "G2", name: "Persistence Layer",  x:  900, y:  750, value: 0.50, tag: "VK_SAP_INDEX_SERVER", },
+];
+
+cable_list =
+[
+    { id1: "A1", id2: "B1" },
+    { id1: "A2", id2: "B2" },
+    { id1: "A3", id2: "B2" },
+    { id1: "A4", id2: "B2" },
+    { id1: "A5", id2: "B2" },
+    { id1: "A6", id2: "B3" },
+
+    { id1: "B1", id2: "C1" },
+    { id1: "B2", id2: "B1" },
+    { id1: "B3", id2: "C2" },
+    { id1: "C1", id2: "D2" },
+    { id1: "C2", id2: "F3" },
+    { id1: "D1", id2: "F1" },
+
+    { id1: "D2", id2: "C2" },
+    { id1: "D2", id2: "D1" },
+    { id1: "D2", id2: "D3" },
+    { id1: "D2", id2: "E1" },
+    { id1: "D2", id2: "E2" },
+    { id1: "D2", id2: "E3" },
+
+    { id1: "E1", id2: "F2" },
+    { id1: "E2", id2: "F2" },
+    { id1: "E3", id2: "F2" },
+    { id1: "F1", id2: "F2" },
+    { id1: "F3", id2: "F2" },
+    { id1: "D3", id2: "G2" },
+
+    { id1: "F2", id2: "G2" },
+    { id1: "F3", id2: "G2" },
+    { id1: "G2", id2: "G1" },
+];
+
+window.onload = function()
+{
+    canvas = document.getElementsByTagName("canvas")[0];
+    ctx = canvas.getContext("2d");
+
+    content = document.getElementById("content");
+    header = document.getElementById("header");
+    footer = document.getElementById("footer");
+
+    content.onmousedown = ondragstart;
+    //canvas.onmousedown = function(event) { event.target = content; ondragstart(event); }
+    //document.body.onmousedown = function(event) { event.target = content; ondragstart(event); }
+
+    for (var i = 0; i < drive_list.length; ++i)
+    {
+        var div = document.createElement("div");
+        div.className = "stage";
+        div.id = drive_list[i].id;
+        div.name = drive_list[i].name;
+        div.style.left = drive_list[i].x + "px";
+        div.style.top = drive_list[i].y + "px";
+        div.onmousedown = ondragstart;
+
+        var img = document.createElement("img");
+        img.src = div_img; img.alt = "";
+        div.appendChild(img);
+
+        var bar = document.createElement("progress");
+        bar.style.width = "100%";
+        bar.style.accentColor = "#FF0033FF";
+        bar.style.position = "absolute";
+        bar.value = drive_list[i].value;
+        bar.style.top = "27px";
+        bar.style.left = "0px";
+        div.appendChild(bar);
+
+        var map = document.createElement("p");
+        map.innerText = drive_list[i].name;
+        map.style.position = "absolute";
+        map.style.textAlign = "center";
+        map.style.color = "#FFFFFFFF";
+        map.style.fontSize = "12pt";
+        map.style.top = "42px";
+        div.appendChild(map);
+
+        var tag = document.createElement("p");
+        tag.innerText = drive_list[i].tag;
+        tag.style.position = "absolute";
+        tag.style.textAlign = "center";
+        tag.style.color = "#FFAAAAFF";
+        tag.style.fontSize = "12pt";
+        tag.style.top = "60px";
+        div.appendChild(tag);
+
+        content.appendChild(div);
+    }
+
+    var spc = document.createElement("p");
+    spc.style.position = "absolute";
+    spc.style.top = max_height + "px";
+    spc.style.left = 0;
+    spc.innerText = "_";
+    content.appendChild(spc);
+
+    window.onresize();
+    setInterval(render, 0);
+}
+
+window.onresize = function()
+{
+    var style = window.getComputedStyle(canvas);
+    w = canvas.width = parseFloat(style.width) * render_scale;
+    h = canvas.height = parseFloat(style.height) * render_scale;
+    p = (render_scale - 1.0) * 50;
+    canvas.style.transform = "translate(" + p + "%, " + p + "%) scale(" + render_scale + ")";
+}
+
+ondragstart = function(event)
+{
+    event.preventDefault();
+    pos3 = event.clientX;
+    pos4 = event.clientY;
+    drag_element = event.target;
+    document.onmousemove = ondragmove;
+    document.onmouseup = ondragstop;
+}
+
+ondragmove = function(event)
+{
+    event.preventDefault();
+    pos1 = pos3 - event.clientX;
+    pos2 = pos4 - event.clientY;
+    pos3 = event.clientX;
+    pos4 = event.clientY;
+    drag_element.style.left = (drag_element.offsetLeft - pos1) + "px";
+    drag_element.style.top = (drag_element.offsetTop - pos2) + "px";
+}
+
+ondragstop = function()
+{
+    document.onmousemove = null;
+    document.onmouseup = null;
+}
+
+point = function(element, mode)
+{
+    var rect = element.getBoundingClientRect();
+    if (mode == 1) { return { x: rect.right + 5, y: rect.top + 10 }; }
+    else if (mode == 2) { return { x: rect.left - 5, y: rect.top + 10 }; }
+    else { return rect; }
+}
+
+interpolate = function(pos, cx, cy) { return { x: pos.x + cx, y: pos.y + cy }; }
+
+render = function()
+{
+    ctx.fillStyle = "#000000FF";
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.strokeStyle = "#FF0040FF";
+    ctx.shadowColor = ctx.strokeStyle;
+    ctx.shadowBlur = line_blur;
+    ctx.lineWidth = line_width;
+    ctx.lineCap = "round";
+
+    canvas.style.filter = "blur(" + render_blur + "px)";
+
+    for (var i = 0; i < cable_list.length; ++i)
+    {
+        var pt1 = point(document.getElementById(cable_list[i].id1), 1);
+        var pt2 = point(document.getElementById(cable_list[i].id2), 2);
+        var pta = interpolate(pt1,  50, 0);
+        var ptb = interpolate(pt2, -50, 0);
+
+        ctx.beginPath();
+        ctx.moveTo(pt1.x, pt1.y);
+        ctx.bezierCurveTo(pta.x, pta.y, ptb.x, ptb.y, pt2.x, pt2.y);
+        ctx.stroke();
+    }
+}
+</script>
+<style>
+    * { box-sizing: border-box; margin: auto; font-family: Orbitron, Helvetica, sans-serif; user-select: none; white-space: nowrap; }
+    body { background: black; color: #FF0033FF; overflow: hidden; }
+    canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; image-rendering: pixelated; }
+    #content { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; }
+    #header { position: fixed; resize: none; background: #000000AF; width: 100%; height: 12vh; padding-top: 0px; padding-bottom: 130px; text-align: center; z-index: 9999; border-bottom: thin gray solid; font-size: 42pt; top: -20px; }
+    #footer { position: fixed; resize: none; background: #000000AF; width: 100%; height: 12vh; padding-top: 5px; padding-bottom: 30px; text-align: center; z-index: 9999; border-top: thin gray solid; bottom: 0; text-align: left; padding-left: 5vw; overflow-y: scroll; }
+    .stage { position: absolute; width: content; height: content; text-align: text-top; }
+    .stage > * { pointer-events: none; }
+</style>
+<canvas></canvas>
+<div id="content"></div>
+<div id="header"><h1>VK_IOMAP SAP-HANA</h1></div>
+<div id="footer"><h1 align="left">VK - VULKAN GRAPHICS ENGINE PIPELINE</h1><h1 align="center">IOMAP - INPUT-OUTPUT MAPPING DIAGRAM</h1><h1 align="right">SAP-HANA - SERVER FOR QUICK ANALYTICS</h1></div>
