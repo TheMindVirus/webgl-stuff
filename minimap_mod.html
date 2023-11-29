@@ -1,0 +1,146 @@
+<script>
+pattern=function(m=32,n=32)
+{
+ var a = new Array();
+ for(var i=0;i<m;++i)
+ {
+  a.push(new Array());
+  for(var j=0;j<n;++j)
+  {
+   var k=0;
+   if((i%2)==0){k=((j%2)>0)?1:0;}
+   else if((i%4)<2){k=((j%6)>2)?0:1;}
+   else{k=((j%6)>2)?1:0;}
+   a[i].push(k);
+  }
+ }
+ return a;
+}
+border=function(b,m=32,n=32,flip=0)
+{
+ var a=new Array();
+ for(var i=0;i<m;++i)
+ {
+  a.push(new Array());
+  for(var j=0;j<n;++j)
+  {
+   var k=0;
+   if(flip==0)
+   {
+    var c=i%m;
+    var d1=j%n;
+    var d2=(j-1);if(d2<0){d2+=n;}d2%=n;
+    if(b[c][d1]!=b[c][d2]){k=1;}
+   }
+   else
+   {
+    var c1=i%m;
+    var c2=(i-1);if(c2<0){c2+=m;}c2%=m;
+    var d=j%n;
+    if(b[c1][d]!=b[c2][d]){k=1;}
+   }
+   a[i].push(k);
+  }
+ }
+ return a;
+}
+tiles=function(b,m=32,n=32,s=100)
+{
+ var div=document.createElement("div");
+ var ba=border(b);
+ var bb=border(b,m,n,flip=1);
+ div.style.transform="translateX("+(s*n*4)+"px) rotateX(60deg) rotateZ(45deg) scale(4)";
+ for(var i=0;i<m;++i)
+ {
+  for(var j=0;j<n;++j)
+  {
+   var sub=document.createElement("div");
+   if(b[i][j]>0){sub.setAttribute("B",1);}
+   else{sub.setAttribute("A",1);}
+   sub.setAttribute("F",1);
+   sub.style.width=s+"px";
+   sub.style.height=s+"px";
+   sub.style.top=(s*i)+"px";
+   sub.style.left=(s*j)+"px";
+   if(ba[i][j]){sub.setAttribute("C",1);}
+   if(bb[i][j]){sub.setAttribute("D",1);}
+   if(i==(0-0)){sub.setAttribute("D",1);}
+   if(j==(0-0)){sub.setAttribute("C",1);}
+   if(i==(m-1)){sub.setAttribute("E",1);}
+   if(j==(n-1)){sub.setAttribute("G",1);}
+   div.appendChild(sub);
+  }
+ }
+ return div;
+}
+window.onload=function()
+{
+ var a=pattern();
+ document.body.appendChild(tiles(a));
+ window.scrollTo(9500,3500);
+ window.onresize();
+}
+</script>
+<script>
+window.onresize = function()
+{
+    var scale = 100;
+    var aspect = (1.0 / window.devicePixelRatio);
+    var w = parseFloat(window.innerWidth);
+    var h = parseFloat(window.innerHeight);
+    var aw = ((w / scale) / aspect);
+    var ah = ((h / scale) / aspect);
+    var svg = document.getElementById("HUD_SVG");
+    svg.style.transform = "translate(-50%, -50%) scale(" + aspect + ") scale(" + aw + ", " + ah + ") translate(50%, 50%)";
+    svg.style.width = w + "px";
+    svg.style.height = h + "px";
+
+    var div = document.getElementById("HUD_DIV");
+    div.style.transform = "translate(-50%, -50%) scale(" + aspect + ") scale(" + aw + ", " + ah + ") translate(50%, 50%)";
+    div.style.width = w + "px";
+    div.style.height = h + "px";
+
+    var HUD0_PATH = "m 0 0 l 20 0 l 10 10 l 40 0 l 10 -10 l 20 0 z";
+    document.getElementById("HUD0").style.clipPath = "path('" + HUD0_PATH + "')";
+    document.getElementById("HUD0_EDGE").setAttribute("d", HUD0_PATH);
+
+    var HUD1_PATH = "m -1 80 l 0 20 l 101 0 l 0 -20 l -20 0 l -10 10 l -40 0 l -10 -10 z";
+    document.getElementById("HUD1").style.clipPath = "path('" + HUD1_PATH + "')";
+    document.getElementById("HUD1_EDGE").setAttribute("d", HUD1_PATH);
+
+    var HUD2_PATH = "m 10 20 l 20 0 l 0 50 l -20 -10 z";
+    document.getElementById("HUD2").style.clipPath = "path('" + HUD2_PATH + "')";
+    document.getElementById("HUD2_EDGE").setAttribute("d", HUD2_PATH);
+}
+</script>
+<style>
+    * { color-scheme: dark; }
+ body { background: #000; }
+  [A] { background: #111; }
+  [B] { background: #222; }
+  [C] { border-left: 1px #F03 dashed; }
+  [D] { border-top: 1px #F03 dashed; }
+  [E] { border-bottom: 1px #F03 dashed; }
+  [F] { position: fixed; padding-bottom: 1px; }
+  [G] { border-right: 1px #F03 dashed; }
+  [overlay] { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; }
+  [blur] { position: fixed; background: #0003; backdrop-filter: blur(1px) saturate(200%); }
+  img { border: none; padding: 100%; }
+</style>
+<div overlay id="HUD_DIV">
+ <img overlay blur id="HUD0"></img>
+ <img blur id="HUD1"></img>
+ <img blur id="HUD2"></img>
+</div>
+<svg overlay id="HUD_SVG">
+ <defs>
+  <filter id="blur">
+   <feGaussianBlur stdDeviation="0.3" />
+  </filter>
+ </defs>
+ <g fill="none" stroke="#F03" stroke-width="0.3" stroke-linecap="round" stroke-linejoin="round">
+  <use href="#HUD0_EDGE" filter="url(#blur)" /><path id="HUD0_EDGE" />
+  <use href="#HUD1_EDGE" filter="url(#blur)" /><path id="HUD1_EDGE" />
+  <use href="#HUD2_EDGE" filter="url(#blur)" /><path id="HUD2_EDGE" />
+ </g>
+</svg>
