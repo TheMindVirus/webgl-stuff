@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>PhoneLitMYC</title>
+    <meta name="viewport" content="width=device-width"></meta>
+    <meta name="apple-mobile-web-app-capable" content="yes"></meta>
+    <script>
+        var R = null;
+        var G = null;
+        var B = null;
+        var M = null;
+        var Y = null;
+        var C = null;
+
+        var slider_R = null;
+        var slider_G = null;
+        var slider_B = null;
+        var slider_M = null;
+        var slider_Y = null;
+        var slider_C = null;
+
+        window.onload = function()
+        {
+            slider_R = document.getElementById("slider_R");
+            slider_G = document.getElementById("slider_G");
+            slider_B = document.getElementById("slider_B");
+            slider_M = document.getElementById("slider_M");
+            slider_Y = document.getElementById("slider_Y");
+            slider_C = document.getElementById("slider_C");
+
+            R = localStorage.getItem("slider_R"); if ((R == "null") || (R == null)) { R = 0.0; }
+            G = localStorage.getItem("slider_G"); if ((G == "null") || (G == null)) { G = 0.0; }
+            B = localStorage.getItem("slider_B"); if ((B == "null") || (B == null)) { B = 0.0; }
+            M = localStorage.getItem("slider_M"); if ((M == "null") || (M == null)) { M = 0.0; }
+            Y = localStorage.getItem("slider_Y"); if ((Y == "null") || (Y == null)) { Y = 0.0; }
+            C = localStorage.getItem("slider_C"); if ((C == "null") || (C == null)) { C = 0.0; }
+
+            slider_R.oninput = function(event) { R = this.value; phonelit(); }
+            slider_G.oninput = function(event) { G = this.value; phonelit(); }
+            slider_B.oninput = function(event) { B = this.value; phonelit(); }
+            slider_M.oninput = function(event) { M = this.value; phonelit(); }
+            slider_Y.oninput = function(event) { Y = this.value; phonelit(); }
+            slider_C.oninput = function(event) { C = this.value; phonelit(); }
+
+            phonelit();
+        }
+
+        var phonelit = function()
+        {
+            document.body.style.backgroundColor = "rgba(" + ((R / 2) + (M / 4) + (Y / 4)) + ", " + ((G / 2) + (Y / 4) + (C / 4)) + ", " + ((B / 2) + (C / 4) + (M / 4)) + ", 1.0)";
+
+            slider_R.value = R;
+            slider_G.value = G;
+            slider_B.value = B;
+            slider_M.value = M;
+            slider_Y.value = Y;
+            slider_C.value = C;
+
+            localStorage.setItem("slider_R", R);
+            localStorage.setItem("slider_G", G);
+            localStorage.setItem("slider_B", B);
+            localStorage.setItem("slider_M", M);
+            localStorage.setItem("slider_Y", Y);
+            localStorage.setItem("slider_C", C);
+        }
+    </script>
+    <style>
+        body { background: rgba(0.0, 0.0, 0.0, 1.0); }
+        .slider { appearance: none; position: absolute; width: 95%; height: 10px; border-radius: 5px; border: 2px rgba(255.0, 255.0, 255.0, 0.7) solid; cursor: pointer; }
+        .slider::-webkit-slider-thumb { appearance: none; width: 30px; height: 30px; border-radius: 15px; border: 2px rgba(255.0, 255.0, 255.0, 0.7) solid; }
+        .slider::-moz-range-thumb { appearance: none; width: 30px; height: 30px; border-radius: 15px; border: 2px rgba(255.0, 255.0, 255.0, 0.7) solid; }
+        #slider_R { top: 40%; left: 2.5%; background: rgba(255.0, 0.0, 0.0, 1.0); box-shadow: 0 0 5px rgba(255.0, 0.0, 0.0, 1.0); }
+        #slider_G { top: 50%; left: 2.5%; background: rgba(0.0, 255.0, 0.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 255.0, 0.0, 1.0); }
+        #slider_B { top: 60%; left: 2.5%; background: rgba(0.0, 0.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 0.0, 255.0, 1.0); }
+        #slider_M { top: 70%; left: 2.5%; background: rgba(255.0, 0.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(255.0, 0.0, 255.0, 1.0); }
+        #slider_Y { top: 80%; left: 2.5%; background: rgba(255.0, 255.0, 0.0, 1.0); box-shadow: 0 0 5px rgba(255.0, 255.0, 0.0, 1.0); }
+        #slider_C { top: 90%; left: 2.5%; background: rgba(0.0, 255.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 255.0, 255.0, 1.0); }
+        #slider_R::-webkit-slider-thumb { background: rgba(255.0, 0.0, 0.0, 1.0); box-shadow: 0 0 5px rgba(255.0, 0.0, 255.0, 1.0); }
+        #slider_G::-webkit-slider-thumb { background: rgba(0.0, 255.0, 0.0, 1.0); box-shadow: 0 0 5px rgba(255.0, 255.0, 0.0, 1.0); }
+        #slider_B::-webkit-slider-thumb { background: rgba(0.0, 0.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 255.0, 255.0, 1.0); }
+        #slider_M::-webkit-slider-thumb { background: rgba(255.0, 0.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(255.0, 0.0, 0.0, 1.0); }
+        #slider_Y::-webkit-slider-thumb { background: rgba(255.0, 255.0, 0.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 255.0, 0.0, 1.0); }
+        #slider_C::-webkit-slider-thumb { background: rgba(0.0, 255.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 0.0, 255.0, 1.0); }
+        #slider_R::-moz-range-thumb { background: rgba(255.0, 0.0, 0.0, 1.0); box-shadow: 0 0 5px rgba(255.0, 0.0, 0.0, 1.0); }
+        #slider_G::-moz-range-thumb { background: rgba(0.0, 255.0, 0.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 255.0, 0.0, 1.0); }
+        #slider_B::-moz-range-thumb { background: rgba(0.0, 0.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 0.0, 255.0, 1.0); }
+        #slider_M::-moz-range-thumb { background: rgba(255.0, 0.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(255.0, 0.0, 255.0, 1.0); }
+        #slider_Y::-moz-range-thumb { background: rgba(255.0, 255.0, 0.0, 1.0); box-shadow: 0 0 5px rgba(255.0, 255.0, 0.0, 1.0); }
+        #slider_C::-moz-range-thumb { background: rgba(0.0, 255.0, 255.0, 1.0); box-shadow: 0 0 5px rgba(0.0, 255.0, 255.0, 1.0); }
+    </style>
+  </head>
+  <body>
+    <input class="slider" id="slider_R" type="range" min="0" max="255" value="0"></input>
+    <input class="slider" id="slider_G" type="range" min="0" max="255" value="0"></input>
+    <input class="slider" id="slider_B" type="range" min="0" max="255" value="0"></input>
+    <input class="slider" id="slider_M" type="range" min="0" max="255" value="0"></input>
+    <input class="slider" id="slider_Y" type="range" min="0" max="255" value="0"></input>
+    <input class="slider" id="slider_C" type="range" min="0" max="255" value="0"></input>
+  </body>
+</html>
