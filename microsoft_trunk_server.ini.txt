@@ -4,7 +4,7 @@ APU: AMD Nahasapeemapetilon (Athlon Ryzen) - Aimed/Mad
 OS: Windows Longhorn (XP Vista) - Experience/Manna
 FW: Apache Chief (Python ASF) - Based As Heck
 REPO: Git & GitHub (SIL Branch) - Silo/Sill
-VOX: Inside The Actors Studio Unchanged (IMROV ASIMO) - Improvised/Isaac Assimilation/Asimov
+VOX: Inside The Actors Studio Unchanged (IMPROV ASIMO) - Improvised/Isaac Assimilation/Asimov
 GAME: The Simpsons Hit & Run Now Loading (RAD Studio) - Radical/Radio
 ENGINE: Toon Boom Unity (Harmony Discord) - OverWatch/JusticeLeague
 MAIN: Need For Speed Underground 3 (Liberty Walkers) - BlackmailServers/CityTours
