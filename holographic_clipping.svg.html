@@ -1,0 +1,38 @@
+<script>
+var i = 0;
+var main = null;
+var interval = null;
+var refresh = function() { main.setAttribute("y", i); i += 1; if (i > 100) { i = 0; } }
+window.onload = function() { main = document.getElementById("main"); interval = setInterval("refresh();", 20); }
+</script>
+<style>
+  body { box-sizing: border-box; margin: auto; background: black; overflow: hidden; }
+  svg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
+</style>
+<svg>
+  <defs>
+    <pattern id="main" x="0.0" y="0.0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <path d="m 50 0 l 0 25 l 25 25 l 0 25 l -25 25 l 0 25" fill="none" stroke="#30F" stroke-width="2"></path>
+    </pattern>
+    <filter id="blur0"><feGaussianBlur stdDeviation="0.0"></feGaussianBlur></filter>
+    <filter id="blur1"><feGaussianBlur stdDeviation="1.0"></feGaussianBlur></filter>
+    <filter id="blur2"><feGaussianBlur stdDeviation="2.0"></feGaussianBlur></filter>
+    <filter id="blur3"><feGaussianBlur stdDeviation="3.0"></feGaussianBlur></filter>
+    <filter id="blur4"><feGaussianBlur stdDeviation="4.0"></feGaussianBlur></filter>
+    <filter id="blur5"><feGaussianBlur stdDeviation="5.0"></feGaussianBlur></filter>
+    <filter id="blur6"><feGaussianBlur stdDeviation="6.0"></feGaussianBlur></filter>
+    <filter id="blur7"><feGaussianBlur stdDeviation="7.0"></feGaussianBlur></filter>
+    <filter id="blur8"><feGaussianBlur stdDeviation="8.0"></feGaussianBlur></filter>
+    <filter id="blur9"><feGaussianBlur stdDeviation="9.0"></feGaussianBlur></filter>
+  </defs>
+  <use href="#rect" filter="url(#blur9)" transform="scale(0.91)"></use>
+  <use href="#rect" filter="url(#blur8)" transform="scale(0.92)"></use>
+  <use href="#rect" filter="url(#blur7)" transform="scale(0.93)"></use>
+  <use href="#rect" filter="url(#blur6)" transform="scale(0.94)"></use>
+  <use href="#rect" filter="url(#blur5)" transform="scale(0.95)"></use>
+  <use href="#rect" filter="url(#blur4)" transform="scale(0.96)"></use>
+  <use href="#rect" filter="url(#blur3)" transform="scale(0.97)"></use>
+  <use href="#rect" filter="url(#blur2)" transform="scale(0.98)"></use>
+  <use href="#rect" filter="url(#blur1)" transform="scale(0.99)"></use>
+  <rect id="rect" width="100%" height="100%" fill="url(#main)" filter="url(#blur0)"></rect>  
+</svg>
