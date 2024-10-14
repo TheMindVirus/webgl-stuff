@@ -1,0 +1,57 @@
+<title>aural_psynapse.txt.svg.html</title>
+<script>
+var i = -1;
+var mode = 0;
+var modes = 4;
+var main = null;
+var velocity = 1;
+var frequency = 0;
+var direction = 0;
+var interval = null;
+var chroma1 = "#007"; //"#F03";
+var chroma2 = "#FFF"; //"#0FF"; 
+var modeswitch = function(x, y = 0, z = -1) { if (z == -1) { z = mode; } if (z == 0) { if (x == 0) { return "main1"; } if (x == 1) { return y; } if (x == 2) { return velocity; } if (x == 3) { return "url(#main1)"; } if (x == 4) { return main1.children[0]; } } if (z == 1) { if (x == 0) { return "main1"; } if (x == 1) { return 100 - y; } if (x == 2) { return velocity; } if (x == 3) { return "url(#main1)"; } if (x == 4) { return main1.children[0]; } } if (z == 2) { if (x == 0) { return "main2"; } if (x == 1) { return y; } if (x == 2) { return velocity * 5; } if (x == 3) { return "url(#main2)"; } if (x == 4) { return main2.children[0]; } } if (z == 3) { if (x == 0) { return "main2"; } if (x == 1) { return 100 - y; } if (x == 2) { return velocity * 5; } if (x == 3) { return "url(#main2)"; } if (x == 4) { return main2.children[0]; } } }
+var refresh = function() { main.setAttribute("y", modeswitch(1, i)); i += modeswitch(2); if (i >= 100) { i = 0; } }
+window.onload = function() { main = document.getElementById(modeswitch(0)); rect = document.getElementById("rect"); rect.setAttribute("fill", modeswitch(3)); if (i == -1) { i = 0; modeswitch(4, 0, 1).setAttribute("stroke", chroma1); modeswitch(4, 0, 3).setAttribute("stroke", chroma2); } interval = setInterval("refresh();", 20); }
+document.onkeydown = function(event) { if (event.key == "ArrowLeft") { frequency = 0; } if (event.key == "ArrowRight") { frequency = 1; } if (event.key == "ArrowDown") { if (direction == 1) { i = 100 - i; i %= 100; } direction = 0; } if (event.key == "ArrowUp") { if (direction == 0) { i = 100 - i; i %= 100; } direction = 1; } mode = (frequency * 2) + direction; if (event.key == " ") { if (velocity == 1) { velocity = 5; } else { velocity = 1; } } if (event.key == "Enter") { modeswitch(4).setAttribute("stroke", (modeswitch(4).getAttribute("stroke") == chroma1) ? chroma2 : chroma1); } clearInterval(interval); window.onload(); }
+//!!!FAILSAFE!!!//
+//var modeswitch = function(x, y = 0) { return 0; }
+//var refresh = function() { main.setAttribute("y", i); i += 1; if (i > 100) { i = 0; } }
+//window.onload = function() { main = document.getElementById("main1"); interval = setInterval("refresh();", 20); }
+//document.onkeydown = function(event) { if (event.key == "ArrowLeft") { mode -= 1; if (mode < 0) { mode = modes - 1; } } if (event.key == "ArrowRight") { mode += 1; if (mode >= modes) { mode = 0; } } clearInterval(interval); window.onload(); }
+//!!!FAILSAFE!!!//
+</script>
+<style>
+  body { box-sizing: border-box; margin: auto; background: black; overflow: hidden; }
+  svg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
+</style>
+<svg>
+  <defs>
+    <pattern id="main1" x="0.0" y="0.0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <path d="m 0 0 l 0 25 l 25 25 l 0 25 l -25 25 l 0 25" fill="none" stroke="#F03" stroke-width="2"></path>
+    </pattern>
+    <pattern id="main2" x="0.0" y="0.0" width="25" height="100" patternUnits="userSpaceOnUse">
+      <path d="m 0 0 l 0 25 l 5 25 l 0 25 l -5 25 l 0 25" fill="none" stroke="#FFF" stroke-width="2"></path>
+    </pattern>
+    <filter id="blur0"><feGaussianBlur stdDeviation="0.0"></feGaussianBlur></filter>
+    <filter id="blur1"><feGaussianBlur stdDeviation="2.0"></feGaussianBlur></filter>
+    <filter id="blur2"><feGaussianBlur stdDeviation="4.0"></feGaussianBlur></filter>
+    <filter id="blur3"><feGaussianBlur stdDeviation="6.0"></feGaussianBlur></filter>
+    <filter id="blur4"><feGaussianBlur stdDeviation="8.0"></feGaussianBlur></filter>
+    <filter id="blur5"><feGaussianBlur stdDeviation="10.0"></feGaussianBlur></filter>
+    <filter id="blur6"><feGaussianBlur stdDeviation="12.0"></feGaussianBlur></filter>
+    <filter id="blur7"><feGaussianBlur stdDeviation="14.0"></feGaussianBlur></filter>
+    <filter id="blur8"><feGaussianBlur stdDeviation="16.0"></feGaussianBlur></filter>
+    <filter id="blur9"><feGaussianBlur stdDeviation="18.0"></feGaussianBlur></filter>
+  </defs>
+  <use href="#rect" filter="url(#blur9)" transform="scale(0.91)"></use>
+  <use href="#rect" filter="url(#blur8)" transform="scale(0.92)"></use>
+  <use href="#rect" filter="url(#blur7)" transform="scale(0.93)"></use>
+  <use href="#rect" filter="url(#blur6)" transform="scale(0.94)"></use>
+  <use href="#rect" filter="url(#blur5)" transform="scale(0.95)"></use>
+  <use href="#rect" filter="url(#blur4)" transform="scale(0.96)"></use>
+  <use href="#rect" filter="url(#blur3)" transform="scale(0.97)"></use>
+  <use href="#rect" filter="url(#blur2)" transform="scale(0.98)"></use>
+  <use href="#rect" filter="url(#blur1)" transform="scale(0.99)"></use>
+  <rect id="rect" width="100%" height="100%" fill="url(#main1)" filter="url(#blur0)"></rect>  
+</svg>
