@@ -1,0 +1,346 @@
+<title>crosstalk_emulator</title>
+<!--Talk Amongst Yourselves...-->
+<script>
+var tau = 2.0 * Math.PI;
+
+var rotor = function(speed = 0.01, phase = 0.00, limit = 1.00, scale = 1.00, offset = 10.0)
+{
+    var self = {};
+    self.speed = speed;
+    self.phase = phase;
+    self.limit = limit;
+    self.scale = scale;
+    self.offset = offset;
+    return self;
+}
+
+var define_rotors = function(count = 1)
+{
+    rotors = [];
+    for (var i = 0; i < count; ++i)
+    {
+        rotors.push(rotor());
+    }
+}
+
+window.onload = function()
+{
+    overlay = document.getElementById("overlay");
+    screen = document.getElementById("screen");
+    underlay = document.getElementById("underlay");
+    overlays = [overlay];
+    underlays = [underlay];
+
+    ctx = screen.getContext("2d");
+    define_rotors(6);
+    window.onresize();
+    setInterval(refresh, 0);
+}
+
+window.onresize = function()
+{
+    style = window.getComputedStyle(screen);
+    w = screen.width = parseFloat(style.width);
+    h = screen.height = parseFloat(style.height);
+    r = 300; a = w / h; hw = w / 2; hh = h / 2;
+    x = hw; y = hh; z = 0; qw = w / 8; qh = h / 8;
+    overlays = resize_layers(overlays);
+    underlays = resize_layers(underlays);
+}
+
+var clear_screen = function()
+{
+    screen.width = screen.width;
+    resize_layers(overlays);
+    resize_layers(underlays);
+}
+
+var clear_layers = function(layers, element)
+{
+    layers = [element];
+    element.innerHTML = "";
+    return layers;
+}
+
+var add_layers = function(layers, layer = 1)
+{
+    for (var i = layers.length; i <= layer; ++i)
+    {
+        var element = document.createElement("canvas");
+        element.className = layers[0].id;
+        element.width = w;
+        element.height = h;
+        layers[0].appendChild(element);
+        layers.push(element);
+    }
+    return layers;
+}
+
+var resize_layers = function(layers)
+{
+    for (var i = 1; i < layers.length; ++i)
+    {
+        if (layers[i].getAttribute("manual") == "true") { console.log(layers[i].getAttribute("manual")); continue; }
+        layers[i].width = w;
+        layers[i].height = h;
+    }
+    return layers;
+}
+
+var draw_rotor = function(radius = 0, phase = 0, offset = 0, breadth = 6, invert = 0, chroma = "#00FFFF")
+{
+    phase -= 0.25;
+    phase *= tau;
+    offset /= radius;
+    ctx.strokeStyle = chroma;
+    ctx.lineWidth = breadth;
+    ctx.shadowColor = ctx.strokeStyle;
+    ctx.shadowBlur = ctx.lineWidth;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.arc(hw, hh, radius, offset + phase, phase - offset, invert);
+    ctx.stroke();
+}
+
+var draw_styroid = function(layer = 1, x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0, breadth = 6, chroma = "#FF0077")
+{
+    var ocanvas = 0;
+    if (layer == 0) { return; }
+    if (layer > 0) { overlays = add_layers(overlays, layer); ocanvas = overlays[layer]; }
+    else { layer = Math.abs(layer); underlays = add_layers(underlays, layer); ocanvas = underlays[layer]; }
+    ocanvas.setAttribute("manual", (layer > 0) ? "false" : "true");
+    var octx = ocanvas.getContext("2d");
+    octx.strokeStyle = chroma;
+    octx.lineWidth = breadth;
+    octx.lineCap = "round";
+    octx.shadowColor = octx.strokeStyle;
+    octx.shadowBlur = octx.lineWidth;
+    octx.beginPath();
+    octx.moveTo(hw + (x1), hh + (y1));
+    octx.lineTo(hw + (x2), hh + (y2));
+    octx.stroke();
+}
+
+var draw_trace = function(layer = 1, phase = 0, level = 0, limit = 1, radius = 1, chroma = "#FFFF00")
+{
+    level /= (limit * 2);
+    var ucanvas = 0;
+    if (layer == 0) { return; }
+    if (layer > 0) { underlays = add_layers(underlays, layer); ucanvas = underlays[layer]; }
+    else { layer = Math.abs(layer); overlays = add_layers(overlays, layer); ucanvas = overlays[layer]; }
+    ucanvas.setAttribute("manual", (layer > 0) ? "true" : "false");
+    var uctx = ucanvas.getContext("2d");
+    if (phase < 0.01) { ucanvas.width = ucanvas.width; }
+    uctx.fillStyle = chroma;
+    uctx.beginPath();
+    uctx.arc(w * phase, hh - h * level, radius, 0, tau);
+    uctx.fill();
+}
+
+var calculate_pos = function(idx1 = 0, phase1 = 0, idx2 = 0, phase2 = 0)
+{
+    var pos = { x1: 0, y1: 0, x2: 0, y2: 0 };
+    pos.x1 = Math.sin(phase1 * tau) * rotors[idx1].scale;
+    pos.y1 = Math.cos(phase1 * tau) * rotors[idx1].scale * -1.0;
+    pos.x2 = Math.sin(phase2 * tau) * rotors[idx2].scale;
+    pos.y2 = Math.cos(phase2 * tau) * rotors[idx2].scale * -1.0;
+    return pos;
+}
+
+var calculate_length = function(x1 = 0, y1 = 0, x2 = 0, y2 = 0)
+{
+    return Math.sqrt(Math.pow(Math.abs(x2 - x1), 2) + Math.pow(Math.abs(y2 - y1), 2));
+}
+
+var set_physics = function()
+{
+    rotors[1].offset = 0.001;
+    rotors[0].scale = 300.0;
+    rotors[1].scale = rotors[0].scale * (5/6);
+    rotors[2].scale = rotors[0].scale * (4/6);
+    rotors[3].scale = rotors[0].scale * (3/6);
+    rotors[4].scale = rotors[0].scale * (2/6);
+    rotors[5].scale = rotors[0].scale * (1/6);
+    rotors[0].speed = 0.001;
+    rotors[1].speed = 0.000;
+    rotors[2].speed = -0.001;
+    rotors[3].speed = 0.002;
+    rotors[4].speed = 0.004;
+    rotors[5].speed = 0.006;
+}
+
+var roll_counters = function()
+{
+    for (var i = 0; i < rotors.length; ++i)
+    {
+        rotors[i].phase += rotors[i].speed;
+        rotors[i].phase %= rotors[i].limit;
+    }
+}
+
+var draw_rotors = function()
+{
+    for (var i = 0; i < rotors.length; ++i)
+    {
+        draw_rotor(rotors[i].scale, rotors[i].phase, rotors[i].offset);
+    }
+}
+
+var draw_styroids = function()
+{
+    var pos = calculate_pos(5, rotors[5].phase, 0);
+    draw_styroid(1, 0, 0, pos.x1, pos.y1);
+
+    var phases = [];
+    var n_phases = 6;
+    var inc = 1.0 / n_phases;
+    for (var i = 0; i < n_phases; ++i)
+    {
+        pos = calculate_pos(1, rotors[1].phase + inc * (i + 1), 0, rotors[0].phase + inc * (i + 1));
+        draw_styroid(2, pos.x1, pos.y1, pos.x2, pos.y2, 3);
+        pos = calculate_pos(1, rotors[1].phase + inc * (i + 1), 2, rotors[2].phase + inc * (i + 1));
+        draw_styroid(2, pos.x1, pos.y1, pos.x2, pos.y2, 3);
+        pos = calculate_pos(0, rotors[0].phase + inc * (i + 1), 0, rotors[0].phase + inc * (i + 1));
+        draw_styroid(2, pos.x1, -hh, pos.x2, pos.y2, 1, "#7700FF");
+        for (var j = 0; j < rotors.length; ++j)
+        {
+            pos = calculate_pos(0, rotors[j].phase + inc * (i + 1), 0, rotors[j].phase + inc * (i + 1));
+            draw_styroid(-3, pos.x1, pos.y1 + qh, pos.x2, pos.y2 + qh + 35);
+        }
+    }
+
+    pos = calculate_pos(3, rotors[3].phase, 4, rotors[4].phase);
+    draw_styroid(3, pos.x1, pos.y1, pos.x2, pos.y2);
+}
+
+var draw_traces = function()
+{
+    var pos = calculate_pos(3, rotors[3].phase, 4, rotors[4].phase);
+    var length = calculate_length(pos.x1, pos.y1, pos.x2, pos.y2);
+    draw_trace(1, rotors[3].phase, pos.x1, 255, 1, "#FFFF00");
+    draw_trace(1, rotors[3].phase, pos.y1, 255, 1, "#00FF00");
+    draw_trace(1, rotors[3].phase, pos.x2, 255, 1, "#00FFFF");
+    draw_trace(1, rotors[3].phase, pos.y2, 255, 1, "#0000FF");
+    draw_trace(2, rotors[0].phase, length, 255, 1, "#FF0077");
+}
+
+var refresh = function()
+{
+    clear_screen();
+    set_physics();
+    roll_counters();
+    draw_rotors();
+    draw_styroids();
+    draw_traces();
+}
+
+document.onmouseup   = function(event) { z = 0; document.onmousemove(event); }
+document.onmousedown = function(event) { z = 1; document.onmousemove(event); }
+document.onmousemove = function(event) { if (z) { x = event.clientX; y = event.clientY; } }
+
+</script>
+<style>
+ * { box-sizing: border-box; margin: auto; font-family: sans-serif; overflow: hidden; background: black; z-index: 0; }
+ .underlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: none; z-index: 1; }
+ #screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: none; z-index: 2; }
+ .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: none; z-index: 3; }
+</style>
+<div id="underlay"></div>
+<canvas id="screen"></canvas>
+<div id="overlay"></div>
+
+<!--
+[camera_lenses]
+* 3 rotors, middle rotor is a stator, stator is RAM, 2 rotors are CRAM / CREM - crosstalk emulator
+* 2 rotors, cascade configuration, half phase, position 1 has talked to position 2 - cipher scrambler
+* 1 rotor, RAM stick program counter spinning to connect multiple external inward laser probes - program counter
+
+[glados_rotors]
+Rotor1: Strings (Texts)
+Rotor2: Streams (Clips)
+Rotor3: Sources (Feeds)
+Rotor4: Signals (Memes)
+
+Rotor5: Sequels (Reels)
+
+Rotor6: Structs (Cores)
+
+[metadata_tags]
+| ___ | ___ | ___ | ___ | MD4 | MD5 | ___ | ___ | ___ | ___ | - toggled
+| ___ | ___ | ___ | ID3 | ___ | ___ | ___ | ___ | ___ | ___ | - tracked
+| ___ | MP1 | MP2 | MP3 | MP4 | ___ | ___ | ___ | ___ | ___ | - ordered
+| ___ | ___ | ___ | ___ | ___ | ___ | ___ | ___ | HI8 | ___ | - delayed
+| ___ | TM1 | ___ | TM3 | ___ | TM5 | TM6 | TM7 | TM8 | TM9 | - sampled
+| HM0 | ___ | ___ | ___ | ___ | HM5 | ___ | ___ | ___ | ___ | - doubled
+
+Rotor7: Systems (Tasks)
+Rotor8: Scripts (Codes)
+Rotor9: Sherpas (Lands)
+
+[tardis_parts]
+absence, aesthetics, context, tunnel, shell, resolve, spiral, priority, config, canvas,
+storage, capacitor, laser, hypocule, hypercule, drifter, actuator, synth, locks, vitals,
+readings, snacks, chroma, scissor, omnibus, mask, pod, resonator, bulb, watch, orrery,
+rift, bell, root, comparator, computer, relay, geometry, profiler, stabiliser, looper,
+shield, status, blocker, arbiter, stator, kiro, router, motor, clutch, driver, differential,
+entropy, booster, protocol, styroid, ward, wiki, extractor, meridian, silo, accumulator, locator,
+burster, logger, linker, joiner, aggregator, flexer, vendor, defibrilator, gauge, thread, dominion,
+scrambler, compensator, gyro, brakes, kernel, regulator, antenna, hologram, probe, radar, translator,
+scanline, flaps, conductor, interface, printer, valve, dispenser, tachometer, balance, level, search,
+overdrive, beacon, transceiver, trigger, condenser, lenacitor, concealer, transporter, cycler, modulator,
+monitor, feedback, navigator, guide, filter, reverb, portal, plasma, photon, alcove, procyon, geiger,
+randomiser, globe, ordinal, abstractor, delegator, operator, replicator, reset, surfel, weaver,
+locker, ender, projector, seismics, shaver, oscillator, array, scheduler, throttle, spacer,
+input, alarm, nucleus, collimator, circuit, fluidics, console, reef, teletype, engine, firewall,
+forcefield, dowser, browser, keys, zone, scripture, magnet, matrix, cell, orientation, scanner,
+disruptor, phone, tracer, selector, buffer, controller, fissure, state, stasis, velocity,
+thermals, heatmap, fader, distro, dime, dilator, freezer, maze, chevron, phaser, rotor, halt,
+vault, vector, tractor, transponder, tremolo, extrapolator, endpoint, interpolator, vox, hype,
+vortex, typhoon, warp, silo, lever, refractor, crystal
+
+[GCHQgchqJVjv]
+RotorA: StringV (XText)
+RotorB: StreamV (XClip)
+RotorC: SourceV (XFeed)
+
+RotorD: SignalV (XMeme)
+RotorE: SequelV (XReel)
+RotorF: StructV (XCore)
+
+RotorG: SystemV (XTask)
+RotorH: ScriptV (XCode)
+RotorI: SherpaV (XLand)
+
+RotorJ: SitcomV (XSits)
+RotorK: SetcomV (XSets)
+RotorL: SatcomV (XSats)
+
+RotorM: OuterV (XActs)
+RotorN: InnerV (XCise)
+
+RotorO: OperaV (XYOps)
+RotorP: PowerV (XYGen)
+
+RotorQ: AuthorV (XBeam)
+RotorR: ReaderV (XScan)
+
+RotorS: SynthV (XSimu)
+RotorT: TechV (XYEmu)
+RotorU: UniV (XYZIn)
+
+RotorV: DesignV (XPlan)
+RotorW: ScalerV (XGrid)
+
+RotorX: PannerV (XPans)
+RotorY: RotateV (XTilt)
+RotorZ: KilterV (XZoom)
+
+[ceiling_fans]
+>>> Aggregator Feeds - Multiple Converging Optical Fibre Conduits
+>>> Articulator Lens - Multiple Variable Disk Stack Phase Quadrature Control
+>>> Cascade Aperture - Multiple Velocity Limited Slip Differential Program Counter
+>>> Cylindrical Fans - Multiple Hollow Upright Directional Contraflow Turbine Tower Coolers
+>>> Ceiling Mounting - Multiple Chain Hoist Arms Facing Varied Directions Lifting Heavy Structures
+??? Regulator-Dendron Mass-Production Self-Stabilising Multi-Actuator Tower-Oscillator Quantum-Megadrone
+!!! Industry-Standard High-Capacity Load-Balancing Multi-Platform Ladder-Filtered Content-Generator Relay-Service
+-->
