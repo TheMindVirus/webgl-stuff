@@ -1,0 +1,160 @@
+<title>Backdrop</title>
+<script>
+var button = null;
+var backdrop = null;
+var switch_timeout = 0;
+var stop_timeout = 0;
+
+window.onload = function()
+{
+    button = document.getElementById("button");
+    backdrop = document.getElementById("backdrop");
+    button.onclick = function(event) { play(event); }
+}
+
+var Operator = function(event)
+{
+    var self = {};
+    self.data = [];
+    self.states = [];
+    self.call = function(call) { self._call = call; return self; }
+    self.info = function(info) { self._info = info; return self; }
+    self.warn = function(warn) { self._warn = warn; return self; }
+    self._call = function(orden) { console.log("Operator_call:", orden); return self; }
+    self._info = function(orden) { console.log("Operator_info:", orden); return self; }
+    self._warn = function(error) { console.log("Operator_warn:", error); return self; }
+    self.run = function(on) { try { self._call(self); self._info(on); } catch(error) { self.raise(error); }; return self; }
+    self.defer = function(on) { try { self._call(self); } catch(error) { self.raise(error); }; return self; }
+    self.signal = function(on) { try { self._info(on); } catch(error) { self.raise(error); }; return self; }
+    self.wait = function(on) { self.states = []; for (var i = 0; i < on; ++i) { self.states.push(0); } return self; }    
+    self.yield = function(orden) { if (orden != null) { orden.signal(orden); } return self; }
+    self.raise = function(error) { self._warn(new Error(error)); return self; }
+    if (event != null) { self.call(event); }
+    else { self.call(self._call); }
+    return self;
+}
+
+var displayMediaOptions = 
+{
+    video: { displaySurface: "window", },
+}
+
+var start_capture = function(event)
+{
+    event.data.message = "start";
+    button.style.display = "none";
+    //Operator().raise("Something Happened");
+    Operator(function(call)
+    {
+        var controller = new CaptureController();
+        displayMediaOptions.controller = controller;
+        displayMediaOptions.controller.setFocusBehavior("no-focus-change");
+        navigator.mediaDevices.getDisplayMedia(displayMediaOptions)
+        .then(function(data) { call.signal(data); })
+        .catch(function(error) { call.raise(error); });
+    }).info(function(data)
+    {
+        data.oninactive = function() { stop_capture(event); }
+        event.data.element.srcObject = data;
+        event.data.element.play();
+        console.log("start");
+        Operator().yield(event);
+    }).warn(function(error) { console.log(error); button.style.display = ""; }).defer();
+}
+
+var switch_capture = function(event)
+{
+    event.data.message = "switch";
+
+    var A = Operator();
+    var B = Operator();
+    var C = Operator();
+
+    A.info(function(data) { console.log("YieldA"); C.states[0] = 1; C.defer(); });
+    B.info(function(data) { console.log("YieldB"); C.states[1] = 1; C.defer(); });
+    C.wait(2).call(function(context)
+    {
+        var count = 0;
+        for (var i = 0; i < context.states.length; ++i)
+        {
+            if (context.states[i] != 0) { count += 1; }
+        }
+        if (count == context.states.length) { C.signal("ready"); }
+    }).info(function(data) { if (data == "ready") { console.log("switch"); } });
+
+    var stream = event.data.element.srcObject;
+    var tracks = stream.getTracks();
+    tracks.forEach(function(track)
+    {
+        console.log(track);
+        var prev = track.getConstraints();
+        console.log("prev", prev);
+        curr = prev;
+        curr.cursor = "never";
+        curr.displaySurface = "monitor";
+        //curr.windowTitle = "Backdrop";
+        //curr.windowInstance = 0;
+        console.log("curr", curr);
+
+        console.log(track.getSettings().displaySurface);
+        console.log(track.getSettings().deviceId);
+
+        track.getSettings().displaySurface = "window";
+        track.getSettings().deviceId = "window:0:0";
+
+        console.log(track.getSettings().displaySurface);
+        console.log(track.getSettings().deviceId);
+
+        track.applyConstraints(curr).then(function() { setTimeout(function() { Operator().yield(A); }, 1000); });
+        track.applyConstraints(prev).then(function() { Operator().yield(B); });
+    });
+}
+
+var stop_capture = function(event)
+{
+    event.data.message = "stop";
+    Operator(function(call)
+    {
+        clearTimeout(switch_timeout);
+        clearTimeout(stop_timeout);
+        event.data.element.srcObject.oninactive = null;
+        var tracks = event.data.element.srcObject.getTracks();
+        tracks.forEach(function(track) { track.stop(); });
+        event.data.element.srcObject = null;
+        button.style.display = "";
+        console.log("stop");
+        Operator().yield(event);
+    }).warn(function(error) { Operator().raise(error); }).defer();
+}
+
+var play = function(event)
+{
+    var context = null;
+    Operator(function(self) { context = self; context.data.element = backdrop; start_capture(context); })
+    .info(function(self)
+    {
+        if (self.data.message == "start")
+        {
+            clearTimeout(switch_timeout);
+            clearTimeout(stop_timeout);
+            switch_timeout = setTimeout(function() { switch_capture(context); }, 5000);
+            stop_timeout = setTimeout(function() { stop_capture(context); }, 10000);
+        }
+    }).warn(function(error) { console.log(error); }).defer();
+}
+</script>
+<style>
+  * { box-sizing: border-box; margin: auto; font-family: sans-serif; overflow: hidden; color-scheme: dark; background: black; color: cyan; }
+  [fullscreen] { position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
+  [blur] { backdrop-filter: blur(3px); image-rendering: pixelated; }
+  [border] { border: thin blue solid; }
+  #backdrop { object-fit: cover; }
+  #button { background: black; color: cyan; font-size: 100pt; z-index: 9999999; border: none; }
+  .filter { position: fixed; background: #00000077; }
+</style>
+<button fullscreen id="button">Play</button>
+<video fullscreen id="backdrop"></video>
+<div blur class="filter" style="top: 0; left: 300px; width: 300px; height: 300px;"></div>
+<div blur class="filter" style="top: 0; right: 300px; width: 300px; height: 300px;"></div>
+<div border class="filter" style="top: 0; left: 300px; width: 300px; height: 300px;"></div>
+<div border class="filter" style="top: 0; right: 300px; width: 300px; height: 300px;"></div>
