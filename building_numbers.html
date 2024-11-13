@@ -1,0 +1,199 @@
+<title>building_numbers</title>
+<script>
+window.onload = function(event)
+{
+    draw_gridbox();
+    window.onresize();
+    xpos = 0; ypos = 0; zpos = 0;
+}
+
+window.onresize = function(event)
+{
+    push_contents();
+    draw_gridbox();
+    pop_contents();
+    draw_gridwire();
+}
+
+var draw_gridbox = function()
+{
+    var gridbox = document.getElementById("gridbox");
+    gridbox.innerHTML = "";
+    var data = '';
+    data += '<rect x="calc(50% - 150px)" y="calc(50% - 150px)" ';
+    data += 'width="300" height="300" stroke="#0FF" stroke-width="6"></rect>';
+    for (var y = 0; y < 10; ++y)
+    {
+        for (var x = 0; x < 10; ++x)
+        {
+            data += '<rect id="grid-' + x + '-' + y + '" ';
+            data += 'x="calc(50% - 150px + 3px + ' + (x * 30) + 'px)" ';
+            data += 'y="calc(50% - 150px + 3px + ' + (y * 30) + 'px)" ';
+            data += 'width="24" height="24" fill="#003"></rect>';
+            data += '<text id="text-' + x + '-' + y + '" ';
+            //data += 'x="calc(50% - 150px)" '; // + 3px + ' + (x * 30) + 'px)" ';
+            //data += 'y="calc(50% - 150px)" '; // + 3px + ' + (y * 30) + 'px)" ';
+            data += 'x="50%" y="50%" transform="translate(' + (-150 + 3 + 6 + (x * 30));
+            data += ', ' + (-150 + 3 + 7 + 11 + (y * 30)) + ')" ';
+            data += 'fill="#FFF" font-weight="bold">_</text>';
+        }
+    }
+    gridbox.innerHTML += data;
+}
+/*
+var draw_gridwire = function()
+{
+    var gridwire = document.getElementById("gridwire");
+    gridwire.innerHTML = "";
+    var data = '';
+    for (var y1 = 0; y1 < 10; ++y1)
+    {
+        for (var x1 = 0; x1 < 10; ++x1)
+        {
+            for (var y2 = 0; y2 < 10; ++y2)
+            {
+                for (var x2 = 0; x2 < 10; ++x2)
+                {
+                    var a = document.getElementById("text-" + x1 + "-" + y1).innerHTML;
+                    var b = document.getElementById("text-" + x2 + "-" + y2).innerHTML;
+                    if ((a == "_") || (b == "_")) { continue; }
+                    if (a == b)
+                    {
+                        data += '<line id="line-' + x1 + '-' + y1 + '-' + x2 + '-' + y2 + '" ';
+                        data += 'x1="calc(50% - 150px + 3px + 12px + ' + (x1 * 30) + 'px)" ';
+                        data += 'y1="calc(50% - 150px + 3px + 12px + ' + (y1 * 30) + 'px)" ';
+                        data += 'x2="calc(50% - 150px + 3px + 12px + ' + (x2 * 30) + 'px)" ';
+                        data += 'y2="calc(50% - 150px + 3px + 12px + ' + (y2 * 30) + 'px)" ';
+                        data += 'stroke="#F06"></line>';
+                    }
+                }
+            }
+        }
+    }
+    gridwire.innerHTML += data;
+}
+*//*
+var draw_gridwire = function()
+{
+    var gridwire = document.getElementById("gridwire");
+    gridwire.innerHTML = "";
+    var data = '';
+    var x1 = 0;
+    var y1 = 0;
+    for (var i = 0; i < 100; ++i)
+    {
+        var x2 = 10 - 1;
+        var y2 = 10 - 1;
+        var found = 0;
+        for (var j = 100 - 1; j >= 0; --j)
+        {
+            var skip = 0;
+            var a = document.getElementById("text-" + x1 + "-" + y1).innerHTML;
+            var b = document.getElementById("text-" + x2 + "-" + y2).innerHTML;
+            if ((a == "_") || (b == "_")) { skip = 1; } // { continue; }
+            if ((a == b) && (found == 0) && (skip == 0))
+            {
+                data += '<line id="line-' + x1 + '-' + y1 + '-' + x2 + '-' + y2 + '" ';
+                data += 'x1="calc(50% - 150px + 3px + 12px + ' + (x1 * 30) + 'px)" ';
+                data += 'y1="calc(50% - 150px + 3px + 12px + ' + (y1 * 30) + 'px)" ';
+                data += 'x2="calc(50% - 150px + 3px + 12px + ' + (x2 * 30) + 'px)" ';
+                data += 'y2="calc(50% - 150px + 3px + 12px + ' + (y2 * 30) + 'px)" ';
+                data += 'stroke="#F06"></line>';
+                found = 1;
+            }
+            --x2; if (x2 < 0) { x2 = 10 - 1; --y2; if (y2 < 0) { y2 = 10 - 1; } }
+        }
+        ++x1; if (x1 >= 10) { x1 = 0; ++y1; if (y1 >= 10) { y1 = 0; } }
+    }
+    gridwire.innerHTML += data;
+}
+*/
+var draw_gridwire = function()
+{
+    var gridwire = document.getElementById("gridwire");
+    gridwire.innerHTML = "";
+    var data = '';
+    for (var i = 0; i < 100; ++i)
+    {
+        var x1 = parseInt(i % 10);
+        var y1 = parseInt(i / 10);
+        var found = 0;
+        for (var j = i; j < 100; ++j)
+        {
+            var x2 = parseInt(j % 10);
+            var y2 = parseInt(j / 10);
+            var skip = 0;
+            var a = document.getElementById("text-" + x1 + "-" + y1).innerHTML;
+            var b = document.getElementById("text-" + x2 + "-" + y2).innerHTML;
+            var c = document.getElementById("line-" + x1 + "-" + y1 + "-" + x2 + "-" + y2);
+            if ((c != null) || ((x1 == x2) && (y1 == y2))) { c = "_"; }
+            if ((a == "_") || (b == "_") || (c == "_")) { skip = 1; } // { continue; }
+            if ((a == b) && (found == 0) && (skip == 0))
+            {
+                data += '<line id="line-' + x1 + '-' + y1 + '-' + x2 + '-' + y2 + '" ';
+                data += 'x1="calc(50% - 150px + 3px + 12px + ' + (x1 * 30) + 'px)" ';
+                data += 'y1="calc(50% - 150px + 3px + 12px + ' + (y1 * 30) + 'px)" ';
+                data += 'x2="calc(50% - 150px + 3px + 12px + ' + (x2 * 30) + 'px)" ';
+                data += 'y2="calc(50% - 150px + 3px + 12px + ' + (y2 * 30) + 'px)" ';
+                data += 'stroke="#F06"></line>';
+                found = 1;
+            }
+        }
+    }
+    gridwire.innerHTML += data;
+}
+
+var contents = [];
+
+var push_contents = function()
+{
+    for (var i = 0; i < 100; ++i)
+    {
+        var x = parseInt(i % 10);
+        var y = parseInt(i / 10);
+        contents[i] = document.getElementById("text-" + x + "-" + y).innerHTML;
+    }
+}
+
+var pop_contents = function()
+{
+    for (var i = 0; i < 100; ++i)
+    {
+        var x = parseInt(i % 10);
+        var y = parseInt(i / 10);
+        document.getElementById("text-" + x + "-" + y).innerHTML = contents[i];
+    }
+}
+
+var process_key = function(event)
+{
+    var key = event.key; if (key == " ") { key = "_"; }
+    var data = '';
+    data += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    data += 'abcdefghijklmnopqrstuvwxyz';
+    data += '0123456789';
+    data += '-=!"£$%^&*_+';
+    data += '(){}[];:\\\'@#';
+    data += '~,./<>?|`¬¦';
+    if ((data.indexOf(key)) < 0) { return; }
+    if (zpos == 0) { document.getElementById("text-" + xpos + "-" + ypos).innerHTML = key; }
+    ++xpos; if (xpos >= 10) { xpos = 0; ++ypos; if (ypos >= 10) { ypos = 0; } } // zpos = 1; } }
+}
+
+document.onkeydown = function(event)
+{
+    process_key(event);
+    draw_gridwire();
+    //alert(event.key);
+    //window.onresize();
+}
+</script>
+<style>
+ * { box-sizing: border-box; margin: auto; font-family: sans-serif; overflow: hidden; }
+ #svg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; user-select: none; }
+</style>
+<svg id="svg">
+  <rect x="0" y="0" width="100%" height="100%" fill="#000"></rect>
+  <g id="gridbox"></g><g id="gridwire"></g>
+</svg>
+<!--teledyne le-cray ola-->
