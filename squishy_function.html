@@ -1,0 +1,135 @@
+<!--unrivalled--><title>squishy_function</title><!--unravelled-->
+<script>
+
+window.onload = function()
+{
+    canvas = document.createElement("canvas");
+    document.body.style = "background: black;";
+    document.body.appendChild(canvas);
+    canvas.setAttribute("id", "canvas");
+    canvas.style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%;";
+    ctx = canvas.getContext("2d");
+    tau = 2 * Math.PI;
+    window.onresize();
+}
+
+window.onresize = function()
+{
+    var style = window.getComputedStyle(canvas);
+    w = canvas.width = parseFloat(style.width);
+    h = canvas.height = parseFloat(style.height);
+    hw = w/2; hh = h/2; qw = hw/2; qh = hh/2;
+    tw = qw + hw; th = qh + hh;
+    ew = qw/2; eh = qh/2;
+    render();
+}
+
+var ctx_sag = function
+(
+    x1, y1, x2, y2, r, swab = 0.1, fill = 1, stroke = 0,
+    startAngle = 0, endAngle = tau, invert = 0,
+    steps = 1000)
+{
+    ctx.beginPath();
+    for (var i = 0; i < steps; ++i)
+    {
+        var inc = i / steps;
+        var mid = (inc * 2) - 1;
+        var xdiff = x1 + ((x2 - x1) * inc);
+        var ydiff = y1 + ((y2 - y1) * inc);
+        var rswab = r * Math.sqrt(Math.abs(mid * mid) + swab);
+        ctx.arc(xdiff, ydiff, rswab, startAngle, endAngle, invert);
+    }
+    if (fill) { ctx.fill(); }
+    if (stroke) { ctx.stroke(); }
+}
+
+var ctx_pinch = function
+(
+    x1, y1, x2, y2, r, swab = 0.1, fill = 1, stroke = 0,
+    startAngle = 0, endAngle = tau, invert = 0,
+    steps = 1000)
+{
+    ctx.beginPath();
+    for (var i = 0; i < steps; ++i)
+    {
+        var inc = i / steps;
+        var mid = (inc * 2) - 1;
+        var xdiff = x1 + ((x2 - x1) * inc);
+        var ydiff = y1 + ((y2 - y1) * inc);
+        var rswab = r * ((Math.sin(mid * mid) * swab) + (1 - swab));
+        ctx.arc(xdiff, ydiff, rswab, startAngle, endAngle, invert);
+    }
+    if (fill) { ctx.fill(); }
+    if (stroke) { ctx.stroke(); }
+}
+
+var ctx_bulge = function
+(
+    x1, y1, x2, y2, r, swab = 0.1, fill = 1, stroke = 0,
+    startAngle = 0, endAngle = tau, invert = 0,
+    steps = 1000)
+{
+    ctx.beginPath();
+    for (var i = 0; i < steps; ++i)
+    {
+        var inc = i / steps;
+        var mid = (inc * 2) - 1;
+        var cos = Math.cos(mid * tau * 0.5);
+        var mod = (cos + 1) / 2;
+        var xdiff = x1 + ((x2 - x1) * inc);
+        var ydiff = y1 + ((y2 - y1) * inc);
+        var rswab = r + (r * swab * mod);
+        ctx.arc(xdiff, ydiff, rswab, startAngle, endAngle, invert);
+    }
+    if (fill) { ctx.fill(); }
+    if (stroke) { ctx.stroke(); }
+}
+
+var ctx_plot = function
+(
+    x1, y1, x2, y2, r, swab = 0.1, fill = 0, stroke = 1,
+    startAngle = 0, endAngle = tau, invert = 0,
+    steps = 1000)
+{
+    ctx.beginPath();
+    for (var i = 0; i < steps; ++i)
+    {
+        var inc = i / steps;
+        var mid = (inc * 2) - 1;
+        var cos = Math.cos(mid * tau * 0.5);
+        var mod = (cos + 1) / 2;
+        var xdiff = x1 + ((x2 - x1) * inc);
+        var ydiff = y1 + ((y2 - y1) * inc);
+        var rswab = swab * mod;
+        ctx.arc(xdiff, ydiff - rswab, r, startAngle, endAngle, invert);
+    }
+    if (fill) { ctx.fill(); }
+    if (stroke) { ctx.stroke(); }
+}
+
+var render = function()
+{
+    canvas.width = canvas.width;
+    ctx.fillStyle = "rgba(0, 0, 0, 1.0)";
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.lineWidth = 1;
+    ctx.shadowBlur = 10;
+    fill = ctx.createLinearGradient(0, 0, 0, h);
+    fill.addColorStop(0.00, "rgba(255.000, 127.500, 064.250, 1.000)");
+    fill.addColorStop(0.25, "rgba(127.500, 064.250, 032.125, 1.000)");
+    fill.addColorStop(0.50, "rgba(000.000, 000.000, 000.000, 1.000)");
+    fill.addColorStop(0.50, "rgba(255.000, 127.500, 064.250, 1.000)");
+    fill.addColorStop(0.75, "rgba(127.500, 064.250, 032.125, 1.000)");
+    fill.addColorStop(1.00, "rgba(000.000, 000.000, 000.000, 1.000)");
+    ctx.fillStyle = fill;
+    ctx.shadowColor = fill;
+    ctx.strokeStyle = fill;
+
+    //ctx_sag(qw, qh, tw, qh, 10, 0.5);
+    ctx_pinch(qw, qh, tw, qh, eh, 0.5);
+    //ctx_plot(qw, th, tw, th, 1, eh);
+    ctx_bulge(qw, th, tw, th, eh, 0.5);
+}
+</script>
