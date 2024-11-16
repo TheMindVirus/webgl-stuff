@@ -1,0 +1,289 @@
+<title>squishy_function_mod</title>
+<script>
+
+window.onload = function()
+{
+    canvas = document.createElement("canvas");
+    document.body.style = "background: black;";
+    document.body.appendChild(canvas);
+    canvas.setAttribute("id", "canvas");
+    canvas.style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%;";
+    ctx = canvas.getContext("2d");
+    tau = 2 * Math.PI;
+    window.onresize();
+}
+
+window.onresize = function()
+{
+    var style = window.getComputedStyle(canvas);
+    w = canvas.width = parseFloat(style.width);
+    h = canvas.height = parseFloat(style.height);
+    hw = w/2; hh = h/2; qw = hw/2; qh = hh/2;
+    tw = qw + hw; th = qh + hh;
+    ew = qw/2; eh = qh/2;
+    a = ((w > h) ? (h / w) : (w / h));
+    e = ((w > h) ? w : h) * a;
+    he = e/2; qe = he/2;
+    te = qe + he; 
+    ee = qe/2;
+    ce = ee + qe;
+    se = ee/2;
+    ne = se/2;
+    xe = se + ne;
+    de = ne/2;
+    _e = de/2;
+    strange_factor = 0.9;
+    render();
+}
+
+var ctx_swab = function
+(
+    x1, y1, x2, y2, r, fill = 1, stroke = 0,
+    startAngle = 0, endAngle = tau, invert = 0,
+    steps = 100)
+{
+    ctx.beginPath();
+    for (var i = 0; i <= steps; ++i)
+    {
+        var inc = i / steps;
+        var mid = (inc * 2) - 1;
+        var ord = 1 - Math.abs(mid);
+        var mod = ord * Math.pow(0.9, ord * 2);
+        var xdiff = x1 + ((x2 - x1) * inc);
+        var ydiff = y1 + ((y2 - y1) * inc);
+        var rdiff = r - (r * mod);
+        ctx.moveTo(xdiff, ydiff); //??? not sure why this is required
+        ctx.arc(xdiff, ydiff, rdiff, startAngle, endAngle, invert);
+    }
+    if (fill) { ctx.fill(); }
+    if (stroke) { ctx.stroke(); }
+}
+
+var ctx_dot = function(x, y, c)
+{
+    var tmp_fill = ctx.fillStyle;
+    ctx.fillStyle = c;
+    ctx.beginPath();
+    ctx.arc(he + (qe * (x)), ce - (qe * (y)), de, 0, tau);
+    ctx.arc(he + (qe * (x)), ce - (qe * (y)), _e, 0, tau, 1);
+    ctx.fill();
+    ctx.fillStyle = tmp_fill;
+}
+
+xp = null; yp = null;
+var ctx_redline = function(x, y)
+{
+    if (xp == null) { xp = x; }
+    if (yp == null) { yp = y; }
+    var tmp_width = ctx.lineWidth;
+    var tmp_stroke = ctx.strokeStyle;
+    var tmp_blur = ctx.shadowBlur;
+    var tmp_shadow = ctx.shadowColor;
+    ctx.lineWidth = 3;
+    ctx.shadowBlur = 10;
+    ctx.strokeStyle = "rgba(255, 0, 64, 1.0)";
+    ctx.shadowColor = "rgba(255, 0, 64, 1.0)";
+    ctx.beginPath();
+    ctx.moveTo(he + (qe * (xp)), ce - (qe * (yp)));
+    ctx.lineTo(he + (qe * (x)), ce - (qe * (y)));
+    ctx.stroke();
+    ctx.shadowColor = tmp_shadow;
+    ctx.shadowBlur = tmp_blur;
+    ctx.strokeStyle = tmp_stroke;
+    ctx.lineWidth = tmp_width;
+    xp = x; yp = y;
+}
+
+var PowerMul = function(x, y)
+{
+    return ((x < 0) || (y < 0)) ? -(Math.abs(x) * Math.abs(y)) : (x * y);
+}
+
+var FnLibLib = function(x, m = 0.7, c = 0.2, d = 0.1)
+{
+    x += d;
+    var _m = PowerMul(m, x);
+    var __m = PowerMul(_m, x);
+    //var ___m = PowerMul(__m, x);
+    //var ____m = PowerMul(__m, x);
+    m = __m;
+    var y = m + c; //Math.pow(m * x, 2) + c;
+    y = Math.min(1, y);
+    return y;
+}
+
+var ctx_gum = function
+(
+    x1, y1, x2, y2, r, fill = 1, stroke = 0,
+    startAngle = 0, endAngle = tau, invert = 0,
+    steps = 100)
+{
+    ctx.beginPath();
+    for (var i = 0; i <= steps; ++i)
+    {
+        var inc = i / steps;
+        var mid = (inc * 2) - 1;
+        var mod = FnLibLib(Math.abs(mid));
+        var xdiff = x1 + ((x2 - x1) * inc);
+        var ydiff = y1 + ((y2 - y1) * inc);
+        var rdiff = r * mod; //Math.abs(r - (r * mod));
+        ctx.moveTo(xdiff, ydiff); //??? still not sure why this is required
+        ctx.arc(xdiff, ydiff, rdiff, startAngle, endAngle, invert);
+    }
+    if (fill) { ctx.fill(); }
+    if (stroke) { ctx.stroke(); }
+}
+
+var render = function()
+{
+    canvas.width = canvas.width;
+    ctx.fillStyle = "rgba(0, 0, 0, 1.0)";
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.lineWidth = 1;
+    ctx.shadowBlur = 10;
+    fill = ctx.createLinearGradient(0, 0, 0, e);
+    fill.addColorStop(0.0, "rgba(255.000, 127.500, 064.250, 1.000)");
+    fill.addColorStop(0.5, "rgba(127.500, 064.250, 032.125, 1.000)");
+    fill.addColorStop(1.0, "rgba(000.000, 000.000, 255.000, 1.000)");
+    ctx.fillStyle = fill;
+    ctx.shadowColor = fill;
+    ctx.strokeStyle = fill;
+
+    ctx_swab(ee, he+ee, ce, he+ee, se);
+    ctx_swab(ee, he+ce, ce, he+ce, se);
+    ctx_swab(ee, he+ee, ee, he+ce, se);
+    ctx_swab(ce, he+ee, ce, he+ce, se);
+
+    ctx.beginPath();
+    //ctx.moveTo(he, he); //?!?
+    ctx.arc(he, he, se, 0, tau);
+    ctx.stroke();
+
+    ctx.beginPath();
+    //ctx.moveTo(he+qe, he); //?!?
+    ctx.arc(he+qe, he, se, 0, tau);
+    ctx.stroke();
+
+    ctx.beginPath();
+    //ctx.moveTo(he, he+qe); //?!?
+    ctx.arc(he, he+qe, se, 0, tau);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(he, he);
+    ctx.lineTo(he+qe, he+qe);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(he, he);
+    ctx.lineTo(he, he+qe);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(he, he);
+    ctx.lineTo(he+qe, he);
+    ctx.stroke();
+
+    ctx.beginPath();
+    //ctx.moveTo(he+ee, he+ee); //?!?
+    //ctx.arc(he+ee, he+ee, ee * strange_factor, 0, tau);
+    //ctx.arc(he+ee, he+ee, ee * 0.9, 0, tau);
+    ctx.arc(he+ee, he+ee, se * 1.8, 0, tau);
+    ctx.stroke();
+
+    ctx.beginPath();
+    //ctx.moveTo(he+ne, he); //?!?
+    //ctx.arc(he+ne, he, se * Math.pow(strange_factor, 3.5), 0, tau);
+    //ctx.arc(he+ne, he, ee * 0.350, 0, tau);
+    ctx.arc(he+ne, he, se * 0.700, 0, tau);
+    ctx.stroke();
+
+    ctx.beginPath();
+    //ctx.moveTo(he, he+ne); //?!?
+    //ctx.arc(he, he+ne, se * Math.pow(strange_factor, 3.5), 0, tau);
+    //ctx.arc(he, he+ne, ee * 0.350, 0, tau);
+    ctx.arc(he, he+ne, se * 0.700, 0, tau);
+    ctx.stroke();
+
+    ctx.beginPath();
+    //ctx.moveTo(he+se, he); //?!?
+    //ctx.arc(he+se, he, ne * strange_factor, 0, tau);
+    //ctx.arc(he+se, he, ee * 0.225, 0, tau);
+    ctx.arc(he+se, he, se * 0.450, 0, tau);
+    ctx.stroke();
+
+    ctx.beginPath();
+    //ctx.moveTo(he, he+se); //?!?
+    //ctx.arc(he, he+se, ne * strange_factor, 0, tau);
+    //ctx.arc(he, he+se, ee * 0.225, 0, tau);
+    ctx.arc(he, he+se, se * 0.450, 0, tau);
+    ctx.stroke();
+
+    ctx.beginPath();
+    //ctx.moveTo(he+xe, he); //?!?
+    //ctx.arc(he+xe, he, de / strange_factor, 0, tau);
+    //ctx.arc(he+xe, he, ee * 0.125, 0, tau);
+    ctx.arc(he+xe, he, se * 0.250, 0, tau);
+    ctx.stroke();
+
+    ctx.beginPath();
+    //ctx.moveTo(he, he+xe); //?!?
+    //ctx.arc(he, he+xe, de / strange_factor, 0, tau);
+    //ctx.arc(he, he+xe, ee * 0.125, 0, tau);
+    ctx.arc(he, he+xe, se * 0.250, 0, tau);
+    ctx.stroke();
+
+    ctx.beginPath();
+    //ctx.moveTo(he+ee, he); //?!?
+    //ctx.arc(he+ee, he, de * strange_factor * strange_factor, 0, tau);
+    ctx.arc(he+ee, he, se * 0.200, 0, tau);
+    ctx.stroke();
+
+    ctx.beginPath();
+    //ctx.moveTo(he, he+ee); //?!?
+    //ctx.arc(he, he+ee, de * strange_factor * strange_factor, 0, tau);
+    ctx.arc(he, he+ee, se * 0.200, 0, tau);
+    ctx.stroke();
+
+    //ee * strange_factor
+    //se * Math.pow(strange_factor, 3.5)
+    //ne * strange_factor
+    //de / strange_factor
+    //de * strange_factor * strange_factor
+
+    //1.000 -> 0.350 -> 0.225 -> 0.125 -> 0.100 -> 0.125 -> 0.225 -> 0.350 -> 1.000
+    //1.000 -> 0.700 -> 0.450 -> 0.250 -> 0.200 -> 0.250 -> 0.450 -> 0.700 -> 1.000
+    //1.000 -> 0.656 -> 0.403 -> 0.251 -> 0.200 -> 0.251 -> 0.403 -> 0.656 -> 1.000
+
+    ctx_dot(0/8, 1.000, "white");
+    ctx_dot(1/8, 0.700, "white");
+    ctx_dot(2/8, 0.450, "white");
+    ctx_dot(3/8, 0.250, "white");
+    ctx_dot(4/8, 0.200, "white");
+    ctx_dot(5/8, 0.250, "white");
+    ctx_dot(6/8, 0.450, "white");
+    ctx_dot(7/8, 0.700, "white");
+    ctx_dot(8/8, 1.000, "white");
+
+    ctx_redline(0/8, FnLibLib(-4/4));
+    ctx_redline(1/8, FnLibLib(-3/4));
+    ctx_redline(2/8, FnLibLib(-2/4));
+    ctx_redline(3/8, FnLibLib(-1/4));
+    ctx_redline(4/8, FnLibLib( 0/4));
+    ctx_redline(5/8, FnLibLib( 1/4));
+    ctx_redline(6/8, FnLibLib( 2/4));
+    ctx_redline(7/8, FnLibLib( 3/4));
+    ctx_redline(8/8, FnLibLib( 4/4));
+    xp = null; yp = null;
+
+    ctx_gum(ee, ee, ce, ee, se);
+    ctx_gum(ee, ce, ce, ce, se);
+    ctx_gum(ee, ee, ee, ce, se);
+    ctx_gum(ce, ee, ce, ce, se);
+
+    ctx.beginPath();
+    ctx.arc(qe, qe, se * 1.8, 0, tau);
+    ctx.stroke();
+}
+</script>
