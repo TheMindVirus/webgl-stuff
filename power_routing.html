@@ -1,0 +1,323 @@
+<title>power_routing</title>
+<style>
+ [fullscreen] { position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
+</style>
+<script>
+var mode = 0;
+var modes = 4;
+window.onload = function()
+{
+    document.body.style.background = "#004";
+    canvas = document.getElementsByTagName("canvas")[0];
+    overlay = document.getElementsByTagName("canvas")[1];
+    canvas.willReadFrequently = true;
+    overlay.willReadFrequently = true;
+    canvas.style.zIndex = 0;
+    overlay.style.zIndex = 1;
+    ctx = canvas.getContext("2d");
+    otx = overlay.getContext("2d");
+    window.onresize();
+    setInterval(main_loop, 1);
+    setInterval(scan_lines, 100);
+    setInterval(mode_switch, 222); //!!! Strobe Warning !!!
+}
+window.onresize = function()
+{
+    var style = window.getComputedStyle(canvas);
+    w = parseFloat(style.width);
+    h = parseFloat(style.height);
+    a = ((w > h) ? (h / w) : (w / h));
+    t = ((w > h) ? w : h) * a;
+    if (mode == 0)
+    {
+        ax = w/w; ay = h/h;
+        fx = w; fy = h;
+        cx = w/2; cy = h/2;
+        dx = w*0.01; dy = h*0.01;
+        canvas.width = w;
+        canvas.height = h;
+        overlay.width = w;
+        overlay.height = h;
+        canvas.imageSmoothing = "enabled";
+        canvas.imageRendering = "crisp-edges";
+        overlay.imageSmoothing = "enabled";
+        overlay.imageRendering = "crisp-edges";
+    }
+    if (mode == 1)
+    {
+        ax = t/w; ay = t/h;
+        fx = t; fy = t;
+        cx = t/2; cy = cx;
+        dx = t*0.01; dy = dx;
+        canvas.width = t;
+        canvas.height = t;
+        overlay.width = t;
+        overlay.height = t;
+        canvas.imageSmoothing = "disabled";
+        canvas.imageRendering = "pixelated";
+        overlay.imageSmoothing = "disabled";
+        overlay.imageRendering = "pixelated";
+    }
+    if (mode == 2)
+    {
+        t = 4096;
+        ax = t/w;
+        ay = t/h;
+        fx = t; fy = t;
+        cx = t/2; cy = cx;
+        dx = t*0.01; dy = dx;
+        w = canvas.width = overlay.width = t;
+        h = canvas.height = overlay.height = t;
+        canvas.imageSmoothing = "enabled";
+        canvas.imageRendering = "crisp-edges";
+        overlay.imageSmoothing = "enabled";
+        overlay.imageRendering = "crisp-edges";
+    }
+    if (mode == 3)
+    {
+        t = 128;
+        ax = t/w;
+        ay = t/h;
+        fx = t; fy = t;
+        cx = t/2; cy = cx;
+        dx = t*0.01; dy = dx;
+        w = canvas.width = overlay.width = t;
+        h = canvas.height = overlay.height = t;
+        canvas.imageSmoothing = "disabled";
+        canvas.imageRendering = "pixelated";
+        overlay.imageSmoothing = "enabled";
+        overlay.imageRendering = "crisp-edges";
+    }
+}
+var Dx = function(e, c = 0) { return (dx*e)+(c*cx); }
+var Dy = function(e, c = 0) { return (dy*e)+(c*cy); }
+var Fx = function(e, c = 0) { return (fx*e)+(c*cx); }
+var Fy = function(e, c = 0) { return (fy*e)+(c*cy); }
+var Ax = function(e, c = 0) { return (ax*e)+(c*cx); }
+var Ay = function(e, c = 0) { return (ay*e)+(c*cy); }
+var Rx = function(e, c = 1) { return Dx(e, c); }
+var Ry = function(e, c = 1) { return Dy(e, c); }
+var Kx = function(e, c = 1) { return Fx(e, c); }
+var Ky = function(e, c = 1) { return Fy(e, c); }
+var Nx = function(e, c = 1) { return Ax(e, c); }
+var Ny = function(e, c = 1) { return Ay(e, c); }
+var Rz = Dx; var Az = Ax;
+var main_loop = function()
+{
+    canvas.width = canvas.width;
+    ctx.fillStyle = "#004";
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.lineWidth = Ax(3);
+    ctx.strokeStyle = "#0FF";
+    ctx.shadowColor = "#FFF";
+    ctx.shadowBlur = Ay(10);
+
+    ctx.beginPath();
+    ctx.moveTo(Rx(-1.5), 0);
+    ctx.lineTo(Rx(-1.5), Ry(-3.0));
+    ctx.quadraticCurveTo(Rx(-1.5), Ry(-0.5), Rx(-3.0), Ry(-0.5));
+    ctx.lineTo(Fx(-0.25) + Rx(1.5), Ry(-0.5));
+    ctx.quadraticCurveTo(Fx(0.25), Ry(-0.5), Fx(0.25), Ry(-3.0));
+    ctx.lineTo(Fx(0.25), Fy(0.35));
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(Rx(-0.5), 0);
+    ctx.lineTo(Rx(-0.5), Ry(-3.0));
+    ctx.quadraticCurveTo(Rx(-0.5), Ry(0.5), Rx(-3.0), Ry(0.5));
+    ctx.lineTo(Fx(-0.25) + Rx(1.5), Ry(0.5));
+    ctx.quadraticCurveTo(Fx(0.25), Ry(0.5), Fx(0.25), Ry(3.0));
+    ctx.lineTo(Fx(0.25), Fy(0.65));
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(Rx(0.5), 0);
+    ctx.lineTo(Rx(0.5), Ry(-3.0));
+    ctx.quadraticCurveTo(Rx(0.5), Ry(0.5), Rx(3.0), Ry(0.5));
+    ctx.lineTo(Fx(0.25) + Rx(-1.5), Ry(0.5));
+    ctx.quadraticCurveTo(Fx(0.75), Ry(0.5), Fx(0.75), Ry(3.0));
+    ctx.lineTo(Fx(0.75), Fy(0.65));
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(Rx(1.5), 0);
+    ctx.lineTo(Rx(1.5), Ry(-3.0));
+    ctx.quadraticCurveTo(Rx(1.5), Ry(-0.5), Rx(3.0), Ry(-0.5));
+    ctx.lineTo(Fx(0.25) + Rx(-1.5), Ry(-0.5));
+    ctx.quadraticCurveTo(Fx(0.75), Ry(-0.5), Fx(0.75), Ry(-3.0));
+    ctx.lineTo(Fx(0.75), Fy(0.35));
+    ctx.stroke();
+
+    ctx.shadowBlur = Ax(3);
+    ctx.shadowColor = "#0FF";
+    ctx.strokeStyle = "#FFF";
+    ctx.lineWidth = Ay(10);
+
+    ctx.beginPath();
+    ctx.moveTo(Fx(0.25), Fy(0.35));
+    ctx.lineTo(Fx(0.15) + Rz(3.0), Fy(0.35));
+    ctx.quadraticCurveTo(Fx(0.15), Fy(0.35), Fx(0.15), Fy(0.35) - Rz(3.0));
+    ctx.lineTo(Fx(0.15), Fy(0.15) + Rz(3.0));
+    ctx.quadraticCurveTo(Fx(0.15), Fy(0.15), Fx(0.15) + Rz(3.0), Fy(0.15));
+    ctx.lineTo(Fx(0.35) - Rz(3.0), Fy(0.15));
+    ctx.quadraticCurveTo(Fx(0.35), Fy(0.15), Fx(0.35), Fy(0.15) + Rz(3.0));
+    ctx.lineTo(Fx(0.35), Fy(0.35) - Rz(3.0));
+    ctx.quadraticCurveTo(Fx(0.35), Fy(0.35), Fx(0.35) - Rz(3.0), Fy(0.35));
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(Fx(0.75), Fy(0.35));
+    ctx.lineTo(Fx(0.85) - Rz(3.0), Fy(0.35));
+    ctx.quadraticCurveTo(Fx(0.85), Fy(0.35), Fx(0.85), Fy(0.35) - Rz(3.0));
+    ctx.lineTo(Fx(0.85), Fy(0.15) + Rz(3.0));
+    ctx.quadraticCurveTo(Fx(0.85), Fy(0.15), Fx(0.85) - Rz(3.0), Fy(0.15));
+    ctx.lineTo(Fx(0.65) + Rz(3.0), Fy(0.15));
+    ctx.quadraticCurveTo(Fx(0.65), Fy(0.15), Fx(0.65), Fy(0.15) + Rz(3.0));
+    ctx.lineTo(Fx(0.65), Fy(0.35) - Rz(3.0));
+    ctx.quadraticCurveTo(Fx(0.65), Fy(0.35), Fx(0.65) + Rz(3.0), Fy(0.35));
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(Fx(0.25), Fy(0.65));
+    ctx.lineTo(Fx(0.15) + Rz(3.0), Fy(0.65));
+    ctx.quadraticCurveTo(Fx(0.15), Fy(0.65), Fx(0.15), Fy(0.65) + Rz(3.0));
+    ctx.lineTo(Fx(0.15), Fy(0.85) - Rz(3.0));
+    ctx.quadraticCurveTo(Fx(0.15), Fy(0.85), Fx(0.15) + Rz(3.0), Fy(0.85));
+    ctx.lineTo(Fx(0.35) - Rz(3.0), Fy(0.85));
+    ctx.quadraticCurveTo(Fx(0.35), Fy(0.85), Fx(0.35), Fy(0.85) - Rz(3.0));
+    ctx.lineTo(Fx(0.35), Fy(0.65) + Rz(3.0));
+    ctx.quadraticCurveTo(Fx(0.35), Fy(0.65), Fx(0.35) - Rz(3.0), Fy(0.65));
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(Fx(0.75), Fy(0.65));
+    ctx.lineTo(Fx(0.85) - Rz(3.0), Fy(0.65));
+    ctx.quadraticCurveTo(Fx(0.85), Fy(0.65), Fx(0.85), Fy(0.65) + Rz(3.0));
+    ctx.lineTo(Fx(0.85), Fy(0.85) - Rz(3.0));
+    ctx.quadraticCurveTo(Fx(0.85), Fy(0.85), Fx(0.85) - Rz(3.0), Fy(0.85));
+    ctx.lineTo(Fx(0.65) + Rz(3.0), Fy(0.85));
+    ctx.quadraticCurveTo(Fx(0.65), Fy(0.85), Fx(0.65), Fy(0.85) - Rz(3.0));
+    ctx.lineTo(Fx(0.65), Fy(0.65) + Rz(3.0));
+    ctx.quadraticCurveTo(Fx(0.65), Fy(0.65), Fx(0.65) + Rz(3.0), Fy(0.65));
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#FFF";
+
+    ctx.font = "bold " + Az(35) + "pt sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("Kernel", Fx(0.25), Fy(0.1));
+
+    ctx.font = "bold " + Az(35) + "pt sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("Auxiliary", Fx(0.75), Fy(0.1));
+
+    ctx.font = "bold " + Az(35) + "pt sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("Sentinel", Fx(0.25), Fy(0.9));
+
+    ctx.font = "bold " + Az(35) + "pt sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("Shields", Fx(0.75), Fy(0.9));
+
+    ctx.lineWidth = Ax(8);
+    ctx.strokeStyle = "#FFF";
+    ctx.shadowColor = "#0FF";
+    ctx.shadowBlur = Ay(10);
+
+    ctx.beginPath();
+    ctx.moveTo(Fx(0.25), Fy(0.20));
+    ctx.lineTo(Fx(0.25) + Dx(5), Fy(0.30));
+    ctx.lineTo(Fx(0.25) - Dx(5), Fy(0.30));
+    ctx.closePath();
+    ctx.stroke(); ctx.stroke(); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(Fx(0.25), Fy(0.21));
+    ctx.lineTo(Fx(0.25) + Dx(5), Fy(0.31));
+    ctx.lineTo(Fx(0.25) - Dx(5), Fy(0.31));
+    ctx.closePath();
+    ctx.stroke(); ctx.stroke(); ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(Fx(0.75), Fy(0.20));
+    ctx.lineTo(Fx(0.75) + Dx(5), Fy(0.30));
+    ctx.lineTo(Fx(0.75) - Dx(5), Fy(0.30));
+    ctx.closePath();
+    ctx.stroke(); ctx.stroke(); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(Fx(0.75), Fy(0.21));
+    ctx.lineTo(Fx(0.75) + Dx(5), Fy(0.31));
+    ctx.lineTo(Fx(0.75) - Dx(5), Fy(0.31));
+    ctx.closePath();
+    ctx.stroke(); ctx.stroke(); ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(Fx(0.25), Fy(0.70));
+    ctx.lineTo(Fx(0.25) + Dx(5), Fy(0.80));
+    ctx.lineTo(Fx(0.25) - Dx(5), Fy(0.80));
+    ctx.closePath();
+    ctx.stroke(); ctx.stroke(); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(Fx(0.25), Fy(0.71));
+    ctx.lineTo(Fx(0.25) + Dx(5), Fy(0.81));
+    ctx.lineTo(Fx(0.25) - Dx(5), Fy(0.81));
+    ctx.closePath();
+    ctx.stroke(); ctx.stroke(); ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(Fx(0.75), Fy(0.70));
+    ctx.lineTo(Fx(0.75) + Dx(5), Fy(0.80));
+    ctx.lineTo(Fx(0.75) - Dx(5), Fy(0.80));
+    ctx.closePath();
+    ctx.stroke(); ctx.stroke(); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(Fx(0.75), Fy(0.71));
+    ctx.lineTo(Fx(0.75) + Dx(5), Fy(0.81));
+    ctx.lineTo(Fx(0.75) - Dx(5), Fy(0.81));
+    ctx.closePath();
+    ctx.stroke(); ctx.stroke(); ctx.stroke();
+
+    ctx.font = "bold " + Az(111) + "pt sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("!", Fx(0.25), Fy(0.25));
+
+    ctx.font = "bold " + Az(111) + "pt sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("!", Fx(0.75), Fy(0.25));
+
+    ctx.font = "bold " + Az(111) + "pt sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("!", Fx(0.25), Fy(0.75));
+
+    ctx.font = "bold " + Az(111) + "pt sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("!", Fx(0.75), Fy(0.75));
+}
+var z = 0;
+var scan_lines = function()
+{
+    overlay.width = overlay.width;
+    otx.fillStyle = "#0009";
+    for (var i = 0; i < parseInt(h); ++i)
+    {
+        if ((i % 10) == parseInt(z)) { otx.fillRect(0, i, w, 1); }
+    }
+    z += 1; z %= 10;
+}
+var mode_switch = function() { mode += 1; mode %= modes; window.onresize(); }
+</script>
+<canvas fullscreen></canvas>
+<canvas fullscreen></canvas>
