@@ -1,0 +1,100 @@
+<title>sorting_machine</title>
+<style>
+ svg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; }
+</style>
+<script>
+window.onload = function()
+{
+    blob1 = document.getElementById("blob1");
+    blob2 = document.getElementById("blob2");
+    //???
+    setInterval(render, 1);
+}
+
+curve = function(i)
+{
+    var p = (i - 0.5) * 2;
+    var y = 1 - Math.pow(Math.abs(p), 2);
+    y -= p * 0.5;
+    return { "x": i, "y": -y };
+}
+
+var p = 0;
+var i = 0;
+var x = 0;
+var y = 0;
+var m = 1;
+var mode = 0;
+var modes = 4;
+render = function()
+{
+    if ((mode == 0) || (mode == 2))
+    {
+        p = i/m; if (i >= m) { p = 1; } if (i >= m * 2) { p = 3 - (i/m); } if (i >= m * 3) { p = 0; }
+    }
+    if ((mode == 1) || (mode == 3))
+    {
+        p = i/m; if (i >= m) { p = 2 - (i/m); }
+    }
+    d = curve(p);
+    x = d["x"] * 20;
+    y = d["y"] * 20 +10;
+    blob1.setAttribute("transform", "translate(" + x + ", " + y + ")");
+    blob3.setAttribute("transform", "translate(" + x + ", " + y + ")");
+    blob5.setAttribute("transform", "translate(" + x + ", " + y + ")");
+    blob7.setAttribute("transform", "translate(" + x + ", " + y + ")");
+    blob9.setAttribute("transform", "translate(" + x + ", " + y + ")");
+    if ((mode == 0) || (mode == 1)) { d = curve(1-p); }
+    if ((mode == 2) || (mode == 3)) { d = curve(p); }
+    x = d["x"] * -20 +20;
+    y = d["y"] * 20 -10;
+    blob2.setAttribute("transform", "translate(" + x + ", " + y + ")");
+    blob4.setAttribute("transform", "translate(" + x + ", " + y + ")");
+    blob6.setAttribute("transform", "translate(" + x + ", " + y + ")");
+    blob8.setAttribute("transform", "translate(" + x + ", " + y + ")");
+    blob0.setAttribute("transform", "translate(" + x + ", " + y + ")");
+    if ((mode == 0) || (mode == 2))
+    {
+        i += 1/58; i %= m * 4;
+    }
+    if ((mode == 1) || (mode == 3))
+    {
+        i += 1/115; i %= m * 2;
+    }
+}
+
+window.onkeydown = function(event)
+{
+    if (event.key == "ArrowLeft") { mode -= 1; if (mode < 0) { mode = modes - 1; } }
+    if (event.key == "ArrowRight") { mode += 1; mode %= modes; }
+}
+</script>
+<svg>
+<use href="#paths" filter="url(#blur)"></use>
+<g id="paths" transform="scale(9.6)" stroke-width="0.2">
+
+<path d="m 0 40 l 20 20 l 20 -20 l 20 20 l 20 -20 l 20 20 l 20 -20 l 20 20 l 20 -20 l 20 20 l 20 -20" fill="none" stroke="#001" stroke-width="1"></path>
+<path d="m 0 40 s 20 -20 20 20 l 0 0 s 0 -40 20 -20 l 0 0 s 20 -20 20 20 l 0 0 s 0 -40 20 -20 l 0 0 s 20 -20 20 20 l 0 0 s 0 -40 20 -20 l 0 0 s 20 -20 20 20 l 0 0 s 0 -40 20 -20 l 0 0 s 20 -20 20 20 l 0 0 s 0 -40 20 -20 l 0 0" fill="none" stroke="#0FA" stroke-width="0.3"></path>
+
+<path d="m 80 40 m -2 0 l 2 -2 l 2 2 l -2 2 l -2 -2 z" fill="#0FFA" stroke="#000" id="blob1"></path>
+<path d="m 100 60 m -2 0 l 2 -2 l 2 2 l -2 2 l -2 -2 z" fill="#F06A" stroke="#000" id="blob2"></path>
+
+<path d="m 120 40 m -2 0 l 2 -2 l 2 2 l -2 2 l -2 -2 z" fill="#0FFA" stroke="#000" id="blob3"></path>
+<path d="m 140 60 m -2 0 l 2 -2 l 2 2 l -2 2 l -2 -2 z" fill="#F06A" stroke="#000" id="blob4"></path>
+
+<path d="m 160 40 m -2 0 l 2 -2 l 2 2 l -2 2 l -2 -2 z" fill="#0FFA" stroke="#000" id="blob5"></path>
+<path d="m 180 60 m -2 0 l 2 -2 l 2 2 l -2 2 l -2 -2 z" fill="#F06A" stroke="#000" id="blob6"></path>
+
+<path d="m 0 40 m -2 0 l 2 -2 l 2 2 l -2 2 l -2 -2 z" fill="#0FFA" stroke="#000" id="blob7"></path>
+<path d="m 20 60 m -2 0 l 2 -2 l 2 2 l -2 2 l -2 -2 z" fill="#F06A" stroke="#000" id="blob8"></path>
+
+<path d="m 40 40 m -2 0 l 2 -2 l 2 2 l -2 2 l -2 -2 z" fill="#0FFA" stroke="#000" id="blob9"></path>
+<path d="m 60 60 m -2 0 l 2 -2 l 2 2 l -2 2 l -2 -2 z" fill="#F06A" stroke="#000" id="blob0"></path>
+
+</g>
+<defs>
+<filter id="blur">
+<feGaussianBlur stdDeviation="10"></feGaussianBlur>
+</filter>
+</defs>
+</svg>
