@@ -1,0 +1,457 @@
+<title>iomap_svg_tube_vicinity_mod_overground</title>
+<script>
+
+w = 0;
+h = 0;
+l = 0;
+
+canvas = null;
+ctx = null;
+
+render_scale = 4.0;
+render_blur = 0.5 / render_scale;
+
+line_width = 2.0;
+line_blur = 10.0;
+
+station_list =
+[
+    { id: "A01", x:  712, y:   85, name: "Watford Junction"            }, 
+    { id: "A02", x:  712, y:  105, name: "Watford High Street"         },
+    { id: "A03", x:  712, y:  123, name: "Bushey"                      },
+    { id: "A04", x:  712, y:  142, name: "Carpenders Park"             },
+    { id: "A05", x:  712, y:  160, name: "Hatch End"                   },
+    { id: "A06", x:  712, y:  176, name: "Headstone Lane"              },
+    { id: "A07", x:  712, y:  193, name: "Harrow & Wealdstone"         },
+    { id: "A08", x:  712, y:  208, name: "Kenton"                      },
+    { id: "A09", x:  712, y:  230, name: "South Kenton"                },
+    { id: "A10", x:  712, y:  245, name: "North Wembley"               },
+    { id: "A11", x:  712, y:  265, name: "Wembley Central"             },
+    { id: "A12", x:  712, y:  300, name: "Stonebridge Park"            },
+    { id: "A13", x:  712, y:  330, name: "Harlesden"                   },
+
+    { id: "A14", x:  762, y:  358, name: "Willesden Junction"          },
+
+    { id: "A15", x:  810, y:  358, name: "Kensal Green"                },
+    { id: "A16", x:  845, y:  358, name: "Queen's Park"                },
+    { id: "A17", x:  882, y:  358, name: "Kilburn High Road"           },
+    { id: "A18", x:  925, y:  358, name: "South Hampstead"             },
+    { id: "A19", x:  970, y:  358, name: "Euston"                      },
+
+    { id: "B01", x:  712, y:  540, name: "Richmond"                    },
+    { id: "B02", x:  712, y:  520, name: "Kew Gardens"                 },
+    { id: "B03", x:  712, y:  475, name: "Gunnersbury"                 },
+    { id: "B04", x:  712, y:  455, name: "South Acton"                 },
+    { id: "B05", x:  712, y:  435, name: "Acton Central"               },
+
+    { id: "B06", x:  762, y:  370, name: "Willesden Junction"          },
+
+    { id: "B07", x:  810, y:  340, name: "Kensal Rise"                 },
+    { id: "B08", x:  825, y:  325, name: "Brondesbury Park"            },
+    { id: "B09", x:  832, y:  302, name: "Brondesbury"                 },
+    { id: "B10", x:  832, y:  282, name: "West Hampstead"              },
+    { id: "B11", x:  843, y:  267, name: "Finchley Road & Frognal"     },
+    { id: "B12", x:  865, y:  250, name: "Hampstead Heath"             },
+
+    { id: "B13", x:  884, y:  242, name: "Gospel Oak"                  },
+
+    { id: "B14", x:  904, y:  242, name: "Kentish Town West"           },
+    { id: "B15", x:  925, y:  255, name: "Camden Road"                 },
+    { id: "B16", x:  945, y:  270, name: "Caledonian Road & Barnsbury" },
+
+    { id: "B17", x:  980, y:  292, name: "Highbury & Islington"        },
+    { id: "B18", x: 1016, y:  292, name: "Canonbury"                   },
+    { id: "B19", x: 1062, y:  302, name: "Dalston Kingsland"           },
+    { id: "B20", x: 1146, y:  309, name: "Hackney Central"             },
+
+    { id: "B21", x: 1185, y:  322, name: "Homerton"                    },
+    { id: "B22", x: 1200, y:  335, name: "Hackney Wick"                },
+    { id: "B23", x: 1215, y:  360, name: "Stratford"                   },
+
+    { id: "B24", x:  763, y:  403, name: "Shepherd's Bush"             },
+    { id: "B25", x:  793, y:  429, name: "Kensington (Olympia)"        },
+    { id: "B26", x:  823, y:  454, name: "West Brompton"               },
+    { id: "B27", x:  853, y:  479, name: "Imperial Wharf"              },
+
+    { id: "B28", x:  905, y:  510, name: "Clapham Junction"            },
+    { id: "C01", x:  914, y:  516, name: "Clapham Junction"            },
+
+    { id: "C02", x:  944, y:  516, name: "Wandsworth Road"             },
+    { id: "C03", x:  986, y:  516, name: "Clapham High Street"         },
+    { id: "C04", x: 1015, y:  504, name: "Denmark Hill"                },
+    { id: "C05", x: 1055, y:  492, name: "Peckham Rye"                 },
+    { id: "C06", x: 1100, y:  492, name: "Queens Road Peckham"         },
+
+    { id: "C07", x: 1130, y:  482, name: "Surrey Quays"                },
+    { id: "C08", x: 1130, y:  462, name: "Canada Water"                },
+    { id: "C09", x: 1130, y:  450, name: "Rotherhithe"                 },
+    { id: "C10", x: 1130, y:  424, name: "Wapping"                     },
+    { id: "C11", x: 1130, y:  410, name: "Shadwell"                    },
+    { id: "C12", x: 1130, y:  395, name: "Whitechapel"                 },
+    { id: "C13", x: 1093, y:  350, name: "Shoreditch High Street"      },
+    { id: "C14", x: 1080, y:  338, name: "Hoxton"                      },
+    { id: "C15", x: 1065, y:  327, name: "Haggerston"                  },
+    { id: "C16", x: 1049, y:  313, name: "Dalston Junction"            },
+    { id: "C17", x: 1016, y:  302, name: "Canonbury"                   },
+    { id: "C18", x:  980, y:  302, name: "Highbury & Islington"        },
+
+    { id: "C19", x: 1145, y:  510, name: "New Cross"                   },
+    { id: "C20", x: 1130, y:  520, name: "New Cross Gate"              },
+    { id: "C21", x: 1120, y:  540, name: "Brockley"                    },
+    { id: "C22", x: 1105, y:  552, name: "Honor Oak Park"              },
+    { id: "C23", x: 1090, y:  565, name: "Forest Hill"                 },
+    { id: "C24", x: 1075, y:  579, name: "Sydenham"                    },
+
+    { id: "C25", x: 1012, y:  570, name: "Crystal Palace"              },
+
+    { id: "C26", x: 1010, y:  596, name: "Penge West"                  },
+    { id: "C27", x:  965, y:  597, name: "Anerley"                     },
+    { id: "C28", x:  919, y:  597, name: "Norwood Junction"            },
+    { id: "C29", x:  860, y:  597, name: "West Croydon"                },
+
+    { id: "D01", x: 1055, y:  372, name: "Liverpool Street"            },
+    { id: "D02", x: 1115, y:  352, name: "Bethnal Green"               },
+    { id: "D03", x: 1115, y:  332, name: "Cambridge Heath"             },
+    { id: "D04", x: 1115, y:  312, name: "London Fields"               },
+    { id: "D05", x: 1115, y:  295, name: "Hackney Downs"               },
+
+    { id: "D06", x: 1095, y:  250, name: "Rectory Road"                },
+    { id: "D07", x: 1075, y:  232, name: "Stoke Newington"             },
+    { id: "D08", x: 1045, y:  208, name: "Stamford Hill"               },
+
+    { id: "D09", x: 1000, y:  170, name: "Seven Sisters"               },
+
+    { id: "D10", x:  990, y:  162, name: "Bruce Grove"                 },
+    { id: "D11", x:  975, y:  150, name: "White Hart Lane"             },
+    { id: "D12", x:  960, y:  135, name: "Silver Street"               },
+    { id: "D13", x:  945, y:  125, name: "Edmonton Green"              },
+    { id: "D14", x:  925, y:  107, name: "Southbury"                   },
+    { id: "D15", x:  905, y:   90, name: "Turkey Street"               },
+    { id: "D16", x:  885, y:   75, name: "Theobalds Grove"             },
+    { id: "D17", x:  865, y:   57, name: "Cheshunt"                    },
+
+    { id: "D18", x:  888, y:  115, name: "Bush Hill Park"              },
+    { id: "D19", x:  854, y:  115, name: "Enfield Town"                },
+
+    { id: "D20", x: 1127, y:  295, name: "Hackney Downs"               },
+    { id: "D21", x: 1127, y:  225, name: "Clapton"                     },
+    { id: "D22", x: 1127, y:  205, name: "St. James Street"            },
+
+    { id: "D23", x: 1127, y:  170, name: "Walthamstow Central"         },
+
+    { id: "D24", x: 1127, y:  135, name: "Wood Street"                 },
+    { id: "D25", x: 1127, y:  125, name: "Highams Park"                },
+    { id: "D26", x: 1127, y:  105, name: "Chingford"                   },
+
+    { id: "E01", x:  874, y:  235, name: "Gospel Oak"                  },
+
+    { id: "E02", x:  874, y:  210, name: "Upper Holloway"              },
+    { id: "E03", x:  890, y:  190, name: "Crouch Hill"                 },
+    { id: "E04", x:  930, y:  180, name: "Harringay Green Lines"       },
+
+    { id: "E05", x:  985, y:  180, name: "South Tottenham"             },
+    { id: "E06", x: 1075, y:  180, name: "Blackhorse Road"             },
+    { id: "E07", x: 1140, y:  180, name: "Walthamstow Queen's Road"    },
+
+    { id: "E08", x: 1195, y:  205, name: "Leyton Midland Road"         },
+    { id: "E09", x: 1195, y:  220, name: "Leytonstone High Road"       },
+    { id: "E10", x: 1195, y:  235, name: "Wanstead Park"               },
+    { id: "E11", x: 1195, y:  255, name: "Woodgrange Park"             },
+    { id: "E12", x: 1195, y:  275, name: "Barking"                     },
+    { id: "E13", x: 1195, y:  290, name: "Barking Riverside"           },
+
+    { id: "F01", x: 1060, y:   75, name: "Romford"                     },
+    { id: "F02", x: 1125, y:   75, name: "Emerson Park"                },
+    { id: "F03", x: 1190, y:   75, name: "Upminster"                   },
+];
+
+link_list =
+[
+    { id1: "A01", id2: "A02" },
+    { id1: "A02", id2: "A03" },
+    { id1: "A03", id2: "A04" },
+    { id1: "A04", id2: "A05" },
+    { id1: "A05", id2: "A06" },
+    { id1: "A06", id2: "A07" },
+    { id1: "A07", id2: "A08" },
+    { id1: "A08", id2: "A09" },
+    { id1: "A09", id2: "A10" },
+    { id1: "A10", id2: "A11" },
+    { id1: "A11", id2: "A12" },
+    { id1: "A12", id2: "A13" },
+    { id1: "A13", id2: "A14" },
+    { id1: "A14", id2: "A15" },
+    { id1: "A15", id2: "A16" },
+    { id1: "A16", id2: "A17" },
+    { id1: "A17", id2: "A18" },
+    { id1: "A18", id2: "A19" },
+
+    { id1: "B01", id2: "B02" },
+    { id1: "B02", id2: "B03" },
+    { id1: "B03", id2: "B04" },
+    { id1: "B04", id2: "B05" },
+    { id1: "B05", id2: "B06" },
+    { id1: "B06", id2: "B07" },
+    { id1: "B07", id2: "B08" },
+    { id1: "B08", id2: "B09" },
+    { id1: "B09", id2: "B10" },
+    { id1: "B10", id2: "B11" },
+    { id1: "B11", id2: "B12" },
+    { id1: "B12", id2: "B13" },
+    { id1: "B13", id2: "B14" },
+    { id1: "B14", id2: "B15" },
+    { id1: "B15", id2: "B16" },
+    { id1: "B16", id2: "B17" },
+    { id1: "B17", id2: "B18" },
+    { id1: "B18", id2: "B19" },
+    { id1: "B19", id2: "B20" },
+    { id1: "B20", id2: "B21" },
+    { id1: "B21", id2: "B22" },
+    { id1: "B22", id2: "B23" },
+
+    { id1: "B06", id2: "B24" },
+    { id1: "B24", id2: "B25" },
+    { id1: "B25", id2: "B26" },
+    { id1: "B26", id2: "B27" },
+    { id1: "B27", id2: "B28" },
+    { id1: "A14", id2: "B06" },
+
+    { id1: "C01", id2: "C02" },
+    { id1: "C02", id2: "C03" },
+    { id1: "C03", id2: "C04" },
+    { id1: "C04", id2: "C05" },
+    { id1: "C05", id2: "C06" },
+    { id1: "C06", id2: "C07" },
+    { id1: "C07", id2: "C08" },
+    { id1: "C08", id2: "C09" },
+    { id1: "C09", id2: "C10" },
+    { id1: "C10", id2: "C11" },
+    { id1: "C11", id2: "C12" },
+    { id1: "C12", id2: "C13" },
+    { id1: "C13", id2: "C14" },
+    { id1: "C14", id2: "C15" },
+    { id1: "C15", id2: "C16" },
+    { id1: "C16", id2: "C17" },
+    { id1: "C17", id2: "C18" },
+
+    { id1: "C07", id2: "C19" },
+    { id1: "C07", id2: "C20" },
+
+    { id1: "C19", id2: "C20" },
+    { id1: "C20", id2: "C21" },
+    { id1: "C21", id2: "C22" },
+    { id1: "C22", id2: "C23" },
+    { id1: "C23", id2: "C24" },
+    { id1: "C24", id2: "C25" },
+
+    { id1: "C24", id2: "C26" },
+    { id1: "C26", id2: "C27" },
+    { id1: "C27", id2: "C28" },
+    { id1: "C28", id2: "C29" },
+
+    { id1: "B17", id2: "C18" },
+    { id1: "B18", id2: "C17" },
+    { id1: "B19", id2: "C16" },
+
+    { id1: "D01", id2: "D02" },
+    { id1: "D02", id2: "D03" },
+    { id1: "D03", id2: "D04" },
+    { id1: "D04", id2: "D05" },
+    { id1: "D05", id2: "D06" },
+    { id1: "D06", id2: "D07" },
+    { id1: "D07", id2: "D08" },
+    { id1: "D08", id2: "D09" },
+    { id1: "D09", id2: "D10" },
+    { id1: "D10", id2: "D11" },
+    { id1: "D11", id2: "D12" },
+    { id1: "D12", id2: "D13" },
+    { id1: "D13", id2: "D14" },
+    { id1: "D14", id2: "D15" },
+    { id1: "D15", id2: "D16" },
+    { id1: "D16", id2: "D17" },
+
+    { id1: "D13", id2: "D18" },
+    { id1: "D18", id2: "D19" },
+
+    { id1: "D02", id2: "D20" },
+    { id1: "D05", id2: "D20" },
+
+    { id1: "D20", id2: "D21" },
+    { id1: "D21", id2: "D22" },
+    { id1: "D22", id2: "D23" },
+    { id1: "D23", id2: "D24" },
+    { id1: "D24", id2: "D25" },
+    { id1: "D25", id2: "D26" },
+
+    { id1: "B20", id2: "D20" },
+
+    { id1: "E01", id2: "E02" },
+    { id1: "E02", id2: "E03" },
+    { id1: "E03", id2: "E04" },
+    { id1: "E04", id2: "E05" },
+    { id1: "E05", id2: "E06" },
+    { id1: "E06", id2: "E07" },
+    { id1: "E07", id2: "E08" },
+    { id1: "E08", id2: "E09" },
+    { id1: "E09", id2: "E10" },
+    { id1: "E10", id2: "E11" },
+    { id1: "E11", id2: "E12" },
+    { id1: "E12", id2: "E13" },
+
+    { id1: "B13", id2: "E01" },
+    { id1: "D09", id2: "E05" },
+    { id1: "D23", id2: "E07" },
+
+    { id1: "F01", id2: "F02" },
+    { id1: "F02", id2: "F03" },
+];
+
+var getStationIndex = function(id)
+{
+    for (var i = 0; i < station_list.length; ++i)
+    {
+        if (station_list[i].id == id) { return i; }
+    }
+}
+
+var redprint = function(message, indent = 0)
+{
+    var indentation = "";
+    if (indent > 0)
+    {
+        for (var i = 0; i < indent - 1; ++i) { indentation += "  "; }
+        indentation += "| - ";
+    }
+    console.log(indentation + "%c" + message, "color: #FF5577");
+    //Serial.println("[INFO]: " + indentation + "\033[38;5;1m" + message + "\033[0m");
+}
+
+var vicinity = function(id, level, depth = 0, prev = null)
+{
+    if (depth > level) { return; }
+    var idx = getStationIndex(id);
+    if (idx != null)
+    {
+        redprint(station_list[idx].name, depth);
+        for (var i = 0; i < link_list.length; ++i)
+        {
+            var id2 = null;
+            if (link_list[i].id1 == id) { id2 = link_list[i].id2; }
+            else if (link_list[i].id2 == id) { id2 = link_list[i].id1; }
+            if ((id2 != null) && (id2 != id) && (id2 != prev)) { vicinity(id2, level, depth + 1, id); }
+        }
+    }
+}
+
+var inquisite = function(event, id, level = 3)
+{
+    var idx = getStationIndex(id);
+    console.log(id);
+    console.log(idx);
+    vicinity(id, level);
+    var cursor = document.getElementById("cursor");
+    cursor.style.left = parseFloat(event.x - 10) + "px";
+    cursor.style.top = parseFloat(event.y - 10) + "px";
+    var msg = station_list[idx].name;
+    setTimeout("alert(\"" + msg + "\");", 100); //!!!
+}
+
+window.onload = function()
+{
+    canvas = document.getElementsByTagName("canvas")[0];
+    ctx = canvas.getContext("2d");
+
+    content = document.getElementById("content");
+    header = document.getElementById("header");
+    footer = document.getElementById("footer");
+
+    for (var i = 0; i < station_list.length; ++i)
+    {
+        var pin = document.createElement("g");
+        pin.setAttribute("class", "station");
+        pin.setAttribute("id", station_list[i].id);
+        pin.setAttribute("name", station_list[i].name);
+        pin.setAttribute("x", station_list[i].x);
+        pin.setAttribute("y", station_list[i].y);
+
+        var ico = document.createElement("circle");
+        ico.setAttribute("cx", station_list[i].x);
+        ico.setAttribute("cy", station_list[i].y);
+        ico.setAttribute("r", "6");
+        ico.setAttribute("fill", "#33333333");
+        ico.setAttribute("stroke", "#FF0040FF");
+        ico.setAttribute("stroke-width", "1");
+        ico.setAttribute("onclick", "inquisite(event, \"" + station_list[i].id + "\");"); //!!!
+        pin.appendChild(ico);
+
+        var txt = document.createElement("text");
+        txt.innerText = station_list[i].name;
+        txt.setAttribute("x", station_list[i].x);
+        txt.setAttribute("y", station_list[i].y - 10);
+        txt.setAttribute("fill", "#FFFFFFFF");
+        txt.setAttribute("font-size", "6pt");
+        txt.setAttribute("text-anchor", "middle");
+        pin.appendChild(txt);
+
+        content.appendChild(pin);
+    }
+    content.innerHTML = content.innerHTML; //!!!
+    
+    window.onresize();
+    setInterval(render, 0);
+}
+
+window.onresize = function()
+{
+    var style = window.getComputedStyle(canvas);
+    w = canvas.width = parseFloat(style.width) * render_scale;
+    h = canvas.height = parseFloat(style.height) * render_scale;
+    l = (render_scale - 1.0) * 50;
+    canvas.style.transform = "translate(" + l + "%, " + l + "%) scale(" + render_scale + ")";
+}
+
+point = function(element)
+{
+    var rect = element.getBoundingClientRect();
+    return { x: rect.left + 6, y: rect.top + 6 };
+}
+
+render = function()
+{
+    canvas.width = canvas.width;
+
+    ctx.strokeStyle = "#FF0040FF";
+    ctx.shadowColor = ctx.strokeStyle;
+    ctx.shadowBlur = line_blur;
+    ctx.lineWidth = line_width;
+    ctx.lineCap = "round";
+
+    canvas.style.filter = "blur(" + render_blur + "px)";
+
+    for (var i = 0; i < link_list.length; ++i)
+    {
+        var a = point(document.getElementById(link_list[i].id1).children[0]);
+        var b = point(document.getElementById(link_list[i].id2).children[0]);
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+    }
+}
+</script>
+<style>
+    * { box-sizing: border-box; margin: auto; font-family: Orbitron, Helvetica, sans-serif; user-select: none; white-space: nowrap; color-scheme: dark; }
+    body { background: black; color: #FF0040FF; overflow: hidden; }
+    canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; image-rendering: pixelated; }
+    #content { position: fixed; top: 12vh; left: 0; width: 100%; height: calc(100% - 24vh); z-index: 9999; }
+    #header { position: fixed; resize: none; background: #000000AF; width: 100%; height: 12vh; padding-top: 0px; padding-bottom: 30px; text-align: center; z-index: 9999; border-bottom: thin gray solid; font-size: 32pt; top: 20px; }
+    #footer { position: fixed; resize: none; background: #000000AF; width: 100%; height: 12vh; padding-top: 5px; padding-bottom: 30px; text-align: center; z-index: 9999; border-top: thin gray solid; bottom: 0; text-align: left; overflow-y: scroll; }
+    #mapimg { position: fixed; top: 12vh; left: calc(50% - 20vw); width: 40vw; height: calc(100% - 24vh); z-index: 9998; }
+    #cursor { position: fixed; top: 0; left: 0; width: 20px; height: 20px; border: 1px #FF0040FF solid; z-index: 9999; }
+</style>
+<canvas></canvas>
+<svg id="content" xmlns="http://www.w3.org/2000/svg"></svg>
+<!--<img id="mapimg" src="overground_map.png"></img>-->
+<div id="cursor"></div>
+<div id="header"><h1>[VK_IOMAP_OVERGROUND_VICINITY]</h1></div>
+<div id="footer"><h1 align="left">VK - VULKAN GRAPHICS ENGINE PIPELINE</h1><h1 align="center">IOMAP - INPUT-OUTPUT MAPPING DIAGRAM</h1><h1 align="right">OVERGROUND-VICINITY - NEAREST STATIONS</h1></div>
