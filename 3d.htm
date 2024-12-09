@@ -1,0 +1,187 @@
+<title>3d</title>
+<script>
+
+fill = "#000";
+stroke = "#F06";
+shadow = 6;
+
+RX = 0;
+RY = 0;
+RZ = 0;
+
+X = [];
+Y = [];
+Z = 1000;
+
+DX = [];
+DY = [];
+DZ = [];
+
+PA = [];
+PB = [];
+PC = [];
+PD = [];
+
+BX = [];
+BY = [];
+BZ = [];
+
+window.onload = function()
+{
+    document.body.style.background = "black";
+    canvas = document.createElement("canvas");
+    document.body.appendChild(canvas);
+    canvas.style.position = "fixed";
+    canvas.style.top = "0";
+    canvas.style.left = "0";
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.onmousemove = GetMousePos;
+    canvas.onmousewheel = GetScrollPos;
+    ctx = canvas.getContext("2d");
+    window.onresize = ClearScreen;
+    ClearScreen();
+    setTimeout(Setup, 0);
+    setInterval(Rotate, 0);
+    setInterval(Loop, 0);
+}
+
+var ClearScreen = function()
+{
+    var style = window.getComputedStyle(canvas);
+    w = canvas.width = parseFloat(style.width);
+    h = canvas.height = parseFloat(style.height);
+    hw = w / 2; hh = h / 2;
+    ctx.fillStyle = fill;
+    ctx.fillRect(0, 0, w, h);
+    ctx.lineWidth = shadow / 10;
+    ctx.strokeStyle = stroke;
+    ctx.shadowColor = stroke;
+    ctx.shadowBlur = shadow;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+}
+
+var Setup = function()
+{
+    AddBox(0, 0, 0);
+    AddBox(200, 0, 0);
+    AddBox(-200, 0, 0);
+    AddBox(0, 200, 0);
+    AddBox(0, -200, 0);
+    AddBox(0, 0, 200);
+    AddBox(0, 0, -200);
+}
+
+var Loop = function()
+{
+    ClearScreen();
+    DrawBox();
+}
+
+var AddDot = function(x, y, z)
+{
+    DX.push(x);
+    DY.push(y);
+    DZ.push(z);
+}
+
+var AddPad = function(a, b, c, d)
+{
+    PA.push(a);
+    PB.push(b);
+    PC.push(c);
+    PD.push(d);
+}
+
+var AddBox = function(ox, oy, oz, s = 100)
+{
+    var o = DX.length;
+    BZ.push(o);
+    AddDot(ox - s, oy + s, oz + s);
+    AddDot(ox + s, oy + s, oz + s);
+    AddDot(ox + s, oy + s, oz - s);
+    AddDot(ox - s, oy + s, oz - s);
+    AddDot(ox - s, oy - s, oz + s);
+    AddDot(ox + s, oy - s, oz + s);
+    AddDot(ox + s, oy - s, oz - s);
+    AddDot(ox - s, oy - s, oz - s);
+    AddPad(o + 0, o + 1, o + 2, o + 3);
+    AddPad(o + 4, o + 5, o + 6, o + 7);
+    AddPad(o + 0, o + 4, o + 5, o + 1);
+    AddPad(o + 1, o + 5, o + 6, o + 2);
+    AddPad(o + 2, o + 6, o + 7, o + 3);
+    AddPad(o + 3, o + 7, o + 4, o + 0);
+    return BZ[BZ.length - 1];
+}
+
+var DrawBox = function(z = 1)
+{
+    for (var i = 0; i < BZ.length; ++i)
+    {
+        for (var j = 0; j < PA.length; ++j)
+        {
+            BX = new Array(X[PA[BZ[i] + j]], X[PB[BZ[i] + j]], X[PC[BZ[i] + j]], X[PD[BZ[i] + j]]);
+            BY = new Array(Y[PA[BZ[i] + j]], Y[PB[BZ[i] + j]], Y[PC[BZ[i] + j]], Y[PD[BZ[i] + j]]);
+            ctx.beginPath();
+            for (var k = 0; k < BX.length; ++k) { ctx.lineTo(BX[k], BY[k]); }
+            if (z) { ctx.lineTo(BX[0], BY[0]); }
+            ctx.closePath();
+            ctx.stroke();
+        }
+    }
+}
+
+var Sine = function(x)
+{
+    return Math.sin(x);
+}
+
+var Cosine = function(x)
+{
+    return Math.cos(x);
+}
+
+var Rotate = function()
+{
+    var rx = RY / -100;
+    var ry = RX / -100;
+    var rz = RZ / -100;
+    
+    var A = Sine(rx);
+    var B = Sine(ry);
+    var C = Sine(rz);
+    var D = Cosine(rx);
+    var E = Cosine(ry);
+    var F = Cosine(rz);
+
+    for (var i = 0; i < DX.length; ++i)
+    {
+        var x = DX[i];
+        var y = DY[i];
+        var z = DZ[i];
+
+        var R = (A * y) + (D * z);
+        var S = (D * y) - (A * z);
+        var T = (E * x) + (B * R);
+
+        var nx = (F * T) - (C * S);
+        var ny = (C * T) + (F * S);
+        var nz = (E * R) - (B * x);
+
+        X[i] = (nx / (nz + Z)) * Z + hw;
+        Y[i] = (ny / (nz + Z)) * Z + hh;
+    }
+}
+
+var GetMousePos = function(event)
+{
+    RX = event.clientX;
+    RY = event.clientY;
+}
+
+var GetScrollPos = function(event)
+{
+    RZ += event.deltaY / 10;
+}
+</script>
