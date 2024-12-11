@@ -1,0 +1,232 @@
+<script>RX=0;RY=0;RZ=0;X=[];Y=[];Z=1000;DX=[];DY=[];DZ=[];PA=[];PB=[];PC=[];PD=[];BX=[];BY=[];BZ=[];
+window.onload=function()
+{
+document.body.style.background="black";
+cvs=document.createElement("canvas");
+document.body.appendChild(cvs);
+cvs.style.position="fixed";
+cvs.style.top="0";
+cvs.style.left="0";
+cvs.style.width="100%";
+cvs.style.height="100%";
+cvs.onmousemove=Mouse;
+cvs.onmousewheel=Scroll;
+ctx=cvs.getContext("2d");
+window.onresize=ClearScreen;
+ClearScreen();ClearBuffers();
+Setup();setInterval(Loop,0);
+}
+ClearScreen=function()
+{
+style=window.getComputedStyle(cvs);
+w=cvs.width=parseFloat(style.width);
+h=cvs.height=parseFloat(style.height);
+hw=w/2;hh=h/2;
+ctx.fillStyle="#000";ctx.fillRect(0,0,w,h);
+ctx.lineWidth=0.6;ctx.shadowBlur=6;
+ctx.strokeStyle=ctx.shadowColor="#F06";
+ctx.lineCap=ctx.lineJoin="round";
+}
+ClearBuffers=function(){X=[];Y=[];DX=[];DY=[];DZ=[];PA=[];PB=[];PC=[];PD=[];BX=[];BY=[];BZ=[];}
+Setup=function()
+{
+AddBox1(0,0,0,200);
+AddBox2(0,0,0,100);
+Conjoin();
+Rotate();
+}
+Loop=function(){ClearScreen();ClearBuffers();Setup();DrawBox();}
+AddDot=function(x,y,z){DX.push(x);DY.push(y);DZ.push(z);}
+AddPad=function(a,b,c,d){PA.push(a);PB.push(b);PC.push(c);PD.push(d);}
+AddBox1=function(ox,oy,oz,s=100)
+{
+o=DX.length;BZ.push(o);tq=3/4;
+AddDot(...Pivot1(ox,oy,oz,-s,s,s,RY/100,RY/100,RY/100,-150,150,150)); //(-ox-s),(-oy+s),(-oz+s))); //RY/100,?,?
+AddDot(ox+s,oy+s,oz+s);
+AddDot(ox+s,oy+s,oz-s);
+AddDot(ox-s,oy+s,oz-s);
+AddDot(ox-s,oy-s,oz+s);
+AddDot(ox+s,oy-s,oz+s);
+AddDot(ox+s,oy-s,oz-s);
+AddDot(ox-s,oy-s,oz-s);
+AddPad(o+0,o+1,o+2,o+3);
+AddPad(o+4,o+5,o+6,o+7);
+AddPad(o+0,o+4,o+5,o+1);
+AddPad(o+1,o+5,o+6,o+2);
+AddPad(o+2,o+6,o+7,o+3);
+AddPad(o+3,o+7,o+4,o+0);
+return BZ[BZ.length-1];
+}
+AddBox2=function(ox,oy,oz,s=100)
+{
+o=DX.length;BZ.push(o);tq=3/4;
+AddDot(...Pivot2(ox,oy,oz,-s,s,s));
+AddDot(ox+s,oy+s,oz+s);
+AddDot(ox+s,oy+s,oz-s);
+AddDot(ox-s,oy+s,oz-s);
+AddDot(ox-s,oy-s,oz+s);
+AddDot(ox+s,oy-s,oz+s);
+AddDot(ox+s,oy-s,oz-s);
+AddDot(ox-s,oy-s,oz-s);
+AddPad(o+0,o+1,o+2,o+3);
+AddPad(o+4,o+5,o+6,o+7);
+AddPad(o+0,o+4,o+5,o+1);
+AddPad(o+1,o+5,o+6,o+2);
+AddPad(o+2,o+6,o+7,o+3);
+AddPad(o+3,o+7,o+4,o+0);
+return BZ[BZ.length-1];
+}
+AddRod=function(a,b){PA.push(a);PB.push(b);PC.push(a);PD.push(b);}
+Conjoin=function()
+{
+AddRod(0,0+8);
+AddRod(1,1+8);
+AddRod(2,2+8);
+AddRod(3,3+8);
+AddRod(4,4+8);
+AddRod(5,5+8);
+AddRod(6,6+8);
+AddRod(7,7+8);
+}
+DrawBox=function(z=1)
+{
+for(i=0;i<BZ.length;++i){for(j=0;j<PA.length;++j){
+BX=new Array(X[PA[BZ[i]+j]],X[PB[BZ[i]+j]],X[PC[BZ[i]+j]],X[PD[BZ[i]+j]]);
+BY=new Array(Y[PA[BZ[i]+j]],Y[PB[BZ[i]+j]],Y[PC[BZ[i]+j]],Y[PD[BZ[i]+j]]);
+ctx.beginPath();
+for(k=0;k<BX.length;++k){ctx.lineTo(BX[k],BY[k]);}
+if(z){ctx.lineTo(BX[0],BY[0]);}
+ctx.closePath();
+ctx.stroke();
+}}}
+Sine=function(x){return Math.sin(x);}
+Cosine=function(x){return Math.cos(x);}
+Rotate=function()
+{
+rx=0;//RY/-100;
+ry=RX/-100;
+rz=0;//rz=RZ/-100;
+A=Sine(rx);
+B=Sine(ry);
+C=Sine(rz);
+D=Cosine(rx);
+E=Cosine(ry);
+F=Cosine(rz);
+for(i=0;i<DX.length;++i)
+{
+x=DX[i];
+y=DY[i];
+z=DZ[i];
+R=(A*y)+(D*z);
+S=(D*y)-(A*z);
+T=(E*x)+(B*R);
+nx=(F*T)-(C*S);
+ny=(C*T)+(F*S);
+nz=(E*R)-(B*x);
+X[i]=(nx/(nz+Z))*Z+hw;
+Y[i]=(ny/(nz+Z))*Z+hh;
+}}
+SineMod=function(i)
+{
+/*
+shift=Math.PI/2.0;
+phase=i/Math.PI*2.0;
+if(phase<1.0/8.0){return Math.tan(i);}
+if(phase<2.0/8.0){return 1.0;}
+if(phase<3.0/8.0){return 1.0;}
+if(phase<4.0/8.0){return Math.tan((2.0*shift)-i);}
+if(phase<5.0/8.0){return -Math.tan(i-(2.0*shift));}
+if(phase<6.0/8.0){return -1.0;}
+if(phase<7.0/8.0){return -1.0;}
+if(phase<8.0/8.0){return -Math.tan((4.0*shift)-i);}
+return 0.0;
+*/
+return Math.sin(i);
+}
+CosineMod=function(i)
+{
+/*
+shift=Math.PI/2.0;
+phase=i/Math.PI*2.0;
+if(phase<1.0/8.0){return 1.0;}
+if(phase<2.0/8.0){return Math.tan(shift-i);}
+if(phase<3.0/8.0){return -Math.tan(i-shift);}
+if(phase<4.0/8.0){return -1.0;}
+if(phase<5.0/8.0){return -1.0;}
+if(phase<6.0/8.0){return -Math.tan((3.0*shift)-i);}
+if(phase<7.0/8.0){return Math.tan(i-(3.0*shift));}
+if(i<8.0/8.0){return 1.0;}
+return 0.0;
+*/
+return Math.cos(i);
+}
+Pivot1=function(ox,oy,oz,tx=0,ty=0,tz=0,rx=0,ry=0,rz=0,px=0,py=0,pz=0)
+{
+x = (ox+tx) - px;
+y = (oy+ty) - py;
+z = (oz+tz) - pz;
+nx = x * CosineMod(rx);
+ny = y * CosineMod(ry);
+nz = z * CosineMod(rz);
+nx += px;
+ny += py;
+nz += pz;
+/*
+x=0;
+y=0;
+z=0;
+x-=px;
+y-=py;
+z-=pz;
+A=Sine(rx);
+B=Sine(ry);
+C=Sine(rz);
+D=Cosine(rx);
+E=Cosine(ry);
+F=Cosine(rz);
+//A=SineMod(rx);
+//B=SineMod(ry);
+//C=SineMod(rz);
+//D=CosineMod(rx);
+//E=CosineMod(ry);
+//F=CosineMod(rz);
+R=(A*y)+(D*z);
+S=(D*y)-(A*z);
+T=(E*x)+(B*R);
+nx=(F*T)-(C*S);
+ny=(C*T)+(F*S);
+nz=(E*R)-(B*x);
+nx+=px+tx+ox;
+ny+=py+ty+oy;
+nz+=pz+tz+oz;
+*/
+return [nx, ny, nz];
+}
+Pivot2=function(ox,oy,oz,tx,ty,tz,rx=0,ry=0,rz=0,px=0,py=0,pz=0)
+{
+x=0;
+y=0;
+z=0;
+x-=px;
+y-=py;
+z-=pz;
+A=-Sine(rx);
+B=-Sine(ry);
+C=-Sine(rz);
+D=-Cosine(rx);
+E=-Cosine(ry);
+F=-Cosine(rz);
+R=(A*y)+(D*z);
+S=(D*y)-(A*z);
+T=(E*x)+(B*R);
+nx=(F*T)-(C*S);
+ny=(C*T)+(F*S);
+nz=(E*R)-(B*x);
+nx+=px+tx+ox;
+ny+=py+ty+oy;
+nz+=pz+tz+oz;
+return [nx, ny, nz];
+}
+Mouse=function(e){RX=e.x;RY=e.y;};
+Scroll=function(e){RZ+=e.deltaY/10;}
+</script>

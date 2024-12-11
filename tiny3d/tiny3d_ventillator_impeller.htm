@@ -1,0 +1,225 @@
+<script>RX=0;RY=0;RZ=0;X=[];Y=[];Z=1000;DX=[];DY=[];DZ=[];RA=[];RB=[];
+window.onload=function()
+{
+document.body.style.background="black";
+cvs=document.createElement("canvas");
+document.body.appendChild(cvs);
+cvs.style.position="fixed";
+cvs.style.top="0";
+cvs.style.left="0";
+cvs.style.width="100%";
+cvs.style.height="100%";
+cvs.onmousemove=Mouse;
+cvs.onmousewheel=Scroll;
+ctx=cvs.getContext("2d");
+window.onresize=ClearScreen;
+ClearScreen();ClearBuffers();
+Setup();setInterval(Loop,0);
+}
+ClearScreen=function()
+{
+style=window.getComputedStyle(cvs);
+w=cvs.width=parseFloat(style.width);
+h=cvs.height=parseFloat(style.height);
+hw=w/2;hh=h/2;
+ctx.fillStyle="#000";ctx.fillRect(0,0,w,h);
+ctx.lineWidth=0.6;ctx.shadowBlur=6;
+ctx.strokeStyle=ctx.shadowColor="#F06";
+ctx.lineCap=ctx.lineJoin="round";
+}
+ClearBuffers=function(){X=[];Y=[];DX=[];DY=[];DZ=[];RA=[];RB=[]}
+Setup=function()
+{
+AddDot(...Involve( 200, 200, 200, 0.00), 10);
+AddDot(...Involve( 200, 200, 200, 0.25), 10);
+AddDot(...Involve( 200, 200, 200, 0.50), 10);
+AddDot(...Involve( 200, 200, 200, 0.75), 10);
+
+AddDot(...Involve( 200,-200, 200, 0.00), 10);
+AddDot(...Involve( 200,-200, 200, 0.25), 10);
+AddDot(...Involve( 200,-200, 200, 0.50), 10);
+AddDot(...Involve( 200,-200, 200, 0.75), 10);
+
+AddDot(...Involve( 200, 200,-200, 0.00), 10);
+AddDot(...Involve( 200, 200,-200, 0.25), 10);
+AddDot(...Involve( 200, 200,-200, 0.50), 10);
+AddDot(...Involve( 200, 200,-200, 0.75), 10);
+
+AddDot(...Involve( 200,-200,-200, 0.00), 10);
+AddDot(...Involve( 200,-200,-200, 0.25), 10);
+AddDot(...Involve( 200,-200,-200, 0.50), 10);
+AddDot(...Involve( 200,-200,-200, 0.75), 10);
+
+AddRod(0,0+4);
+AddRod(1,1+4);
+AddRod(2,2+4);
+AddRod(3,3+4);
+AddRod(4,4+4);
+AddRod(5,5+4);
+AddRod(6,6+4);
+AddRod(7,7+4);
+
+Rotate();
+}
+Loop=function(){ClearScreen();ClearBuffers();Setup();Draw();}
+AddDot=function(x,y,z){DX.push(x);DY.push(y);DZ.push(z);}
+AddRod=function(a,b){RA.push(a);RB.push(b);}
+Draw=function()
+{
+for(k=0;k<RA.length;++k){
+ctx.beginPath();
+ctx.moveTo(X[RA[k]],Y[RA[k]]);
+ctx.lineTo(X[RB[k]],Y[RB[k]]);
+ctx.closePath();
+ctx.stroke();
+}}
+Sine=function(x){return Math.sin(x);}
+Cosine=function(x){return Math.cos(x);}
+Rotate=function()
+{
+rx=0;//RY/-100;
+ry=10;//!!!not actually 45 //RX/-100;
+rz=0;//rz=RZ/-100;
+A=Sine(rx);
+B=Sine(ry);
+C=Sine(rz);
+D=Cosine(rx);
+E=Cosine(ry);
+F=Cosine(rz);
+for(i=0;i<DX.length;++i)
+{
+x=DX[i];
+y=DY[i];
+z=DZ[i];
+R=(A*y)+(D*z);
+S=(D*y)-(A*z);
+T=(E*x)+(B*R);
+nx=(F*T)-(C*S);
+ny=(C*T)+(F*S);
+nz=(E*R)-(B*x);
+X[i]=(nx/(nz+Z))*Z+hw;
+Y[i]=(ny/(nz+Z))*Z+hh;
+}}
+SineMod=function(i)
+{
+/*
+shift=Math.PI/2.0;
+phase=i/Math.PI*2.0;
+if(phase<1.0/8.0){return Math.tan(i);}
+if(phase<2.0/8.0){return 1.0;}
+if(phase<3.0/8.0){return 1.0;}
+if(phase<4.0/8.0){return Math.tan((2.0*shift)-i);}
+if(phase<5.0/8.0){return -Math.tan(i-(2.0*shift));}
+if(phase<6.0/8.0){return -1.0;}
+if(phase<7.0/8.0){return -1.0;}
+if(phase<8.0/8.0){return -Math.tan((4.0*shift)-i);}
+return 0.0;
+*/
+return Math.sin(i);
+}
+CosineMod=function(i)
+{
+/*
+shift=Math.PI/2.0;
+phase=i/Math.PI*2.0;
+if(phase<1.0/8.0){return 1.0;}
+if(phase<2.0/8.0){return Math.tan(shift-i);}
+if(phase<3.0/8.0){return -Math.tan(i-shift);}
+if(phase<4.0/8.0){return -1.0;}
+if(phase<5.0/8.0){return -1.0;}
+if(phase<6.0/8.0){return -Math.tan((3.0*shift)-i);}
+if(phase<7.0/8.0){return Math.tan(i-(3.0*shift));}
+if(i<8.0/8.0){return 1.0;}
+return 0.0;
+*/
+return Math.cos(i);
+}
+Pivot1=function(ox,oy,oz,tx=0,ty=0,tz=0,rx=0,ry=0,rz=0,px=0,py=0,pz=0)
+{
+x=0;
+y=0;
+z=0;
+x-=px;
+y-=py;
+z-=pz;
+A=Sine(rx);
+B=Sine(ry);
+C=Sine(rz);
+D=Cosine(rx);
+E=Cosine(ry);
+F=Cosine(rz);
+R=(A*y)+(D*z);
+S=(D*y)-(A*z);
+T=(E*x)+(B*R);
+nx=(F*T)-(C*S);
+ny=(C*T)+(F*S);
+nz=(E*R)-(B*x);
+nx+=px+tx+ox;
+ny+=py+ty+oy;
+nz+=pz+tz+oz;
+return [nx, ny, nz];
+}
+Pivot2=function(ox,oy,oz,tx,ty,tz,rx=0,ry=0,rz=0,px=0,py=0,pz=0)
+{
+x=0;
+y=0;
+z=0;
+x-=px;
+y-=py;
+z-=pz;
+A=-Sine(rx);
+B=-Sine(ry);
+C=-Sine(rz);
+D=-Cosine(rx);
+E=-Cosine(ry);
+F=-Cosine(rz);
+R=(A*y)+(D*z);
+S=(D*y)-(A*z);
+T=(E*x)+(B*R);
+nx=(F*T)-(C*S);
+ny=(C*T)+(F*S);
+nz=(E*R)-(B*x);
+nx+=px+tx+ox;
+ny+=py+ty+oy;
+nz+=pz+tz+oz;
+return [nx, ny, nz];
+}
+Involve = function(x, y, z, phase_offset)
+{
+    nx = x;
+    ny = y;
+    nz = z;
+    phase = ((RY / 200) + phase_offset) % 1;
+    step = 0;
+    if (phase < (1 / 4))
+    {
+        nx = x * ((0.5 - phase) * 2);
+        ny = y * ((0.5 - phase) * 2);
+        nz = z * ((0.5 - phase) * 2);
+        step = 1;
+    }
+    else if (phase < (2 / 4))
+    {
+        nx = x * ((0.375 - phase) * 4);
+        ny = y * 0.5; 
+        nz = z * 0.5;
+        step = 2;
+    }
+    else if (phase < (3 / 4))
+    {
+        nx = -x * ((phase - 0.25) * 2);
+        ny =  y * ((phase - 0.25) * 2);
+        nz =  z * ((phase - 0.25) * 2);
+        step = 3;
+    }
+    else if (phase < (4 / 4))
+    {
+        nx = -x * ((0.875 - phase) * 8);
+        step = 4;
+    }
+    //document.title = step;
+    return [nx, ny, nz];
+}
+Mouse=function(e){RX=e.x;RY=e.y;};
+Scroll=function(e){RZ+=e.deltaY/10;}
+</script>
