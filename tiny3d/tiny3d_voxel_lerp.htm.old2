@@ -1,0 +1,210 @@
+<script>RX=0;RY=0;RZ=0;X=[];Y=[];Z=1000;DX=[];DY=[];DZ=[];RA=[];RB=[];Q1=[];Q2=[];Q3=[];Q4=[];B1=[];B2=[];B3=[];B4=[];B5=[];B6=[];B7=[];B8=[];
+window.onload=function()
+{
+document.body.style.background="black";
+cvs=document.createElement("canvas");
+document.body.appendChild(cvs);
+cvs.style.position="fixed";
+cvs.style.top="0";
+cvs.style.left="0";
+cvs.style.width="100%";
+cvs.style.height="100%";
+cvs.onmousemove=Mouse;
+cvs.onmousewheel=Scroll;
+ctx=cvs.getContext("2d");
+window.onresize=ClearScreen;
+ClearScreen();ClearBuffers();
+Setup();setInterval(Loop,0);
+}
+ClearScreen=function()
+{
+style=window.getComputedStyle(cvs);
+w=cvs.width=parseFloat(style.width);
+h=cvs.height=parseFloat(style.height);
+hw=w/2;hh=h/2;
+ctx.fillStyle="#000";ctx.fillRect(0,0,w,h);
+ctx.lineWidth=0.6;ctx.shadowBlur=6;
+ctx.strokeStyle=ctx.shadowColor="#0FF";
+ctx.lineCap=ctx.lineJoin="round";
+}
+ClearBuffers=function(){X=[];Y=[];DX=[];DY=[];DZ=[];RA=[];RB=[];Q1=[];Q2=[];Q3=[];Q4=[];B1=[];B2=[];B3=[];B4=[];B5=[];B6=[];B7=[];B8=[];}
+Setup=function()
+{
+AddDot(-1, -1, -1);
+AddDot(-1, -1,  1);
+AddDot(-1,  1, -1);
+AddDot(-1,  1,  1);
+AddDot( 1, -1, -1);
+AddDot( 1, -1,  1);
+AddDot( 1,  1, -1);
+AddDot( 1,  1,  1);
+AddRod(0,1);
+AddRod(1,3);
+AddRod(3,2);
+AddRod(2,0);
+AddRod(4,5);
+AddRod(5,7);
+AddRod(7,6);
+AddRod(6,4);
+AddRod(0,4);
+AddRod(1,5);
+AddRod(2,6);
+AddRod(3,7);
+AddPad(0,1,3,2);
+AddPad(4,5,7,6);
+AddPad(0,1,5,4);
+AddPad(2,3,7,6);
+AddPad(0,2,6,4);
+AddPad(1,3,7,5);
+//AddBox(0,1,2,3,4,5,6,7);
+Rotate();
+}
+Loop=function(){ClearScreen();ClearBuffers();Setup();Draw();}
+Wrap=function(x,n,s){return ((x-s)>=(n-1))?(((x-s)%n)+s):x;}
+AddDot=function(x,y,z,w=100){DX.push(x*w);DY.push(y*w);DZ.push(z*w);}
+AddRod=function(a,b){RA.push(a);RB.push(b);}
+AddPad=function(a,b,c,d){Q1.push(a);Q2.push(b);Q3.push(c);Q4.push(d);}
+AddBox=function(a,b,c,d,e,f,g,h){B1.push(a);B2.push(b);B3.push(c);B4.push(d);B5.push(e);B6.push(f);B7.push(g);B8.push(h);}
+Draw=function()
+{
+for(k=0;k<RA.length;++k)
+{
+ctx.beginPath();
+ctx.moveTo(X[RA[k]],Y[RA[k]]);
+ctx.lineTo(X[RB[k]],Y[RB[k]]);
+ctx.closePath();
+ctx.stroke();
+}
+ctx.shadowBlur=0;
+//ctx.fillStyle="#111A";
+for(k=0;k<Q1.length;++k)
+{
+nx=4;
+ny=4;
+nt=nx*ny;
+nq=1/nt;
+for(i=0;i<nt;++i)
+{
+idx=parseInt(i/nx);
+idy=parseInt(i%nx);
+inx=idx/nx;
+iny=idy/ny;
+icx=1/nx;
+icy=1/ny;
+r=0;g=0;b=1;a=1.0;
+
+x1=X[Q1[k]];
+y1=Y[Q1[k]];
+x2=X[Q2[k]];
+y2=Y[Q2[k]];
+x3=X[Q3[k]];
+y3=Y[Q3[k]];
+x4=X[Q4[k]];
+y4=Y[Q4[k]];
+
+x1=Lerp(iny + 0.0, Lerp(inx + 0.0, X[Q1[k]], X[Q4[k]]), Lerp(inx + 0.0, X[Q2[k]], X[Q3[k]]));
+y1=Lerp(iny + 0.0, Lerp(inx + 0.0, Y[Q1[k]], Y[Q4[k]]), Lerp(inx + 0.0, Y[Q2[k]], Y[Q3[k]]));
+x2=Lerp(iny + icy, Lerp(inx + 0.0, X[Q1[k]], X[Q4[k]]), Lerp(inx + 0.0, X[Q2[k]], X[Q3[k]]));
+y2=Lerp(iny + icy, Lerp(inx + 0.0, Y[Q1[k]], Y[Q4[k]]), Lerp(inx + 0.0, Y[Q2[k]], Y[Q3[k]]));
+x3=Lerp(iny + icy, Lerp(inx + icx, X[Q1[k]], X[Q4[k]]), Lerp(inx + icx, X[Q2[k]], X[Q3[k]]));
+y3=Lerp(iny + icy, Lerp(inx + icx, Y[Q1[k]], Y[Q4[k]]), Lerp(inx + icx, Y[Q2[k]], Y[Q3[k]]));
+x4=Lerp(iny + 0.0, Lerp(inx + icx, X[Q1[k]], X[Q4[k]]), Lerp(inx + icx, X[Q2[k]], X[Q3[k]]));
+y4=Lerp(iny + 0.0, Lerp(inx + icx, Y[Q1[k]], Y[Q4[k]]), Lerp(inx + icx, Y[Q2[k]], Y[Q3[k]]));
+
+r = Lerp(0.5, x1, x3);
+b = Lerp(0.5, y2, x4);
+g = b;
+//r = 0;
+a = 0.1;
+
+ctx.fillStyle = ctx.fillStyle="rgba(" + (r * 255) + ", " + (g * 255) + ", " + (b * 255) + ", " + (a * 1) + ")";
+ctx.strokeStyle=ctx.fillStyle;
+ctx.beginPath();
+ctx.moveTo(x1, y1);
+ctx.lineTo(x2, y2);
+ctx.lineTo(x3, y3);
+ctx.lineTo(x4, y4);
+ctx.closePath();
+ctx.fill();
+ctx.stroke();
+}
+}
+//ctx.beginPath();
+//ctx.moveTo(X[X1[k]],Y[X1[k]]);
+//ctx.lineTo(X[X2[k]],Y[X2[k]]);
+//ctx.lineTo(X[X3[k]],Y[X3[k]]);
+//ctx.lineTo(X[X4[k]],Y[X4[k]]);
+//ctx.closePath();
+//ctx.fill();
+for(k=0;k<B1.length;++k)
+{
+nx=4;
+ny=4;
+nz=4;
+nt=nx*ny*nz;
+nq=1/nt;
+idx=0;
+idy=0;
+idz=0;
+for(i=0;i<nt;++i)
+{
+inx=idx/nx;
+iny=idy/ny;
+icx=1/nx;
+icy=1/ny;
+r=0.0;g=0.5;b=1.0;a=0.5;
+
+x1=Lerp(iny + 0.0, Lerp(inx + 0.0, X[Q1[k]], X[Q4[k]]), Lerp(inx + 0.0, X[Q2[k]], X[Q3[k]]));
+y1=Lerp(iny + 0.0, Lerp(inx + 0.0, Y[Q1[k]], Y[Q4[k]]), Lerp(inx + 0.0, Y[Q2[k]], Y[Q3[k]]));
+x2=Lerp(iny + icy, Lerp(inx + 0.0, X[Q1[k]], X[Q4[k]]), Lerp(inx + 0.0, X[Q2[k]], X[Q3[k]]));
+y2=Lerp(iny + icy, Lerp(inx + 0.0, Y[Q1[k]], Y[Q4[k]]), Lerp(inx + 0.0, Y[Q2[k]], Y[Q3[k]]));
+x3=Lerp(iny + icy, Lerp(inx + icx, X[Q1[k]], X[Q4[k]]), Lerp(inx + icx, X[Q2[k]], X[Q3[k]]));
+y3=Lerp(iny + icy, Lerp(inx + icx, Y[Q1[k]], Y[Q4[k]]), Lerp(inx + icx, Y[Q2[k]], Y[Q3[k]]));
+x4=Lerp(iny + 0.0, Lerp(inx + icx, X[Q1[k]], X[Q4[k]]), Lerp(inx + icx, X[Q2[k]], X[Q3[k]]));
+y4=Lerp(iny + 0.0, Lerp(inx + icx, Y[Q1[k]], Y[Q4[k]]), Lerp(inx + icx, Y[Q2[k]], Y[Q3[k]]));
+
+ctx.fillStyle = ctx.fillStyle="rgba(" + (r * 255) + ", " + (g * 255) + ", " + (b * 255) + ", " + (a * 1) + ")";
+ctx.strokeStyle=ctx.fillStyle;
+ctx.beginPath();
+ctx.moveTo(x1, y1);
+ctx.lineTo(x2, y2);
+ctx.lineTo(x3, y3);
+ctx.lineTo(x4, y4);
+ctx.closePath();
+ctx.fill();
+ctx.stroke();
+}
+}
+}
+Sine=function(x){return Math.sin(x);}
+Cosine=function(x){return Math.cos(x);}
+Lerp=function(x,a,b){return (b*x)+(a*(1-x));}
+Rotate=function()
+{
+rx=RY/-100;
+ry=RX/-100;
+rz=RZ/-100;
+A=Sine(rx);
+B=Sine(ry);
+C=Sine(rz);
+D=Cosine(rx);
+E=Cosine(ry);
+F=Cosine(rz);
+for(i=0;i<DX.length;++i)
+{
+x=DX[i];
+y=DY[i];
+z=DZ[i];
+R=(A*y)+(D*z);
+S=(D*y)-(A*z);
+T=(E*x)+(B*R);
+nx=(F*T)-(C*S);
+ny=(C*T)+(F*S);
+nz=(E*R)-(B*x);
+X[i]=(nx/(nz+Z))*Z+hw;
+Y[i]=(ny/(nz+Z))*Z+hh;
+}
+}
+Mouse=function(e){RX=e.x;RY=e.y;};
+Scroll=function(e){RZ+=e.deltaY/10;}
+</script>
