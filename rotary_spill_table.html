@@ -1,0 +1,155 @@
+<title>rotary_spill_table</title>
+<style>
+ * { box-sizing: border-box; margin: auto; font-family: sans-serif; overflow: hidden; }
+ canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
+ body { background: black; }
+</style>
+<script>
+window.onload = function()
+{
+    canvas = document.createElement("canvas");
+    ctx = canvas.getContext("2d");
+    document.body.appendChild(canvas);
+    window.onresize(); Q = []; mode = 1;
+    setInterval(refresh, 10);
+}
+window.onresize = function()
+{
+    style = window.getComputedStyle(canvas);
+    w = canvas.width = parseFloat(style.width);
+    h = canvas.height = parseFloat(style.height);
+    hw = w / 2; hh = h / 2; a = w / h; i = 1; t = 2 * Math.PI;
+}
+refresh = function()
+{
+    canvas.width = canvas.width;
+    canvas.fillStyle = "#000";
+    ctx.fillRect(0, 0, w, h);
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+
+    ctx.ellipse(hw, hh, 300, 299, i, 1, t);
+    ctx.fillStyle = "#003";
+    ctx.strokeStyle = "#004";
+    ctx.shadowColor = "#DDF";
+    ctx.shadowBlur = 10;
+    ctx.lineWidth = 6;
+    ctx.stroke();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.ellipse(hw, hh, 10, 10, i, 1, t);
+    ctx.fillStyle = "#003";
+    ctx.strokeStyle = "#004";
+    ctx.shadowColor = "#DDF";
+    ctx.shadowBlur = 10;
+    ctx.lineWidth = 6;
+    ctx.stroke();
+    ctx.fill();
+
+    for (o = 0; o < Q.length; ++o)
+    {
+        Q[o].x += Q[o].vx;
+        Q[o].y += Q[o].vy;
+        r = radius(Q[o].x, Q[o].y, hw, hh);
+        f = ravine(Q[o].x, Q[o].y, hw, hh);
+        if (mode == 2) { f = 0.1; }
+
+        velo_x = _velo_(Q[o].x, Q[o].y, Q[o].vx, Q[o].vx, 100, 1);
+        velo_y = _velo_(Q[o].x, Q[o].y, Q[o].vx, Q[o].vy, 100, 2);
+        perp_x = _perp_(Q[o].x, Q[o].y, Q[o].vx, Q[o].vy, 100, 1);
+        perp_y = _perp_(Q[o].x, Q[o].y, Q[o].vx, Q[o].vy, 100, 2);
+        draw_x = _draw_(Q[o].x, Q[o].y, hw, hh, 0.1, 1);
+        draw_y = _draw_(Q[o].x, Q[o].y, hw, hh, 0.1, 2);
+        spin_x = _spin_(Q[o].x, Q[o].y, hw, hh, 0.1, 1);
+        spin_y = _spin_(Q[o].x, Q[o].y, hw, hh, 0.1, 2);
+
+        if (r < 300) { Q[o].vx += (spin_x - Q[o].x) * f; Q[o].vy += (spin_y - Q[o].y) * f; }
+        if ((Q[o].x < 0) || (Q[o].x > w)) { Q[o].d = true; }
+        if ((Q[o].y < 0) || (Q[o].y > h)) { Q[o].d = true; }
+        if (mode == 1)
+        {
+            if (radius(0, 0, Q[o].vx, Q[o].vy) > 1)
+            {
+                Q[o].vx += (0 - Q[o].vx) * 0.1;
+                Q[o].vy += (0 - Q[o].vy) * 0.1;
+            }
+        }
+        if (mode == 2)
+        {
+            Q[o].vx = minmax(Q[o].vx, 1);
+            Q[o].vy = minmax(Q[o].vy, 1);
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(Q[o].x, Q[o].y);
+        ctx.lineTo(velo_x, velo_y);
+        ctx.strokeStyle = "#F03";
+        ctx.shadowColor = ctx.strokeStyle;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(Q[o].x, Q[o].y);
+        ctx.lineTo(perp_x, perp_y);
+        ctx.strokeStyle = "#3F0";
+        ctx.shadowColor = ctx.strokeStyle;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(Q[o].x, Q[o].y);
+        ctx.lineTo(draw_x, draw_y);
+        ctx.strokeStyle = "#03F";
+        ctx.shadowColor = ctx.strokeStyle;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(Q[o].x, Q[o].y);
+        ctx.lineTo(spin_x, spin_y);
+        ctx.strokeStyle = "#FF0";
+        ctx.shadowColor = ctx.strokeStyle;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.ellipse(Q[o].x, Q[o].y, 10, 10, i, 1, t);
+        ctx.fillStyle = "#FFF";
+        ctx.strokeStyle = "#FFF";
+        ctx.shadowColor = "#FFF";
+        ctx.shadowBlur = 10;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.fill();
+    }
+
+    l = Q.length;
+    for (c = 0; c < l; ++c)
+    {
+        for (o = 0; o < Q.length; ++o)
+        {
+            if (Q[o].d == true) { Q.splice(o, 1); break; } //Q.pop(o); }
+        }
+    }
+
+    i += 1; i %= t;
+}
+window.onmousedown = function(event)
+{
+    if (mode == 1)
+    {
+        Q.push({ x: event.x, y: event.y, vx: random(), vy: random(), d: false });
+    }
+    else if (mode == 2)
+    {
+        draw_x = (hw - event.x) * 0.001;
+        draw_y = (hh - event.y) * 0.001;
+        Q.push({ x: event.x, y: event.y, vx: draw_x, vy: draw_y, d: false });
+    }
+}
+minmax = function(a, b) { return Math.min(Math.max(a, -b), b); }
+random = function() { return (Math.random() * 2) - 1; }
+radius = function(x, y, cx, cy) { return Math.sqrt(Math.pow(x - cx, 2) + Math.pow(y - cy, 2)); }
+ravine = function(x, y, cx, cy) { return 0.0001 * Math.max(0, Math.abs(1 - Math.sqrt(Math.pow(x - cx, 2) + Math.pow(y - cy, 2)))); }
+_velo_ = function(x, y, vx, vy, a, b) { return (b == 1) ? (x + (vx * a)) : (y + (vy * a)); }
+_perp_ = function(x, y, vx, vy, a, b) { return (b == 1) ? (x + (vy * a)) : (y - (vx * a)); }
+_draw_ = function(x, y, cx, cy, a, b) { return (b == 1) ? x + ((cx - x) * a) : y + ((cy - y) * a); }
+_spin_ = function(x, y, cx, cy, a, b) { return (b == 1) ? x + ((cy - y) * a) : y - ((cx - x) * a); }
+</script>
