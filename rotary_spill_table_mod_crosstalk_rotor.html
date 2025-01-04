@@ -1,0 +1,116 @@
+<title>rotary_spill_table_mod_crosstalk_rotor</title>
+<style>
+ * { box-sizing: border-box; margin: auto; font-family: sans-serif; overflow: hidden; }
+ canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
+ body { background: black; }
+</style>
+<script>
+window.onload = function()
+{
+    canvas = document.createElement("canvas");
+    ctx = canvas.getContext("2d");
+    document.body.appendChild(canvas);
+    window.onresize(); Q = [];
+    for (i = 0; i < 4; ++i)
+    {
+        Q.push({ x: 0, y: 0 });
+    }
+    setInterval(refresh, 6);
+}
+window.onresize = function()
+{
+    style = window.getComputedStyle(canvas);
+    w = canvas.width = parseFloat(style.width);
+    h = canvas.height = parseFloat(style.height);
+    hw = w / 2; hh = h / 2; a = w / h; i = 1; t = 2 * Math.PI;
+}
+refresh = function()
+{
+    canvas.width = canvas.width;
+    canvas.fillStyle = "#000";
+    ctx.fillRect(0, 0, w, h);
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+
+    gradient = ctx.createLinearGradient(hw - 150, hh - 150, hw + 150, hh + 150);
+    gradient.addColorStop(0.0, "#99F");
+    gradient.addColorStop(0.2, "#FFF");
+    gradient.addColorStop(0.4, "#FFF");
+    gradient.addColorStop(1.0, "#DDF");
+
+    ctx.ellipse(hw, hh, 300, 299, i, 0.2, t);
+    ctx.fillStyle = gradient;
+    ctx.strokeStyle = "#004";
+    ctx.shadowColor = "#DDF";
+    ctx.shadowBlur = 10;
+    ctx.lineWidth = 6;
+    ctx.stroke();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.ellipse(hw, hh, 70, 70, i, 1, t);
+    ctx.fillStyle = gradient;
+    ctx.strokeStyle = "#004";
+    ctx.shadowColor = "#DDF";
+    ctx.shadowBlur = 10;
+    ctx.lineWidth = 6;
+    ctx.stroke();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.ellipse(hw, hh, 30, 30, 0, 0, t);
+    ctx.fillStyle = "#000";
+    ctx.strokeStyle = "#004";
+    ctx.shadowColor = "#DDF";
+    ctx.shadowBlur = 10;
+    ctx.lineWidth = 6;
+    ctx.stroke();
+    ctx.fill();
+
+    ctx.fillStyle = "#FFF";
+    ctx.font = "20pt sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("Cat5 over PS2 Multitap Square Tipped Soldering Iron Probe Stack x8+ (opt x10)", hw, hh - 420);
+    ctx.fillText("Buffer Swaps and Equilibrates with each Square Crosstalk Rotor Pad", hw, hh - 390);
+    ctx.fillText("on each brush-by of the quarter cycle (fractional phase)", hw, hh - 360);
+
+    for (o = 0; o < 10; ++o)
+    {
+        //ctx.beginPath();
+        ctx.ellipse(hw, hh, 320, 320, o * 36, 0.2, t);
+        ctx.strokeStyle = "#FFF";
+        ctx.shadowColor = "#DDF";
+        ctx.shadowBlur = 10;
+        ctx.lineWidth = 6;
+        ctx.stroke();
+    }
+
+    for (q = 0; q < Q.length; ++q)
+    {
+        for (r = 0; r < 8; ++r)
+        {
+            ctx.beginPath();
+            ctx.ellipse(hw, hh, 340, 340, (q * (300 / Q.length)) + (r * 0.04) + 90, t, t + 0.01);
+            ctx.strokeStyle = "#FFF";
+            ctx.shadowColor = "#DDF";
+            ctx.shadowBlur = 10;
+            ctx.lineWidth = 6;
+            ctx.stroke();
+        }
+    }
+
+    for (q = 0; q < Q.length; ++q)
+    {
+        ctx.beginPath();
+        ctx.ellipse(hw, hh, 360, 360, (q * (300 / Q.length)) + (r * 0.04) + 1.71, t, t + 0.3);
+        ctx.strokeStyle = "#FFF";
+        ctx.shadowColor = "#DDF";
+        ctx.shadowBlur = 10;
+        ctx.lineWidth = 6;
+        ctx.stroke();
+    }
+
+    i += 1; i %= t;
+}
+</script>
