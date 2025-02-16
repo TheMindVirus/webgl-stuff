@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>tiny3dii</title>
+<script>
+RX = 0; RY = 0; RZ = 0; X = []; Y = []; Z = 1000; DX = []; DY = []; DZ = [];
+RA = []; RB = []; II = 0; Q1 = []; Q2 = []; Q3 = []; Q4 = [];
+w = 0; h = 0; hw = 0; hh = 0; th = 0; tbh = 76;
+o = 2; n = 12; ii = 1 / n; t = 0.01;
+ox = 0; oy = 0; oz = 0; s = 100;
+
+var play = function(element)
+{
+    alert("hello");
+    element.style.display = "none"; //element.remove();
+    setup();
+}
+
+var setup = function()
+{
+    canvas = document.getElementById("canvas");
+    ctx = canvas.getContext("2d");
+    var style = window.getComputedStyle(canvas);
+    w = canvas.width = parseFloat(style.width);
+    h = canvas.height = parseFloat(style.height);
+    hw = w / 2; hh = h / 2; th = h - tbh;
+    setInterval(loop, 0);
+}
+
+var loop = function()
+{
+    clear();
+    reset();
+    rotate();
+    draw();
+}
+
+var clear = function()
+{
+    X = []; Y = [];
+    DX = []; DY = []; DZ = [];
+    RA = []; RB = [];
+    Q1 = []; Q2 = []; Q3 = []; Q4 = [];
+    canvas.width = canvas.width;
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, w, h);
+    ctx.lineWidth = 0.6;
+    ctx.strokeStyle = "#00FFFF";
+    ctx.shadowBlur = 6;
+    ctx.shadowColor = "#00FFFF";
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(w, h);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(w, th);
+    ctx.stroke();
+}
+
+var reset = function()
+{
+    point(ox - s, oy + s, oz + s);
+    point(ox + s, oy + s, oz + s);
+    point(ox + s, oy + s, oz - s);
+    point(ox - s, oy + s, oz - s);
+    point(ox - s, oy - s, oz + s);
+    point(ox + s, oy - s, oz + s);
+    point(ox + s, oy - s, oz - s);
+    point(ox - s, oy - s, oz - s);
+    line(0, 1); line(1, 2); line(2, 3); line(3, 0);
+    line(4, 5); line(5, 6); line(6, 7); line(7, 4);
+    line(0, 4);             line(5, 1);            
+                                                   
+    line(2, 6);             line(7, 3);            
+                                                   
+}
+
+var point = function(x, y, z)
+{
+    DX.push(x); DY.push(y); DZ.push(z);
+}
+
+var line = function(a, b)
+{
+    RA.push(a); RB.push(b);
+}
+
+var rotate = function()
+{
+    var rx = RY / -100;
+    var ry = RX / -100;
+    var rz = RZ / -100;
+    var A = Math.sin(rx);
+    var B = Math.sin(ry);
+    var C = Math.sin(rz);
+    var D = Math.cos(rx);
+    var E = Math.cos(ry);
+    var F = Math.cos(rz);
+    for (var i = 0; i < DX.length; ++i)
+    {
+        var x = DX[i];
+        var y = DY[i];
+        var z = DZ[i];
+        var R = (A * y) + (D * z);
+        var S = (D * y) - (A * z);
+        var T = (E * x) + (B * R);
+        var nx = (F * T) - (C * S);
+        var ny = (C * T) + (F * S);
+        var nz = (E * R) - (B * x);
+        X[i] = ((nx / (nz + Z)) * Z) + hw;
+        Y[i] = ((ny / (nz + Z)) * Z) + hh;
+    }
+}
+
+var draw = function()
+{
+    for (var k = 0; k < RA.length; ++k)
+    {
+        ctx.beginPath();
+        ctx.moveTo(X[RA[k]], Y[RA[k]]);
+        ctx.lineTo(X[RB[k]], Y[RB[k]]);
+        ctx.closePath();
+        ctx.stroke();
+    }
+}
+
+var mouse = function(event)
+{
+    RX = event.x; RY = event.y;
+}
+
+</script>
+<style>
+ * { box-sizing: border-box; margin: auto; font-family: calibri; }
+ body { background: #0000AA; text-align: center; }
+ button { background: #0000AA; color: #FFFFFF; font-size: 150pt; border: none; user-select: none; }
+ [fullscreen] { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; }
+</style>
+</head>
+<body>
+<canvas fullscreen="" id="canvas" onmousemove="mouse(event);"></canvas>
+<button fullscreen="" onclick="play(this);">Wii</button>
+</body></html>
