@@ -1,0 +1,50 @@
+<script>
+window.onload = function(event)
+{
+    svg = document.getElementsByTagName("svg")[0];
+    window.onresize(); setInterval(render, 1);
+}
+window.onresize = function(event)
+{
+    style = window.getComputedStyle(svg); w = parseFloat(style.width); h = parseFloat(style.height); hw = w / 2; hh = h / 2;
+    x = 0; y = 0; z = 0; //svg.setAttribute("viewBox", "0 0 " + parseFloat(style.width) + " " + parseFloat(style.height));
+}
+window.onmousemove = function(event)
+{
+    x = event.x - hw;
+    y = event.y - hh;
+}
+window.onclick = function(event)
+{
+    z = 100;
+}
+render = function(event)
+{
+    if (z > 0) { z -= 1; }
+    document.getElementById("path-2").setAttribute("transform", "translate(" + (x * 0.003) + ", " + (0 * (z * -0.01)) + ") scale(" + (1 + (z * 0.01)) + ") ");
+    document.getElementById("path-3").setAttribute("transform", "translate(" + (x * 0.003) + ", " + (0 * (z * -0.01)) + ") scale(" + (1 + (z * 0.01)) + ") ");
+}
+</script>
+<style>
+ [fullscreen] { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; filter: saturate(1000%); }
+</style>
+<svg fullscreen viewBox="0 0 100 100">
+<defs>
+<filter id="blur">
+<feGaussianBlur stdDeviation="3">
+</feGaussianBlur>
+</filter>
+<pattern id="dith" width="0.3" height="0.4" patternUnits="userSpaceOnUse">
+<rect width="0.1" height="0.1" x="0.00" y="0.0"></rect>
+<rect width="0.1" height="0.1" x="0.01" y="0.2"></rect>
+<rect width="0.1" height="0.4" x="0.02" y="0.0"></rect>
+<rect width="0.2" height="0.1" x="0.00" y="0.3"></rect>
+</pattern>
+</defs>
+<rect id="rect-1" fill="lime" stroke="none" width="100%" height="100%"></rect>
+<rect id="rect-2" fill="cyan" stroke="none" width="100%" height="50%"></rect>
+<path id="path-1" fill="pink" stroke="none" d="m 5 50 a 10 10 1 1 1 0.001 0.001" filter="url(#blur)"></path>
+<path id="path-2" fill="pink" stroke="none" d="m 7.5 39 a 6 6 1 1 1 0.001 0.001" filter="url(#blur)"></path>
+<path id="path-3" fill="none" stroke="#000" d="m 11 35 l 0 2 m 2 0 l 0 -2 m -1 5 l 0 1" stroke-linecap="round"></path>
+<rect id="rect-3" fill="url(#dith)" stroke="none" width="100%" height="100%"></rect>
+</svg>
