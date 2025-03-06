@@ -1,0 +1,276 @@
+<div id="screen">
+<div id="scroll">
+<h1>||| Advent Of Stuff ||| Message Router ||| Operating Systems ||| Edge Computing |||
+
+[msg_router]
+Microsoft -> IRP (Chirps) [Windows] [DOS] [BASIC] ([WIN], [SYS])
+Google -> IRQ (Intents) [Android] [Dalvik] [JAVA] ([ADB], [APK])
+Canonical -> NET (Packets) [Linux] [Debian] [C++] ([LIB], [DRV])
+Apple -> BUF (Buffers) [Macintosh] [Darwin] [OBJ-C] ([MAC], [SOF])
+
+[micro_kernel]
+Arduino -> ISR (Vectors) [Uno] [INO] [IDE] ([TRE], [YUN])
+Raspberry -> GIC (Pipelines) [Pi] [DTB] [PIO] ([RPI], [PIC])
+Commodore -> INT (Routines) [Amiga] [COM] [UAE] ([COM], [DLL])
+Adafruit -> ADA (Factories) [Feather] [MPY] [CPY] ([MIT], [ASH])
+
+[peri_base]
+Arm -> SOC (Packages) [Cortex] [EFI] [SWD] ([DSM], [RMA])
+Cherry -> SIG (Signals) [MX] [HCI] [USB] ([CLK], [DAT])
+Nordic -> LAN (Networks) [NRF] [BLE] [STM] ([NOR], [WAN])
+Nintendo -> HAL (Toggles) [Switch] [IOS] [NDA] ([WII], [MII])
+
+[light_sound]
+Avolites -> DMX (Multiplexers) [Arena] [CUE] [AGO] ([AVO], [LIT])
+Siggraph -> PCI (Busses) [Segway] [SEG] [MLX] ([PEX], [NVM])
+Yamaha -> MIC (Samples) [Motif] [PAD] [DNB] ([YAM], [AHA])
+Roland -> ZEN (Engines) [Jupiter] [JUN] [ALP] ([RND], [AMD])
+
+[wifi_radio]
+Espressif -> ESP (Wisps) [Now] [PRE] [OPT] ([RES], [SIF])
+Tensilica -> DSP (Digits) [Xtensa] [AIN] [AIR] ([TEN], [SIL])
+Dreadbox -> HYP (Inclings) [Hypnosis] [NOS] [SIS] ([DRE], [BOX])
+Elektron -> SEQ (Patterns) [Digitakt] [GIT] [HUB] ([LEK], [TAC])
+
+[misc_synth]
+Marshall -> ALL (Worlds) [JVM] [DAC] [AMP] ([MOR], [MON])
+Princeton -> TXT (Texts) [Fender] [IBM] [SMS] ([MSG], [TON])
+Pioneer -> SHA (Scripts) [Squid] [INK] [INC] ([ION], [EER])
+Korg -> NEW (Things) [Kaoss] [NOT] [OSC] ([NTS], [OSS])
+
+[dev_boards]
+Xilinx -> GLB (Globals) [Spartan] [ART] [HDL] ([XIL], [INX])
+Mellanox -> LAN (Locals) [Infiniband] [NOX] [IPV] ([MEL], [NOX])
+Nichicon -> BIT (Buckets) [Electrolytic] [KYO] [JPN] ([NIC], [CAP])
+Foxconn -> PRO (Products) [Massive] [LSI] [DRC] ([FOX], [CON])
+
+[implicit_gags]
+Foxconn: "Sneaky Like A Fox." (Simpsons Hit and Run)
+Nichicon: "SuperDry, Nichicon." (SuperDryJPN)
+Mellanox: "Tiny, Mini, Micro." (ServeTheHome)
+Xilinx: "Together We Advance _." (The Datacenter)
+
+Korg: "Take Me To Your Leader." (Alien Invasion)
+Pioneer: "To Raise A Squid." (Gemini Meridian)
+Princeton: "You're The Pretender." (Foo Fighters)
+Marshall: "Same Old Song and Dance." (Aerosmith)
+
+Elektron: "Make The Ground Shake." (Aero Chord Surface)
+Dreadbox: "Let's Do The Time Warp Again." (Hypnosis Time Effects)
+Tensilica: "Processors Don't Make Themselves." (Intel Corporation)
+Espressif: "Lisp Might Actually Catch On." (International Lisp Conference)
+
+Roland: "Welcome To Jumanji." (Jumanji)
+Yamaha: "Looks Harder Than It Is." (Simpsons Hit and Run)
+Siggraph: "...Occupy Mars." (Mars Annual Research Symposium)
+Avolites: "Reach For The Mars." (Reach For The S-Club Seven)
+
+Nintendo: "Wholesome Family Entertainment." (Nintendo Direct)
+Nordic: "I Know More Than You." (Parks and Recreation)
+Cherry: "...BATTLESTATIONS." (Overclockers UK)
+Arm: "Would You Like Fries With That." (McDonalds)
+
+Adafruit: "...and Switched To Candy Bars." (The Chocolate Factory)
+Commodore: "Will It Run Doom." (Will It Run Crysis)
+Raspberry: "...Worth A Quick Go." (Pi Cloud Bonding)
+Arduino: "...It Compiles, Ship It." (XDA Developer Forums)
+
+Apple: "Light As A Feather, Stiff As A Board." (Apple Vision Pro Event)
+Canonical: "This Will Make The Next Release." (Linaro Annual Repository Symposium)
+Google: "...Where's Walle..." (Where's Walle)
+Microsoft: "...Where's Sony?..." (Where's Wally)
+
+"." ()
+</h1>
+<h1 id="display"><h1>
+</div>
+</div>
+<div id="button-up" perimeter onclick="btn_up();"><div id="arrow-up" onclick="btn_up();"></div></div>
+<div id="button-down" perimeter onclick="btn_dn();"><div id="arrow-down" onclick="btn_dn();"></div></div>
+<div id="button-left" perimeter onclick="btn_lt();"><div id="arrow-left" onclick="btn_lt();"></div></div>
+<div id="button-right" perimeter onclick="btn_rt();"><div id="arrow-right" onclick="btn_rt();"></div></div>
+<div id="scroll-v" perimeter></div>
+<div id="scroll-h" perimeter></div>
+<div id="scroll_v" perimeter></div>
+<div id="scroll_h" perimeter></div>
+<style>
+             * { background: #000; color: #FE0; letter-spacing: -0.1em; word-spacing: 0.595em; overflow: hidden; }
+            h1 { font-weight: bold; font-family: consolas; word-wrap: break-word; white-space: pre-wrap; font-size: 18pt; }
+       #screen { position: absolute; top: 0px; left: 0px; width: 1299px; height: 900px; padding: 10px; user-select: none; }
+       #scroll { position: relative; top: 0px; left: 0px; width: 1299px; height: content; filter: blur(1px) saturate(1000%); text-shadow: 0 0 35px #FE0A; }
+    #scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: none; pointer-events: none; }
+ [perimeter]   { border: 1px #FFF solid; background: #0000; }
+ #button-up    { position: fixed; top: 0px; left: 1299px; width: 20px; height: 20px; }
+ #button-down  { position: fixed; top: 877px; left: 1299px; width: 20px; height: 20px; }
+ #button-left  { position: fixed; top: 900px; left: 0px; width: 20px; height: 20px; }
+ #button-right { position: fixed; top: 900px; left: 1299px; width: 20px; height: 20px; }
+ #arrow-up     { position: relative; top: 5px; left: 5px; width: 0px; height: 0px; border-bottom: inset 5px #FE0A; border-right: inset 5px #00A0; border-top: inset 5px #00A0; border-left: inset 5px #00A0; transform: scaleY(2) rotateZ(0deg  ) translate(0px, -2.5px); }
+ #arrow-down   { position: relative; top: 5px; left: 5px; width: 0px; height: 0px; border-bottom: inset 5px #FE0A; border-right: inset 5px #00A0; border-top: inset 5px #00A0; border-left: inset 5px #00A0; transform: scaleY(2) rotateZ(180deg) translate(0px, -2.5px); }
+ #arrow-left   { position: relative; top: 5px; left: 5px; width: 0px; height: 0px; border-bottom: inset 5px #FE0A; border-right: inset 5px #00A0; border-top: inset 5px #00A0; border-left: inset 5px #00A0; transform: scaleX(2) rotateZ(270deg) translate(0px, -2.5px); }
+ #arrow-right  { position: relative; top: 5px; left: 5px; width: 0px; height: 0px; border-bottom: inset 5px #FE0A; border-right: inset 5px #00A0; border-top: inset 5px #00A0; border-left: inset 5px #00A0; transform: scaleX(2) rotateZ(90deg ) translate(0px, -2.5px); }
+ #scroll-v     { position: fixed; top: 22px; left: 1299px; width: 20px; height: 853px; }
+ #scroll-h     { position: fixed; top: 900px; left: 22px; width: 1275px; height: 20px; }
+ #scroll_v     { position: fixed; top: 22px; left: 1299px; width: 20px; height: 200px; background: #FE0A; }
+ #scroll_h     { position: fixed; top: 900px; left: 22px; width: 200px; height: 20px; background: #FE0A; }
+</style>
+<script>
+
+content_length = 21;
+extra_speed = 10;
+
+scroll_v_pos = 0;
+scroll_v_speed = -10;
+scroll_v_toggle = false;
+
+scroll_h_pos = 0;
+scroll_h_speed = -10;
+scroll_h_toggle = false;
+
+btn_up_loop = false; btn_dn_loop = false;
+btn_lt_loop = false; btn_rt_loop = false;
+
+ctrl_held = false;
+
+window.onload = function()
+{
+    screen = document.getElementById("screen");
+    scroll = document.getElementById("scroll");
+
+    scrollv = document.getElementById("scroll-v");
+    scrollh = document.getElementById("scroll-h");
+
+    scrollv.onmousedown = function(event) { scroll_v_mousedown(event); document_mousemove(event); }
+    scrollh.onmousedown = function(event) { scroll_h_mousedown(event); document_mousemove(event); }
+
+    scroll_v = document.getElementById("scroll_v");
+    scroll_h = document.getElementById("scroll_h");
+
+    scroll_v.ondragstart = prevent_default;
+    scroll_h.ondragstart = prevent_default;
+
+    scroll_v.onmousedown = scroll_v_mousedown;
+    scroll_h.onmousedown = scroll_h_mousedown;
+
+    scroll_v.onmouseup = scroll_v_mouseup;
+    scroll_h.onmouseup = scroll_h_mouseup;
+
+    document.onmouseup = document_mouseup;
+    document.onmousemove = document_mousemove;
+
+    document.onkeydown = document.onkeyup = document_keypress
+    document.addEventListener("wheel", function handler(event) { event.preventDefault(); document_mousewheel(event); }, { passive: false });
+
+    display = document.getElementById("display");
+    document.body.style.background = "#000";
+}
+
+prevent_default = function(event) { event.preventDefault(); }
+
+scroll_v_mousedown = function(event) { scroll_v_toggle = true; }
+scroll_h_mousedown = function(event) { scroll_h_toggle = true; }
+
+scroll_v_mouseup = function(event) { scroll_v_toggle = false; }
+scroll_h_mouseup = function(event) { scroll_h_toggle = false; }
+
+document_mouseup = function(event)
+{
+    if ((scroll_v_toggle) && (!scroll_h_toggle)) { scroll_v_toggle = false; }
+    if ((scroll_h_toggle) && (!scroll_v_toggle)) { scroll_h_toggle = false; }
+    btn_up_loop = false; btn_dn_loop = false;
+    btn_lt_loop = false; btn_rt_loop = false;
+}
+
+document_mousemove = function(event)
+{
+    if (scroll_v_toggle)
+    {
+        scroll_v.style.top = (parseFloat(event.y) - (parseFloat(window.getComputedStyle(scroll_v).height) / 2)) + "px";
+        scroll_v.style.top = Math.min(Math.max(parseFloat(window.getComputedStyle(scroll_v).top), parseFloat(window.getComputedStyle(scrollv).top)), parseFloat(window.getComputedStyle(scrollv).top) + parseFloat(window.getComputedStyle(scrollv).height) - parseFloat(window.getComputedStyle(scroll_v).height)) + "px";
+        scroll_v_pos = (parseFloat(window.getComputedStyle(scroll_v).top) - parseFloat(window.getComputedStyle(scrollv).top)) / (parseFloat(window.getComputedStyle(scrollv).height) - parseFloat(window.getComputedStyle(scroll_v).height));
+        scroll.style.top = (scroll_v_pos * scroll_v_speed * content_length * extra_speed) + "px";
+    }
+    if (scroll_h_toggle)
+    {
+        scroll_h.style.left = (parseFloat(event.x) - (parseFloat(window.getComputedStyle(scroll_h).width) / 2)) + "px";
+        scroll_h.style.left = Math.min(Math.max(parseFloat(window.getComputedStyle(scroll_h).left), parseFloat(window.getComputedStyle(scrollh).left)), parseFloat(window.getComputedStyle(scrollh).left) + parseFloat(window.getComputedStyle(scrollh).width) - parseFloat(window.getComputedStyle(scroll_h).width)) + "px";
+        scroll_h_pos = (parseFloat(window.getComputedStyle(scroll_h).left) - parseFloat(window.getComputedStyle(scrollh).left)) / (parseFloat(window.getComputedStyle(scrollh).width) - parseFloat(window.getComputedStyle(scroll_h).width));
+        scroll.style.left = (scroll_h_pos * scroll_h_speed) + "px";
+    }
+    display.innerText = scroll_h_pos.toFixed(6) + ", " + scroll_v_pos.toFixed(6);
+}
+
+document_mousewheel = function(event)
+{
+    if (ctrl_held)
+    {
+        console.log(event);
+        if (event.deltaY < 0) { btn_lt_loop = false; _btn_lt(); }
+        if (event.deltaY > 0) { btn_rt_loop = false; _btn_rt(); }
+    }
+    else
+    {
+        if (event.deltaY < 0) { btn_up_loop = false; _btn_up(); }
+        if (event.deltaY > 0) { btn_dn_loop = false; _btn_dn(); }
+    }
+}
+
+document_keypress = function(event) { ctrl_held = event.ctrlKey; }
+
+btn_up = function() { btn_up_loop = true; _btn_up(); }
+_btn_up = function()
+{
+    scroll_v.style.top = (parseFloat(window.getComputedStyle(scroll_v).top) + scroll_v_speed) + "px";
+    
+    if (parseFloat(window.getComputedStyle(scroll_v).top) < parseFloat(window.getComputedStyle(scrollv).top)) { scroll_v.style.top = parseFloat(window.getComputedStyle(scrollv).top); btn_up_loop = false; }
+    scroll_v_pos = (parseFloat(window.getComputedStyle(scroll_v).top) - parseFloat(window.getComputedStyle(scrollv).top)) / (parseFloat(window.getComputedStyle(scrollv).height) - parseFloat(window.getComputedStyle(scroll_v).height));
+    scroll.style.top = (scroll_v_pos * scroll_v_speed * content_length * extra_speed) + "px";
+    display.innerText = scroll_h_pos.toFixed(6) + ", " + scroll_v_pos.toFixed(6);
+    if (btn_up_loop) { window.requestAnimationFrame(_btn_up); }
+}
+
+btn_dn = function() { btn_dn_loop = true; _btn_dn(); }
+_btn_dn = function()
+{
+    scroll_v.style.top = (parseFloat(window.getComputedStyle(scroll_v).top) - scroll_v_speed) + "px";
+    
+    if (parseFloat(window.getComputedStyle(scroll_v).top) > (parseFloat(window.getComputedStyle(scrollv).top) + parseFloat(window.getComputedStyle(scrollv).height) - parseFloat(window.getComputedStyle(scroll_v).height))) { scroll_v.style.top = parseFloat(window.getComputedStyle(scrollv).top) + parseFloat(window.getComputedStyle(scrollv).height) - parseFloat(window.getComputedStyle(scroll_v).height); btn_dn_loop = false; }
+    scroll_v_pos = (parseFloat(window.getComputedStyle(scroll_v).top) - parseFloat(window.getComputedStyle(scrollv).top)) / (parseFloat(window.getComputedStyle(scrollv).height) - parseFloat(window.getComputedStyle(scroll_v).height));
+    scroll.style.top = (scroll_v_pos * scroll_v_speed * content_length * extra_speed) + "px";
+    display.innerText = scroll_h_pos.toFixed(6) + ", " + scroll_v_pos.toFixed(6);
+    if (btn_dn_loop) { window.requestAnimationFrame(_btn_dn); }
+}
+
+btn_lt = function() { btn_lt_loop = true; _btn_lt(); }
+_btn_lt = function()
+{
+    scroll_h.style.left = (parseFloat(window.getComputedStyle(scroll_h).left) + scroll_h_speed) + "px";
+    
+    if (parseFloat(window.getComputedStyle(scroll_h).left) < parseFloat(window.getComputedStyle(scrollh).left)) { scroll_h.style.left = parseFloat(window.getComputedStyle(scrollh).left); btn_lt_loop = false; }
+    scroll_h_pos = (parseFloat(window.getComputedStyle(scroll_h).left) - parseFloat(window.getComputedStyle(scrollh).left)) / (parseFloat(window.getComputedStyle(scrollh).width) - parseFloat(window.getComputedStyle(scroll_h).width));
+    scroll.style.left = (scroll_h_pos * scroll_h_speed) + "px";
+    display.innerText = scroll_h_pos.toFixed(6) + ", " + scroll_v_pos.toFixed(6);
+    if (btn_lt_loop) { window.requestAnimationFrame(_btn_lt); }
+}
+
+btn_rt = function() { btn_rt_loop = true; _btn_rt(); }
+_btn_rt = function()
+{
+    scroll_h.style.left = (parseFloat(window.getComputedStyle(scroll_h).left) - scroll_h_speed) + "px";
+    
+    if (parseFloat(window.getComputedStyle(scroll_h).left) > (parseFloat(window.getComputedStyle(scrollh).left) + parseFloat(window.getComputedStyle(scrollh).width) - parseFloat(window.getComputedStyle(scroll_h).width))) { scroll_h.style.left = parseFloat(window.getComputedStyle(scrollh).left) + parseFloat(window.getComputedStyle(scrollh).width) - parseFloat(window.getComputedStyle(scroll_h).width); btn_rt_loop = false; }
+    scroll_h_pos = (parseFloat(window.getComputedStyle(scroll_h).left) - parseFloat(window.getComputedStyle(scrollh).left)) / (parseFloat(window.getComputedStyle(scrollh).width) - parseFloat(window.getComputedStyle(scroll_h).width));
+    scroll.style.left = (scroll_h_pos * scroll_h_speed) + "px";
+    display.innerText = scroll_h_pos.toFixed(6) + ", " + scroll_v_pos.toFixed(6);
+    if (btn_rt_loop) { window.requestAnimationFrame(_btn_rt); }
+}
+
+</script>
+<svg id="scanlines">
+<defs>
+<pattern id="dith" width="1" height="2" patternUnits="userSpaceOnUse">
+<rect width="1" height="1" fill="#000A"></rect>
+</pattern>
+</defs>
+<rect width="1299" height="900" fill="url(#dith)"></rect>
+</svg>
+<!--filter blur saturate-->
