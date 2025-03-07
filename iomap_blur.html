@@ -1,0 +1,132 @@
+<script>
+window.onload = function()
+{
+var id = 0;
+var view = 0;
+var mode = 2;
+var data = [];
+var glob = [];
+    glob.push("GLOB_LINK_UUID_1");
+    glob.push("GLOB_LINK_UUID_2");
+    glob.push("GLOB_LINK_UUID_3");
+    glob.push("GLOB_LINK_UUID_4");
+var prio = +1;
+var resn = -1;
+var fld_id = 0;
+var fld_lt = fld_id + 1;
+var fld_pr = fld_lt + 1;
+var fld_gl = fld_pr + 1;
+    data.push([id, [], prio, glob[0]]); id += 1;
+    data.push([id, [], resn, glob[3]]); id += 1;
+    data.push([id, [], prio, glob[1]]); id += 1;
+    data.push([id, [], prio, glob[0]]); id += 1;
+    data.push([id, [], resn, glob[2]]); id += 1;
+    data.push([id, [], resn, glob[2]]); id += 1;
+    data.push([id, [], resn, glob[0]]); id += 1;
+    data.push([id, [], resn, glob[1]]); id += 1;
+    data.push([id, [], resn, glob[3]]); id += 1;
+    data.push([id, [], resn, glob[0]]); id += 1;
+    data.push([id, [], prio, glob[3]]); id += 1;
+    data.push([id, [], resn, glob[2]]); id += 1;
+    data.push([id, [], prio, glob[0]]); id += 1;
+    data.push([id, [], prio, glob[0]]); id += 1;
+    data.push([id, [], prio, glob[2]]); id += 1;
+    data.push([id, [], prio, glob[2]]); id += 1;
+    data.push([id, [], prio, glob[1]]); id += 1;
+    data.push([id, [], prio, glob[1]]); id += 1;
+    data.push([id, [], prio, glob[0]]); id += 1;
+    data.push([id, [], resn, glob[1]]); id += 1;
+    data.push([id, [], resn, glob[1]]); id += 1;
+  //data.push([id, [], prio, glob[1]]); id += 1;
+    for (var record in data)
+    {
+        for (var item in data)
+        {
+            if (record == item) { continue; }
+            if (data[record][fld_gl] == data[item][fld_gl])
+            {
+              //evaluate link table
+                data[record][fld_lt].push((parseInt(item) + 1) * data[record][fld_pr]);
+            }
+        }
+    }
+    console.log(data);
+var X = 50;
+var Y = 50;
+    document.body.innerHTML = "";
+    svg = document.createElement("svg");
+    document.body.appendChild(svg);
+    svg.style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white;";
+  //svg.setAttribute("viewBox", "0 0 100 100");
+    svg.innerHTML += "<defs><filter id='blur'><feGaussianBlur stdDeviation='1.5'></feGaussianBlur></defs>";
+    for (var record in data) //optionally draw a grid instead of just 2 layers
+    {
+    var x1 = X;
+    var y1 = Y + (data[record][fld_id] * ((parseFloat(window.innerHeight) - Y) / data.length));
+    var x2 = parseFloat(window.innerWidth) - x1;
+    var y2 = y1;
+    var ic1 = document.createElement("path");
+        ic1.setAttribute("d", "m " + (x1) + " " + (y1) + " m -6 6 a 10 10 1 1 1 0.001 0.001 z");
+        ic1.setAttribute("fill", "none");
+        ic1.setAttribute("stroke", "#0FF");
+        ic1.setAttribute("stroke-width", "6");
+        ic1.setAttribute("stroke-linecap", "round");
+        ic1.setAttribute("stroke-linejoin", "round");
+        ic1.setAttribute("id", "ic-" + (1) + "-" + (parseInt(record) + 1));
+        svg.appendChild(ic1);
+    var ic2 = document.createElement("path");
+        ic2.setAttribute("d", "m " + (x2) + " " + (y2) + " m -6 6 a 10 10 1 1 1 0.001 0.001 z");
+        ic2.setAttribute("fill", "none");
+        ic2.setAttribute("stroke", "#0FF");
+        ic2.setAttribute("stroke-width", "6");
+        ic2.setAttribute("stroke-linecap", "round");
+        ic2.setAttribute("stroke-linejoin", "round");
+        ic2.setAttribute("id", "ic-" + (2) + "-" + (parseInt(record) + 1));
+        svg.appendChild(ic2);
+    }
+    for (var record in data)
+    {
+    var x1 = X;
+    var y1 = Y + (data[record][fld_id] * ((parseFloat(window.innerHeight) - Y) / data.length));
+    var x2 = parseFloat(window.innerWidth) - x1;
+    var y2 = y1;
+      //draw quadratic curve link from record to item with anti-aliasing
+        if ((view > 0) && ((view - 1) != record)) { continue; }
+        for (var item in data[record][fld_lt])
+        {
+            y2 = Y + ((Math.abs(data[record][fld_lt][item]) - 1) * ((parseFloat(window.innerHeight) - Y) / data.length));
+        var xn = window.innerWidth / 2;
+        var yn = (y1 + y2) / 2;
+        var xa = window.innerWidth / 4;
+        var ya = y1;
+        var xb = xa * 3;
+        var yb = y2;
+        var blr = document.createElement("path");
+if(mode==1) blr.setAttribute("d", "M " + (x1) + " " + (y1) + " L " + (x2) + " " + (y2));
+if(mode==2) blr.setAttribute("d", "M " + (x1) + " " + (y1) + " S " + (xn) + " " + (y1) + " " + (xn) + " " + (yn) + " l 0 0 " + " S " + (xn) + " " + (y2) + " " + (x2) + " " + (y2));
+if(mode==3) blr.setAttribute("d", "M " + (x1) + " " + (y1) + " S " + (xa) + " " + (ya) + " " + (xn) + " " + (yn) + " l 0 0 " + " S " + (xb) + " " + (yb) + " " + (x2) + " " + (y2));
+            blr.setAttribute("fill", "none");
+            blr.setAttribute("stroke", (data[item][fld_pr] == prio) ? "#0FB7" : "#F067");
+            blr.setAttribute("stroke-width", "1.5");
+            blr.setAttribute("stroke-linecap", "round");
+            blr.setAttribute("stroke-linejoin", "round");
+            blr.setAttribute("id", "bl-" + (parseInt(record) + 1) + "-" + (data[record][fld_lt][item]));
+            blr.setAttribute("filter", "url(#blur)");
+            svg.appendChild(blr);
+        var lnk = document.createElement("path");
+if(mode==1) lnk.setAttribute("d", "M " + (x1) + " " + (y1) + " L " + (x2) + " " + (y2));
+if(mode==2) lnk.setAttribute("d", "M " + (x1) + " " + (y1) + " S " + (xn) + " " + (y1) + " " + (xn) + " " + (yn) + " l 0 0 " + " S " + (xn) + " " + (y2) + " " + (x2) + " " + (y2));
+if(mode==3) lnk.setAttribute("d", "M " + (x1) + " " + (y1) + " S " + (xa) + " " + (ya) + " " + (xn) + " " + (yn) + " l 0 0 " + " S " + (xb) + " " + (yb) + " " + (x2) + " " + (y2));
+            lnk.setAttribute("fill", "none");
+            lnk.setAttribute("stroke", (data[item][fld_pr] == prio) ? "#0FB7" : "#F067");
+            lnk.setAttribute("stroke-width", "0.5");
+            lnk.setAttribute("stroke-linecap", "round");
+            lnk.setAttribute("stroke-linejoin", "round");
+            lnk.setAttribute("id", "ln-" + (parseInt(record) + 1) + "-" + (data[record][fld_lt][item]));
+            svg.appendChild(lnk);
+        }
+    }
+    document.body.innerHTML = document.body.innerHTML; //???
+    window.onresize = window.onload; //!!!
+}
+</script>
