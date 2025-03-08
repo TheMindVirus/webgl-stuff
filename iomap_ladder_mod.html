@@ -1,0 +1,127 @@
+<title>iomap_ladder_mod</title>
+<script>
+window.onload = function()
+{
+var id = 0;
+var red = 0;
+var mod = 3;
+var mute = 0;
+var solo = 0;
+var prio = +1;
+var resn = -1;
+var data = [];
+var glob = [];
+    glob.push(["GLOB_LINK_UUID_1", prio]);
+    glob.push(["GLOB_LINK_UUID_1", resn]);
+    glob.push(["GLOB_LINK_UUID_2", prio]);
+    glob.push(["GLOB_LINK_UUID_2", resn]);
+    glob.push(["GLOB_LINK_UUID_3", prio]);
+    glob.push(["GLOB_LINK_UUID_3", resn]);
+    glob.push(["GLOB_LINK_UUID_4", prio]);
+    glob.push(["GLOB_LINK_UUID_4", resn]);
+var fld_id = 0;
+var fld_ln = fld_id + 1;
+var fld_xt = fld_ln + 1;
+    data.push([id, [], glob[0]]); id += 1;
+    data.push([id, [], glob[3]]); id += 1;
+    data.push([id, [], glob[1]]); id += 1;
+    data.push([id, [], glob[0]]); id += 1;
+    data.push([id, [], glob[2]]); id += 1;
+    data.push([id, [], glob[2]]); id += 1;
+    data.push([id, [], glob[0]]); id += 1;
+    data.push([id, [], glob[1]]); id += 1;
+    data.push([id, [], glob[3]]); id += 1;
+    data.push([id, [], glob[0]]); id += 1;
+    data.push([id, [], glob[3]]); id += 1;
+    data.push([id, [], glob[2]]); id += 1;
+    data.push([id, [], glob[0]]); id += 1;
+    data.push([id, [], glob[0]]); id += 1;
+    data.push([id, [], glob[2]]); id += 1;
+    data.push([id, [], glob[2]]); id += 1;
+    data.push([id, [], glob[1]]); id += 1;
+    data.push([id, [], glob[1]]); id += 1;
+    data.push([id, [], glob[0]]); id += 1;
+    data.push([id, [], glob[1]]); id += 1;
+    data.push([id, [], glob[1]]); id += 1;
+  //data.push([id, [], glob[1]]); id += 1;
+    for (var record in data)
+    {
+        for (var itemid in data)
+        {
+            if ((mute) && (record == itemid)) { continue; }
+            if (data[record][fld_xt] == data[itemid][fld_xt])
+            {
+              //evaluate link table
+                data[record][fld_ln].push((data[itemid][fld_id] + 1) * data[itemid][fld_xt][fld_ln]);
+            }
+        }
+    }
+  //console.log(data);
+var X = 50;
+var Y = 50;
+    document.body.innerHTML = "";
+    svg = document.createElement("svg");
+    document.body.appendChild(svg);
+    svg.style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #123;";
+    if (red) { svg.style.background = "#000"; }
+    svg.innerHTML += "<defs><filter id='blur'><feGaussianBlur stdDeviation='1.5'></feGaussianBlur></filter></defs>";
+  //svg.setAttribute("soloBox", "0 0 100 100");
+    for (var record in data)
+    {
+    var x1 = X;
+    var y1 = Y + (record * ((parseFloat(window.innerHeight) - (Y * 2)) / (data.length - 1)));
+    var x2 = parseFloat(window.innerWidth) - x1;
+    var y2 = y1;
+        for (var pass = 0; pass <= 1; ++pass)
+        {
+        var idx = document.createElement("path");
+            idx.setAttribute("d", "m " + ((pass) ? x2 : x1) + " " + ((pass) ? y2 : y1) + " m +7 -7 a 10 10 1 1 1 -0.001 -0.001 z");
+            idx.setAttribute("fill", "none");
+            idx.setAttribute("stroke", (red) ? "#123" : ((pass) ? "#0FF" : "#F06"));
+            idx.setAttribute("stroke-width", "6");
+            idx.setAttribute("stroke-linecap", "round");
+            idx.setAttribute("stroke-linejoin", "round");
+            idx.setAttribute("id", "id-" + (pass + 1) + "-" + (parseInt(record) + 1));
+            svg.appendChild(idx);
+        }
+    }
+    for (var record in data)
+    {
+    var x1 = X;
+    var y1 = Y + (record * ((parseFloat(window.innerHeight) - (Y * 2)) / (data.length - 1)));
+    var x2 = parseFloat(window.innerWidth) - x1;
+    var y2 = y1;
+        if ((solo > 0) && ((solo - 1) != record)) { continue; }
+        for (var itemid in data[record][fld_ln])
+        {
+        var prio_override = false;
+            if (red) { prio_override = true; }
+        var item = Math.abs(data[record][fld_ln][itemid]) - 1;
+            y2 = Y + (item * ((parseFloat(window.innerHeight) - (Y * 2)) / (data.length - 1)));
+        var xn = window.innerWidth / 2;
+        var yn = (y1 + y2) / 2;
+        var xa = xn / 2;
+        var ya = y1;
+        var xb = xa * 3;
+        var yb = y2;
+            for (var pass = 0; pass <= 1; ++pass)
+            {
+            var lnk = document.createElement("path");
+if (mod == 1) { lnk.setAttribute("d", "M " + (x1) + " " + (y1) + " L " + (x2) + " " + (y2) + " M -100 -100 Z"); }
+if (mod == 2) { lnk.setAttribute("d", "M " + (x1) + " " + (y1) + " S " + (xn) + " " + (y1) + " " + (xn) + " " + (yn) + " l 0 0 " + " S " + (xn) + " " + (y2) + " " + (x2) + " " + (y2) + " M -100 -100 Z"); }
+if (mod == 3) { lnk.setAttribute("d", "M " + (x1) + " " + (y1) + " S " + (xa) + " " + (ya) + " " + (xn) + " " + (yn) + " l 0 0 " + " S " + (xb) + " " + (yb) + " " + (x2) + " " + (y2) + " M -100 -100 Z"); }
+                lnk.setAttribute("fill", "none");
+                lnk.setAttribute("stroke", (prio_override) ? "#F067" : (data[item][fld_xt][fld_ln] == prio) ? "#0FB7" : "#F067");
+                lnk.setAttribute("stroke-width", (pass) ? ((red) ? "3.5" : "1.5") : "0.5");
+                lnk.setAttribute("stroke-linecap", "round");
+                lnk.setAttribute("stroke-linejoin", "round");
+                lnk.setAttribute("id", ((pass) ? "xt-" : "ln-") + (data[record][fld_id] + 1) + "-" + (data[item][fld_id] + 1));
+if (pass)     { lnk.setAttribute("filter", "url(#blur)"); }
+                svg.appendChild(lnk);
+            }
+        }
+    }
+    document.body.innerHTML = document.body.innerHTML; //???
+    window.onresize = window.onload; //!!!
+}
+</script>
