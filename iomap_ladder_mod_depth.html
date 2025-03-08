@@ -1,0 +1,142 @@
+<script>
+window.onload = function()
+{
+var id = 0;
+var red = 0;
+var mod = 3;
+var mute = 1;
+var solo = 0;
+var prio = "+1";
+var zero = "+0";
+var    n = "-0";
+var resn = "-1";
+var data = [];
+var glob = [];
+    glob.push(["GLOB_LINK_UUID_1", ]);
+    glob.push(["GLOB_LINK_UUID_1", ]);
+    glob.push(["GLOB_LINK_UUID_2", ]);
+    glob.push(["GLOB_LINK_UUID_2", ]);
+    glob.push(["GLOB_LINK_UUID_3", ]);
+    glob.push(["GLOB_LINK_UUID_3", ]);
+    glob.push(["GLOB_LINK_UUID_4", ]);
+    glob.push(["GLOB_LINK_UUID_4", ]);
+var fld_id = 0;
+var fld_ln = fld_id + 1;
+var fld_pr = fld_ln + 1;
+var fld_xt = fld_pr + 1;
+    data.push([id, [], resn, glob[0]]); id += 1;
+    data.push([id, [], prio, glob[0]]); id += 1;
+    data.push([id, [], prio, glob[1]]); id += 1;
+    data.push([id, [], resn, glob[6]]); id += 1;
+    data.push([id, [], resn, glob[2]]); id += 1;
+    data.push([id, [], resn, glob[4]]); id += 1;
+    data.push([id, [], resn, glob[0]]); id += 1;
+    data.push([id, [], prio, glob[1]]); id += 1;
+    data.push([id, [], prio, glob[5]]); id += 1;
+    data.push([id, [], resn, glob[0]]); id += 1;
+    data.push([id, [], prio, glob[3]]); id += 1;
+    data.push([id, [], resn, glob[2]]); id += 1;
+    data.push([id, [], resn, glob[0]]); id += 1;
+    data.push([id, [], resn, glob[7]]); id += 1;
+    data.push([id, [], resn, glob[4]]); id += 1;
+    data.push([id, [], resn, glob[2]]); id += 1;
+    data.push([id, [], prio, glob[1]]); id += 1;
+    data.push([id, [], prio, glob[1]]); id += 1;
+    data.push([id, [], resn, glob[0]]); id += 1;
+    data.push([id, [], prio, glob[1]]); id += 1;
+    data.push([id, [], prio, glob[1]]); id += 1;
+  //data.push([id, [], prio, glob[1]]); id += 1;
+var rd = "#F06";
+var wr = "#111";
+var bk = "#000";
+var lt = "#FF0";
+var rt = "#0FF";
+var hh = "7";
+    for (var record in data)
+    {
+        for (var itemid in data)
+        {
+            if ((mute) && (record == itemid)) { continue; }
+            if (data[record][fld_xt][0] == data[itemid][fld_xt][0])
+            {
+              //evaluate link table
+            var uid = data[itemid][fld_id] + 1;
+            var res = data[itemid][fld_pr];
+            var pol = (res > 0);
+            var lnk = ((pol) ? "+" : "-") + uid.toString();
+                data[record][fld_ln].push(lnk);
+            }
+        }
+    }
+    console.log(data);
+var X = 50;
+var Y = 50;
+    document.body.innerHTML = "";
+    svg = document.createElement("svg");
+    document.body.appendChild(svg);
+    svg.style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: " + (wr) + ";";
+    document.body.style.background = (bk);
+    if (red) { svg.style.background = (bk); }
+    svg.innerHTML += "<defs><filter id='blur'><feGaussianBlur stdDeviation='1.5'></feGaussianBlur></filter></defs>";
+  //svg.setAttribute("soloBox", "0 0 100 100");
+    for (var record in data)
+    {
+    var x1 = X;
+    var y1 = Y + (record * ((parseFloat(window.innerHeight) - (Y * 2)) / (data.length - 1)));
+    var x2 = parseFloat(window.innerWidth) - x1;
+    var y2 = y1;
+    var sign = data[record][fld_pr];
+        for (var pass = 0; pass <= 1; ++pass)
+        {
+        var idx = document.createElement("path");
+            idx.setAttribute("d", "m " + ((pass) ? x2 : x1) + " " + ((pass) ? y2 : y1) + " m +7 -7 a 10 10 1 1 1 -0.001 -0.001 z");
+            idx.setAttribute("fill", "none");
+            idx.setAttribute("stroke", (red) ? wr : (((pass == 1) && (sign == resn)) ? lt : rt));
+            idx.setAttribute("stroke-width", "6");
+            idx.setAttribute("stroke-linecap", "round");
+            idx.setAttribute("stroke-linejoin", "round");
+            idx.setAttribute("id", "id-" + (pass + 1) + "-" + (parseInt(record) + 1));
+            svg.appendChild(idx);
+        }
+    }
+    for (var record in data)
+    {
+    var x1 = X;
+    var y1 = Y + (record * ((parseFloat(window.innerHeight) - (Y * 2)) / (data.length - 1)));
+    var x2 = parseFloat(window.innerWidth) - x1;
+    var y2 = y1;
+        if ((solo > 0) && ((solo - 1) != record)) { continue; }
+        for (var itemid in data[record][fld_ln])
+        {
+        var prio_override = false;
+            if (red) { prio_override = true; }
+        var item = Math.abs(parseInt(data[record][fld_ln][itemid])) - 1;
+            y2 = Y + (item * ((parseFloat(window.innerHeight) - (Y * 2)) / (data.length - 1)));
+        var sign = (data[record][fld_ln][itemid][0] == "+") ? prio : resn;
+        var xn = window.innerWidth / 2;
+        var yn = (y1 + y2) / 2;
+        var xa = xn / 2;
+        var ya = y1;
+        var xb = xa * 3;
+        var yb = y2;
+            for (var pass = 0; pass <= 1; ++pass)
+            {
+            var lnk = document.createElement("path");
+if (mod == 1) { lnk.setAttribute("d", "M " + (x1) + " " + (y1) + " L " + (x2) + " " + (y2) + " M -100 -100 Z"); }
+if (mod == 2) { lnk.setAttribute("d", "M " + (x1) + " " + (y1) + " S " + (xn) + " " + (y1) + " " + (xn) + " " + (yn) + " l 0 0 " + " S " + (xn) + " " + (y2) + " " + (x2) + " " + (y2) + " M -100 -100 Z"); }
+if (mod == 3) { lnk.setAttribute("d", "M " + (x1) + " " + (y1) + " S " + (xa) + " " + (ya) + " " + (xn) + " " + (yn) + " l 0 0 " + " S " + (xb) + " " + (yb) + " " + (x2) + " " + (y2) + " M -100 -100 Z"); }
+                lnk.setAttribute("fill", "none");
+                lnk.setAttribute("stroke", (prio_override) ? rd : (sign == prio) ? (lt + hh) : (rt + hh));
+                lnk.setAttribute("stroke-width", (pass) ? ((red) ? "3.5" : "1.5") : "0.5");
+                lnk.setAttribute("stroke-linecap", "round");
+                lnk.setAttribute("stroke-linejoin", "round");
+                lnk.setAttribute("id", ((pass) ? "xt-" : "ln-") + (data[record][fld_id] + 1) + "-" + (data[item][fld_id] + 1));
+if (pass)     { lnk.setAttribute("filter", "url(#blur)"); }
+                svg.appendChild(lnk);
+            }
+        }
+    }
+    document.body.innerHTML = document.body.innerHTML; //???
+    window.onresize = window.onload; //!!!
+}
+</script>
