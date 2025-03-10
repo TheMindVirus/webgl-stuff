@@ -1,0 +1,195 @@
+<!DOCTYPE>
+<html>
+<head>
+<title>animii</title>
+<script>
+var setup = function(event)
+{
+    var element = document.getElementById("button");
+    element.style.display = "none";
+    animii = document.getElementById("animii");
+    canvas = document.getElementById("canvas");
+    atx = animii.getContext("2d");
+    ctx = canvas.getContext("2d");
+    //window.onresize = resize;
+    roll = 0; scroll = 0;
+    x = 0; y = 0; z = 0;
+    X = 0; Y = 0; Z = 0;
+    O = 0; R = 0; T = 0;
+    P = Math.PI; T = P * 2;
+    D = 180; resize();
+    //window.onresize();
+    setInterval(loop, 10);
+}
+var resize = function(event)
+{
+    var style = window.getComputedStyle(canvas);
+    w = animii.width = canvas.width = parseFloat(style.width);
+    h = animii.height = canvas.height = parseFloat(style.height);
+    hw = w / 2; hh = h / 2;
+}
+var loop = function(event)
+{
+    animii.width = animii.width;
+    z = roll + scroll + 45;
+
+    atx.translate(x, y);
+    atx.rotate(z * (P / D));
+    atx.translate(-x, -y);
+
+    //atx.fillStyle = "#FFFFFF00";
+    //atx.fillRect(0, 0, w, h);
+    atx.lineJoin = "round";
+    atx.lineCap = "round";
+
+    atx.lineWidth = 2;
+    atx.strokeStyle = "#EEEEEEEE";
+    atx.beginPath(); X = 0; Y = 0; Z = z;
+    X += 15; Y += 15; atx.moveTo(x + X, y + Y);
+    X += 60; Y += 60; atx.lineTo(x + X, y + Y);
+    X += -30; Y += -50; atx.moveTo(x + X, y + Y);
+    X += -20; Y += 20; atx.lineTo(x + X, y + Y);
+    atx.closePath();
+    atx.stroke();
+
+    atx.lineWidth = 3;
+    atx.strokeStyle = "#332211EE";
+    atx.beginPath(); X = 0; Y = 0; Z = z;
+    X += 15; Y += 15; atx.moveTo(x + X, y + Y);
+    X += 40; Y +=  0; atx.lineTo(x + X, y + Y);
+    X += 10; Y += 10; atx.lineTo(x + X, y + Y);
+    X += 20; Y +=  0; atx.lineTo(x + X, y + Y);
+    X -= 10; Y += 10; atx.lineTo(x + X, y + Y);
+    X += 20; Y += 20; atx.lineTo(x + X, y + Y);
+    X -= 20; Y +=  0; atx.lineTo(x + X, y + Y);
+    X += 20; Y += 20; atx.lineTo(x + X, y + Y);
+    X -= 20; Y +=  0; atx.lineTo(x + X, y + Y);
+    X +=  0; Y += 20; atx.lineTo(x + X, y + Y);
+    X -= 20; Y -= 20; atx.lineTo(x + X, y + Y);
+    X +=  0; Y += 20; atx.lineTo(x + X, y + Y);
+    X -= 20; Y -= 20; atx.lineTo(x + X, y + Y);
+    X -= 10; Y += 10; atx.lineTo(x + X, y + Y);
+    X +=  0; Y -= 20; atx.lineTo(x + X, y + Y);
+    X -= 10; Y -= 10; atx.lineTo(x + X, y + Y);
+    X +=  0; Y -= 40; atx.lineTo(x + X, y + Y);
+    atx.closePath();
+    atx.stroke();
+
+    atx.lineWidth = 2;
+    atx.strokeStyle = "#EEEEEEEE";
+    atx.lineWidth = 3;
+    atx.beginPath(); X = 0; Y = 0; Z = z;
+    X += 15; Y += 15; atx.moveTo(x + X, y + Y);
+    X += 20; Y +=  0; atx.lineTo(x + X, y + Y);
+    X += 60; Y += 60; atx.lineTo(x + X, y + Y);
+    X -= 20; Y +=  0; atx.lineTo(x + X, y + Y);
+    X +=  0; Y += 20; atx.lineTo(x + X, y + Y);
+    X -= 60; Y -= 60; atx.lineTo(x + X, y + Y);
+    X +=  0; Y -= 20; atx.lineTo(x + X, y + Y);
+    X += 20; Y +=  0; atx.moveTo(x + X, y + Y);
+    X += 20; Y +=  0; atx.lineTo(x + X, y + Y);
+    X += 10; Y += 10; atx.lineTo(x + X, y + Y);
+    X -= 40; Y += 40; atx.lineTo(x + X, y + Y);
+    X -= 10; Y -= 10; atx.lineTo(x + X, y + Y);
+    X +=  0; Y -= 20; atx.lineTo(x + X, y + Y);
+    atx.stroke();
+
+    atx.lineWidth = 2;
+    atx.strokeStyle = "#EEEEEEEE";
+    atx.lineWidth = 3;
+    atx.beginPath(); X = 0; Y = 0; Z = z;
+    X += 15; Y += 15; atx.moveTo(x + X, y + Y);
+    X += 50; Y += 10; atx.moveTo(x + X, y + Y);
+    X += 20; Y +=  0; atx.lineTo(x + X, y + Y);
+    X -= 60; Y += 60; atx.lineTo(x + X, y + Y);
+    X +=  0; Y -= 20; atx.lineTo(x + X, y + Y);
+    X += 10; Y += 10; atx.moveTo(x + X, y + Y);
+    X += 20; Y += 20; atx.lineTo(x + X, y + Y);
+    X +=  0; Y -= 20; atx.lineTo(x + X, y + Y);
+    X += 20; Y -= 20; atx.lineTo(x + X, y + Y);
+    X += 20; Y +=  0; atx.lineTo(x + X, y + Y);
+    X -= 20; Y -= 20; atx.lineTo(x + X, y + Y);
+    atx.stroke();
+
+    atx.lineWidth = 1;
+    atx.fillStyle = "#000000FF";
+    atx.strokeStyle = "#000000FF";
+    atx.beginPath(); X = 0; Y = 0; Z = z;
+    X += 15; Y += 15; atx.moveTo(x + X, y + Y);
+    X += 30; Y += 30; atx.moveTo(x + X, y + Y);
+    X +=  5; Y -=  5; atx.moveTo(x + X, y + Y);
+    X2 = X + (10); Y2 = Y + ( 0); X += 5; Y -= 5; atx.quadraticCurveTo(x + X, y + Y, x + X2, y + Y2);
+    X  = X2; Y  = Y2; atx.lineTo(x + X, y + Y);
+    X2 = X + ( 0); Y2 = Y + (10); X += 5; Y += 5; atx.quadraticCurveTo(x + X, y + Y, x + X2, y + Y2);
+    X  = X2; Y  = Y2; atx.lineTo(x + X, y + Y);
+    X -= 10; Y += 10; atx.lineTo(x + X, y + Y);
+    X2 = X - (10); Y2 = Y + ( 0); X -= 5; Y += 5; atx.quadraticCurveTo(x + X, y + Y, x + X2, y + Y2);
+    X  = X2; Y  = Y2; atx.lineTo(x + X, y + Y);
+    X2 = X + ( 0); Y2 = Y - (10); X -= 5; Y -= 5; atx.quadraticCurveTo(x + X, y + Y, x + X2, y + Y2);
+    X  = X2; Y  = Y2; atx.lineTo(x + X, y + Y);
+    X += 10; Y -= 10; atx.lineTo(x + X, y + Y);
+    atx.fill(); atx.stroke();
+
+    atx.lineWidth = 2;
+    atx.fillStyle = "#000000FF";
+    atx.strokeStyle = "#FFFFFFFF";
+    X = 0; Y = 0; Z = z;
+    X += 15; Y += 15;
+    X += 35; Y += 35;
+    X +=  5; Y -=  5;
+    X +=  0; Y +=  0; R = 5;
+    atx.beginPath();
+    atx.arc(x + X, y + Y, R, 0, T, 1);
+    atx.closePath();
+    atx.fill(); atx.stroke();
+    X -= 10; Y += 10;
+    X +=  0; Y +=  0; R = 5;
+    atx.beginPath();
+    atx.arc(x + X, y + Y, R, 0, T, 1);
+    atx.closePath();
+    atx.fill(); atx.stroke();
+}
+var point = function(event)
+{
+    x = event.x;
+    y = event.y;
+    if (window["opera"])
+    {
+        var wiimote = opera.wiiremote.update(0);
+        roll = (Math.atan2(wiimote.dpdRollY, wiimote.dpdRollX) / P) * D;
+    }
+}
+var wheel = function(event)
+{
+    scroll += event.deltaY * 0.1;
+}
+var press = function(event)
+{
+    ctx.fillStyle = "#332211FF"; ctx.strokeStyle = "#EEEEEE00";
+    O = 0; R = 5;
+    ctx.beginPath(); ctx.arc(x + O, y + O, R, 0, T, 1); ctx.closePath(); ctx.stroke(); ctx.fill();
+    O = 20; R = 15;
+    ctx.beginPath(); ctx.arc(x - O, y - O, R, 0, T, 1); ctx.closePath(); ctx.stroke(); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + O, y - O, R, 0, T, 1); ctx.closePath(); ctx.stroke(); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + O, y + O, R, 0, T, 1); ctx.closePath(); ctx.stroke(); ctx.fill();
+    ctx.beginPath(); ctx.arc(x - O, y + O, R, 0, T, 1); ctx.closePath(); ctx.stroke(); ctx.fill();
+    O = 25; R = 20;
+    ctx.beginPath(); ctx.arc(x - O, y - O, R, 0, T, 1); ctx.closePath(); ctx.stroke(); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + O, y - O, R, 0, T, 1); ctx.closePath(); ctx.stroke(); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + O, y + O, R, 0, T, 1); ctx.closePath(); ctx.stroke(); ctx.fill();
+    ctx.beginPath(); ctx.arc(x - O, y + O, R, 0, T, 1); ctx.closePath(); ctx.stroke(); ctx.fill();
+}
+</script>
+<style>
+ * { box-sizing: border-box; margin: auto; font-family: calibri; }
+ body { background: #FFF; color: #000; text-align: center; overflow; hidden; }
+ button { background: #111; color: #EEE; font-size: 150pt; border: none; user-select: none; }
+ [fullscreen] { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; }
+</style>
+</head>
+<body>
+<canvas fullscreen id="animii" onmousemove="point(event);" onmousedown="press(event);" onmousewheel="wheel(event);"></canvas>
+<canvas fullscreen id="canvas" onmousemove="point(event);" onmousedown="press(event);" onmousewheel="wheel(event);"></canvas>
+<button fullscreen id="button" onclick="setup(event);">animii</button>
+</body>
+</html>
