@@ -1,0 +1,202 @@
+<title>Avolites QM500-TD</title>
+<style>
+ * { box-sizing: border-box; margin: auto; font-family: sans-serif; overflow: hidden; }
+ body { background: black; }
+ [panel] { background: #333; border: 1px black solid; position: absolute; z-index: 1; }
+ #panel-cue-faders-1 { top: 0px; left: 0px; width: 600px; height: 400px; }
+ #panel-video-display { top: 0px; left: 600px; width: 600px; height: 400px; }
+ #panel-mastering { top: 0px; left: 1200px; width: 300px; height: 400px; }
+ #panel-cue-faders-2 { top: 400px; left: 0px; width: 600px; height: 400px; }
+ #panel-timed-fade { top: 400px; left: 600px; width: 300px; height: 400px; }
+ #panel-program { top: 400px; left: 900px; width: 300px; height: 400px; }
+ #panel-effects { top: 400px; left: 1200px; width: 300px; height: 400px; }
+ [display] { border: 1px white solid; position: absolute; z-index: 2; width: 500px; height: 100px; }
+ #display-cue-faders-1 { background: #311; top: 50px; left: 50px; border-radius: 10px; }
+ #display-video { background: #111; top: 50px; left: 650px; height: 300px; }
+ #display-cue-faders-2 { background: #311; top: 450px; left: 50px; border-radius: 10px; }
+ #display-timed-fade-1 { background: #311; top: 450px; left: 625px; width: 50px; height: 300px; border-radius: 10px; }
+ #display-timed-fade-2 { background: #311; top: 490px; left: 770px; width: 80px; height: 100px; border-radius: 10px; }
+ #display-program-1 { background: #311; top: 450px; left: 925px; width: 250px; height: 50px; border-radius: 10px; }
+ #display-program-2 { background: #311; top: 525px; left: 925px; width: 80px; height: 225px; border-radius: 10px; }
+ #display-program-3 { background: #311; top: 525px; left: 1040px; width: 50px; height: 70px; border-radius: 10px; }
+ #display-program-4 { background: #311; top: 565px; left: 1125px; width: 50px; height: 30px; border-radius: 10px; }
+ #display-effects-1 { background: #311; top: 450px; left: 1225px; width: 50px; height: 70px; border-radius: 10px; }
+ #display-effects-2 { background: #311; top: 450px; left: 1325px; width: 50px; height: 70px; border-radius: 10px; }
+ [fader] { appearance: slider-vertical; position: absolute; z-index: 3; }
+ #fader-cue-faders-1-0 { top: 200px; left: 10px; }
+ #fader-cue-faders-1-1 { top: 200px; left: 60px; }
+ #fader-cue-faders-1-2 { top: 200px; left: 110px; }
+ #fader-cue-faders-1-3 { top: 200px; left: 160px; }
+ #fader-cue-faders-1-4 { top: 200px; left: 210px; }
+ #fader-cue-faders-1-5 { top: 200px; left: 260px; }
+ #fader-cue-faders-1-6 { top: 200px; left: 310px; }
+ #fader-cue-faders-1-7 { top: 200px; left: 360px; }
+ #fader-cue-faders-1-8 { top: 200px; left: 410px; }
+ #fader-cue-faders-1-9 { top: 200px; left: 460px; }
+ #fader-cue-faders-2-0 { top: 600px; left: 10px; }
+ #fader-cue-faders-2-1 { top: 600px; left: 60px; }
+ #fader-cue-faders-2-2 { top: 600px; left: 110px; }
+ #fader-cue-faders-2-3 { top: 600px; left: 160px; }
+ #fader-cue-faders-2-4 { top: 600px; left: 210px; }
+ #fader-cue-faders-2-5 { top: 600px; left: 260px; }
+ #fader-cue-faders-2-6 { top: 600px; left: 310px; }
+ #fader-cue-faders-2-7 { top: 600px; left: 360px; }
+ #fader-cue-faders-2-8 { top: 600px; left: 410px; }
+ #fader-cue-faders-2-9 { top: 600px; left: 460px; }
+ #fader-timed-fade-1 { top: 600px; left: 800px; }
+ #fader-mastering-1 { top: 200px; left: 1170px; }
+ #fader-mastering-2 { top: 200px; left: 1260px; }
+ #fader-mastering-3 { top: 200px; left: 1310px; }
+ #fader-mastering-4 { top: 200px; left: 1400px; }
+ #fader-effects-1 { top: 600px; left: 1170px; }
+ #fader-effects-2 { top: 600px; left: 1270px; }
+ [wheel] { background: black; border: 1px #555 solid; width: 20px; height: 130px; position: absolute; z-index: 4; }
+ #wheel-timed-fade-1 { top: 600px; left: 790px; }
+ #wheel-timed-fade-2 { top: 600px; left: 810px; }
+ #wheel-program { top: 600px; left: 1130px; width: 40px; }
+ #wheel-effects-1 { top: 600px; left: 1270px; }
+ #wheel-effects-2 { top: 600px; left: 1370px; }
+ [button] { background: white; border: 1px black solid; text-align: center; user-select: none; position: absolute; z-index: 5; }
+ #button-program { top: 602px; left: 1015px; width: 100px; height: 125px; }
+ #button-effects { top: 450px; left: 1415px; width: 50px; height: 300px; }
+ #button-timed-fade { top: 450px; left: 700px; width: 50px; height: 300px; }
+ #button-cue-faders-1 { top: 155px; left: 50px; width: 500px; height: 20px; }
+ #button-cue-faders-2 { top: 555px; left: 50px; width: 500px; height: 20px; }
+</style>
+<script>
+window.onload = function()
+{
+    canvas = document.getElementById("display-video");
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#321";
+    ctx.fillRect(0, 0, 300, 200);
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = "#fda";
+    ctx.shadowStyle = ctx.strokeStyle;
+    ctx.shadowBlur = 10;
+    ctx.strokeRect(10, 10, 280, 130);
+}
+var fader = function(event, sender)
+{
+    console.log(event.type, sender.id, sender.value);
+}
+var pad = function(event, sender)
+{
+    console.log(event.type, sender.id, event.x, event.y);
+}
+</script>
+<svg panel id="panel-cue-faders-1">
+  <text x="300" y="370" fill="white" text-anchor="middle">[CUE_FADERS]</text>
+  <path d="M 20 20 l 560 0 M 20 380 l 560 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-cue-faders-1" onclick="pad(event, this);"></canvas>
+  <input fader id="fader-cue-faders-1-0" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-1-1" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-1-2" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-1-3" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-1-4" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-1-5" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-1-6" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-1-7" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-1-8" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-1-9" type="range" oninput="fader(event, this);"></input>
+  <table button id="button-cue-faders-1" onclick="pad(event, this);">
+    <tr><td>0</td><td>1</td>
+        <td>2</td><td>3</td>
+        <td>4</td><td>5</td>
+        <td>6</td><td>7</td>
+        <td>8</td><td>9</td></tr>
+  </table>
+<svg panel id="panel-video-display">
+  <text x="300" y="370" fill="white" text-anchor="middle">[VIDEO_DISPLAY]</text>
+  <path d="M 20 20 l 560 0 M 20 380 l 560 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-video" onclick="pad(event, this);"></canvas>
+<svg panel id="panel-mastering">
+  <text x="150" y="370" fill="white" text-anchor="middle">[MASTERING]</text>
+  <path d="M 20 20 l 260 0 M 20 380 l 260 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <input fader id="fader-mastering-1" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-mastering-2" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-mastering-3" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-mastering-4" type="range" oninput="fader(event, this);"></input>
+<svg panel id="panel-cue-faders-2">
+  <text x="300" y="370" fill="white" text-anchor="middle">[CUE_FADERS]</text>
+  <path d="M 20 20 l 560 0 M 20 380 l 560 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-cue-faders-2" onclick="pad(event, this);"></canvas>
+  <input fader id="fader-cue-faders-2-0" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-2-1" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-2-2" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-2-3" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-2-4" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-2-5" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-2-6" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-2-7" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-2-8" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-2-9" type="range" oninput="fader(event, this);"></input>
+  <table button id="button-cue-faders-2" onclick="pad(event, this);">
+    <tr><td>0</td><td>1</td>
+        <td>2</td><td>3</td>
+        <td>4</td><td>5</td>
+        <td>6</td><td>7</td>
+        <td>8</td><td>9</td></tr>
+  </table>
+<svg panel id="panel-timed-fade">
+  <text x="150" y="370" fill="white" text-anchor="middle">[TIMED_FADE]</text>
+  <path d="M 20 20 l 260 0 M 20 380 l 260 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-timed-fade-1" onclick="pad(event, this);"></canvas>
+  <canvas display id="display-timed-fade-2" onclick="pad(event, this);"></canvas>
+  <div wheel id="wheel-timed-fade-1" onclick="pad(event, this);"></div>
+  <div wheel id="wheel-timed-fade-2" onclick="pad(event, this);"></div>
+  <input fader id="fader-timed-fade-1" type="range" oninput="fader(event, this);"></input>
+  <table button id="button-timed-fade" onclick="pad(event, this);">
+    <tr><td>0</td><td>A</td></tr>
+    <tr><td>1</td><td>B</td></tr>
+    <tr><td>2</td><td>C</td></tr>
+    <tr><td>3</td><td>D</td></tr>
+    <tr><td>4</td><td>E</td></tr>
+    <tr><td>5</td><td>F</td></tr>
+    <tr><td>6</td><td>G</td></tr>
+    <tr><td>7</td><td>H</td></tr>
+    <tr><td>8</td><td>I</td></tr>
+    <tr><td>9</td><td>J</td></tr>
+  </table>
+<svg panel id="panel-program">
+  <text x="150" y="370" fill="white" text-anchor="middle">[PROGRAM]</text>
+  <path d="M 20 20 l 260 0 M 20 380 l 260 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-program-1" onclick="pad(event, this);"></canvas>
+  <canvas display id="display-program-2" onclick="pad(event, this);"></canvas>
+  <canvas display id="display-program-3" onclick="pad(event, this);"></canvas>
+  <canvas display id="display-program-4" onclick="pad(event, this);"></canvas>
+  <div wheel id="wheel-program" onclick="pad(event, this);"></div>
+  <table button id="button-program" onclick="pad(event, this);">
+    <tr><td>1</td><td>2</td><td>3</td></tr>
+    <tr><td>4</td><td>5</td><td>6</td></tr>
+    <tr><td>7</td><td>8</td><td>9</td></tr>
+    <tr><td>*</td><td>0</td><td>#</td></tr>
+  </table>
+<svg panel id="panel-effects">
+  <text x="150" y="370" fill="white" text-anchor="middle">[EFFECTS]</text>
+  <path d="M 20 20 l 260 0 M 20 380 l 260 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-effects-1" onclick="pad(event, this);"></canvas>
+  <canvas display id="display-effects-2" onclick="pad(event, this);"></canvas>
+  <input fader id="fader-effects-1" type="range" oninput="fader(event, this);"></input>
+  <input fader id="fader-effects-2" type="range" oninput="fader(event, this);"></input>
+  <div wheel id="wheel-effects-1" onclick="pad(event, this);"></div>
+  <div wheel id="wheel-effects-2" onclick="pad(event, this);"></div>
+  <table button id="button-effects" onclick="pad(event, this);">
+    <tr><td>0</td><td>A</td></tr>
+    <tr><td>1</td><td>B</td></tr>
+    <tr><td>2</td><td>C</td></tr>
+    <tr><td>3</td><td>D</td></tr>
+    <tr><td>4</td><td>E</td></tr>
+    <tr><td>5</td><td>F</td></tr>
+    <tr><td>6</td><td>G</td></tr>
+    <tr><td>7</td><td>H</td></tr>
+    <tr><td>8</td><td>I</td></tr>
+    <tr><td>9</td><td>J</td></tr>
+  </table>
