@@ -1,0 +1,1474 @@
+<title>Avolites QM500-TD</title>
+<style>
+ * { box-sizing: border-box; margin: auto; font-family: sans-serif; overflow: hidden; }
+ body { background: black; }
+ [panel] { background: #333; border: 1px black solid; user-select: none; position: absolute; z-index: 1; }
+ #panel-cue-faders-1 { top: 0px; left: 0px; width: 600px; height: 400px; }
+ #panel-video-display { top: 0px; left: 600px; width: 600px; height: 400px; }
+ #panel-mastering { top: 0px; left: 1200px; width: 300px; height: 400px; }
+ #panel-cue-faders-2 { top: 400px; left: 0px; width: 600px; height: 400px; }
+ #panel-timed-fade { top: 400px; left: 600px; width: 300px; height: 400px; }
+ #panel-program { top: 400px; left: 900px; width: 300px; height: 400px; }
+ #panel-effects { top: 400px; left: 1200px; width: 300px; height: 400px; }
+ [display] { border: 1px white solid; position: absolute; z-index: 2; width: 500px; height: 100px; }
+ #display-cue-faders-1 { background: #311; top: 50px; left: 50px; border-radius: 10px; }
+ #display-video { background: #111; top: 50px; left: 650px; height: 300px; }
+ #display-cue-faders-2 { background: #311; top: 450px; left: 50px; border-radius: 10px; }
+ #display-timed-fade-1 { background: #311; top: 450px; left: 640px; width: 50px; height: 300px; border-radius: 10px; }
+ #display-timed-fade-2 { background: #311; top: 490px; left: 770px; width: 80px; height: 100px; border-radius: 10px; }
+ #display-program-1 { background: #311; top: 450px; left: 925px; width: 250px; height: 50px; border-radius: 10px; }
+ #display-program-2 { background: #311; top: 525px; left: 925px; width: 50px; height: 225px; border-radius: 10px; }
+ #display-program-3 { background: #311; top: 525px; left: 1040px; width: 50px; height: 70px; border-radius: 10px; }
+ #display-program-4 { background: #311; top: 565px; left: 1125px; width: 50px; height: 30px; border-radius: 10px; }
+ #display-effects-1 { background: #311; top: 450px; left: 1225px; width: 50px; height: 70px; border-radius: 10px; }
+ #display-effects-2 { background: #311; top: 450px; left: 1325px; width: 50px; height: 70px; border-radius: 10px; }
+ [fader] { appearance: slider-vertical; -webkit-appearance: slider-vertical; width: 10px; height: 130px; margin-left: 59px; position: absolute; z-index: 3; }
+ #fader-cue-faders-1-0 { top: 200px; left: 10px; }
+ #fader-cue-faders-1-1 { top: 200px; left: 60px; }
+ #fader-cue-faders-1-2 { top: 200px; left: 110px; }
+ #fader-cue-faders-1-3 { top: 200px; left: 160px; }
+ #fader-cue-faders-1-4 { top: 200px; left: 210px; }
+ #fader-cue-faders-1-5 { top: 200px; left: 260px; }
+ #fader-cue-faders-1-6 { top: 200px; left: 310px; }
+ #fader-cue-faders-1-7 { top: 200px; left: 360px; }
+ #fader-cue-faders-1-8 { top: 200px; left: 410px; }
+ #fader-cue-faders-1-9 { top: 200px; left: 460px; }
+ #fader-cue-faders-2-0 { top: 600px; left: 10px; }
+ #fader-cue-faders-2-1 { top: 600px; left: 60px; }
+ #fader-cue-faders-2-2 { top: 600px; left: 110px; }
+ #fader-cue-faders-2-3 { top: 600px; left: 160px; }
+ #fader-cue-faders-2-4 { top: 600px; left: 210px; }
+ #fader-cue-faders-2-5 { top: 600px; left: 260px; }
+ #fader-cue-faders-2-6 { top: 600px; left: 310px; }
+ #fader-cue-faders-2-7 { top: 600px; left: 360px; }
+ #fader-cue-faders-2-8 { top: 600px; left: 410px; }
+ #fader-cue-faders-2-9 { top: 600px; left: 460px; }
+ #fader-timed-fade-1 { top: 600px; left: 800px; }
+ #fader-mastering-1 { top: 200px; left: 1170px; }
+ #fader-mastering-2 { top: 200px; left: 1260px; }
+ #fader-mastering-3 { top: 200px; left: 1310px; }
+ #fader-mastering-4 { top: 200px; left: 1400px; }
+ #fader-effects-1 { top: 600px; left: 1170px; }
+ #fader-effects-2 { top: 600px; left: 1270px; }
+ [wheel] { background: black; border: 1px #555 solid; width: 20px; height: 130px; position: absolute; z-index: 4; }
+ #wheel-timed-fade-1 { top: 600px; left: 790px; }
+ #wheel-timed-fade-2 { top: 600px; left: 810px; }
+ #wheel-program { top: 600px; left: 1130px; width: 40px; }
+ #wheel-effects-1 { top: 600px; left: 1270px; }
+ #wheel-effects-2 { top: 600px; left: 1370px; }
+ [button] { background: white; border: 1px black solid; text-align: center; user-select: none; position: absolute; z-index: 5; }
+ #button-program { top: 602px; left: 1015px; width: 100px; height: 125px; }
+ [grab] { background: grey; width: 10px; height: 20px; position: absolute; z-index: 6; }
+ #button-cue-faders-1-grab-0 { top: 30px; left: 67px; }
+ #button-cue-faders-1-grab-1 { top: 30px; left: 117px; }
+ #button-cue-faders-1-grab-2 { top: 30px; left: 167px; }
+ #button-cue-faders-1-grab-3 { top: 30px; left: 217px; }
+ #button-cue-faders-1-grab-4 { top: 30px; left: 267px; }
+ #button-cue-faders-1-grab-5 { top: 30px; left: 317px; }
+ #button-cue-faders-1-grab-6 { top: 30px; left: 367px; }
+ #button-cue-faders-1-grab-7 { top: 30px; left: 417px; }
+ #button-cue-faders-1-grab-8 { top: 30px; left: 467px; }
+ #button-cue-faders-1-grab-9 { top: 30px; left: 517px; }
+ #button-cue-faders-2-grab-0 { top: 430px; left: 67px; }
+ #button-cue-faders-2-grab-1 { top: 430px; left: 117px; }
+ #button-cue-faders-2-grab-2 { top: 430px; left: 167px; }
+ #button-cue-faders-2-grab-3 { top: 430px; left: 217px; }
+ #button-cue-faders-2-grab-4 { top: 430px; left: 267px; }
+ #button-cue-faders-2-grab-5 { top: 430px; left: 317px; }
+ #button-cue-faders-2-grab-6 { top: 430px; left: 367px; }
+ #button-cue-faders-2-grab-7 { top: 430px; left: 417px; }
+ #button-cue-faders-2-grab-8 { top: 430px; left: 467px; }
+ #button-cue-faders-2-grab-9 { top: 430px; left: 517px; }
+ [swop] { background: blue; width: 20px; height: 20px; position: absolute; z-index: 7; }
+ #button-cue-faders-1-swop-0 { top: 160px; left: 65px; }
+ #button-cue-faders-1-swop-1 { top: 160px; left: 115px; }
+ #button-cue-faders-1-swop-2 { top: 160px; left: 165px; }
+ #button-cue-faders-1-swop-3 { top: 160px; left: 215px; }
+ #button-cue-faders-1-swop-4 { top: 160px; left: 265px; }
+ #button-cue-faders-1-swop-5 { top: 160px; left: 315px; }
+ #button-cue-faders-1-swop-6 { top: 160px; left: 365px; }
+ #button-cue-faders-1-swop-7 { top: 160px; left: 415px; }
+ #button-cue-faders-1-swop-8 { top: 160px; left: 465px; }
+ #button-cue-faders-1-swop-9 { top: 160px; left: 515px; }
+ #button-cue-faders-2-swop-0 { top: 560px; left: 65px; }
+ #button-cue-faders-2-swop-1 { top: 560px; left: 115px; }
+ #button-cue-faders-2-swop-2 { top: 560px; left: 165px; }
+ #button-cue-faders-2-swop-3 { top: 560px; left: 215px; }
+ #button-cue-faders-2-swop-4 { top: 560px; left: 265px; }
+ #button-cue-faders-2-swop-5 { top: 560px; left: 315px; }
+ #button-cue-faders-2-swop-6 { top: 560px; left: 365px; }
+ #button-cue-faders-2-swop-7 { top: 560px; left: 415px; }
+ #button-cue-faders-2-swop-8 { top: 560px; left: 465px; }
+ #button-cue-faders-2-swop-9 { top: 560px; left: 515px; }
+ #button-timed-fade-swop { top: 560px; left: 855px; }
+ #button-effects-swop-1 { top: 560px; left: 1225px; }
+ #button-effects-swop-2 { top: 560px; left: 1325px; }
+ [add] { background: grey; width: 20px; height: 20px; position: absolute; z-index: 8; }
+ #button-cue-faders-1-add-0 { top: 180px; left: 65px; }
+ #button-cue-faders-1-add-1 { top: 180px; left: 115px; }
+ #button-cue-faders-1-add-2 { top: 180px; left: 165px; }
+ #button-cue-faders-1-add-3 { top: 180px; left: 215px; }
+ #button-cue-faders-1-add-4 { top: 180px; left: 265px; }
+ #button-cue-faders-1-add-5 { top: 180px; left: 315px; }
+ #button-cue-faders-1-add-6 { top: 180px; left: 365px; }
+ #button-cue-faders-1-add-7 { top: 180px; left: 415px; }
+ #button-cue-faders-1-add-8 { top: 180px; left: 465px; }
+ #button-cue-faders-1-add-9 { top: 180px; left: 515px; }
+ #button-cue-faders-2-add-0 { top: 580px; left: 65px; }
+ #button-cue-faders-2-add-1 { top: 580px; left: 115px; }
+ #button-cue-faders-2-add-2 { top: 580px; left: 165px; }
+ #button-cue-faders-2-add-3 { top: 580px; left: 215px; }
+ #button-cue-faders-2-add-4 { top: 580px; left: 265px; }
+ #button-cue-faders-2-add-5 { top: 580px; left: 315px; }
+ #button-cue-faders-2-add-6 { top: 580px; left: 365px; }
+ #button-cue-faders-2-add-7 { top: 580px; left: 415px; }
+ #button-cue-faders-2-add-8 { top: 580px; left: 465px; }
+ #button-cue-faders-2-add-9 { top: 580px; left: 515px; }
+ #button-timed-fade-add { top: 580px; left: 855px; }
+ #button-effects-add-1 { top: 580px; left: 1225px; }
+ #button-effects-add-2 { top: 580px; left: 1325px; }
+ [sel] { background: #733; width: 20px; height: 5px; position: absolute; z-index: 9; }
+ #div-cue-faders-1-sel-0 { top: 155px; left: 65px; }
+ #div-cue-faders-1-sel-1 { top: 155px; left: 115px; }
+ #div-cue-faders-1-sel-2 { top: 155px; left: 165px; }
+ #div-cue-faders-1-sel-3 { top: 155px; left: 215px; }
+ #div-cue-faders-1-sel-4 { top: 155px; left: 265px; }
+ #div-cue-faders-1-sel-5 { top: 155px; left: 315px; }
+ #div-cue-faders-1-sel-6 { top: 155px; left: 365px; }
+ #div-cue-faders-1-sel-7 { top: 155px; left: 415px; }
+ #div-cue-faders-1-sel-8 { top: 155px; left: 465px; }
+ #div-cue-faders-1-sel-9 { top: 155px; left: 515px; }
+ #div-cue-faders-2-sel-0 { top: 555px; left: 65px; }
+ #div-cue-faders-2-sel-1 { top: 555px; left: 115px; }
+ #div-cue-faders-2-sel-2 { top: 555px; left: 165px; }
+ #div-cue-faders-2-sel-3 { top: 555px; left: 215px; }
+ #div-cue-faders-2-sel-4 { top: 555px; left: 265px; }
+ #div-cue-faders-2-sel-5 { top: 555px; left: 315px; }
+ #div-cue-faders-2-sel-6 { top: 555px; left: 365px; }
+ #div-cue-faders-2-sel-7 { top: 555px; left: 415px; }
+ #div-cue-faders-2-sel-8 { top: 555px; left: 465px; }
+ #div-cue-faders-2-sel-9 { top: 555px; left: 515px; }
+ #div-timed-fade-sel { top: 555px; left: 855px; }
+ #div-effects-sel-1 { top: 555px; left: 1225px; }
+ #div-effects-sel-2 { top: 555px; left: 1325px; }
+ [go] { background: red; width: 20px; height: 20px; position: absolute; z-index: 10; }
+ #button-timed-fade-go-1 { top: 700px; left: 700px; }
+ #button-timed-fade-go-2 { top: 580px; left: 700px; width: 10px; }
+ [fx] { background: yellow; width: 10px; height: 20px; position: absolute; z-index: 11; }
+ #button-effects-1 { top: 500px; left: 1420px; }
+ #button-effects-2 { top: 500px; left: 1440px; }
+ #button-effects-3 { top: 520px; left: 1420px; }
+ #button-effects-4 { top: 520px; left: 1440px; }
+ #button-effects-5 { top: 540px; left: 1420px; }
+ #button-effects-6 { top: 540px; left: 1440px; }
+ #button-effects-7 { top: 560px; left: 1420px; }
+ #button-effects-8 { top: 560px; left: 1440px; }
+ #button-effects-9 { top: 580px; left: 1420px; }
+ #button-effects-10 { top: 580px; left: 1440px; }
+ #button-effects-11 { top: 600px; left: 1420px; }
+ #button-effects-12 { top: 600px; left: 1440px; }
+ #button-effects-13 { top: 620px; left: 1420px; }
+ #button-effects-14 { top: 620px; left: 1440px; }
+ #button-effects-15 { top: 640px; left: 1420px; }
+ #button-effects-16 { top: 640px; left: 1440px; }
+ #button-effects-17 { top: 660px; left: 1420px; }
+ #button-effects-18 { top: 660px; left: 1440px; }
+ #button-effects-19 { top: 680px; left: 1420px; }
+ #button-effects-20 { top: 680px; left: 1440px; }
+ #button-effects-fd-1 { top: 520px; left: 1272px; }
+ #button-effects-bk-1 { top: 540px; left: 1272px; }
+ #button-effects-pp-1 { top: 560px; left: 1272px; }
+ #button-effects-ss-1 { top: 580px; left: 1272px; }
+ #button-effects-fd-2 { top: 520px; left: 1372px; }
+ #button-effects-bk-2 { top: 540px; left: 1372px; }
+ #button-effects-pp-2 { top: 560px; left: 1372px; }
+ #button-effects-ss-2 { top: 580px; left: 1372px; }
+ [misc] { background: grey; width: 10px; height: 20px; position: absolute; z-index: 12; }
+ #button-timed-fade-1 { top: 460px; left: 615px; }
+ #button-timed-fade-2 { top: 490px; left: 615px; }
+ #button-timed-fade-3 { top: 520px; left: 615px; }
+ #button-timed-fade-live { top: 700px; left: 615px; }
+ #button-timed-fade-page-next { top: 460px; left: 700px; }
+ #button-timed-fade-page-prev { top: 490px; left: 700px; }
+ #button-timed-fade-pre-warm { top: 520px; left: 700px; }
+ #button-timed-fade-link-wait { top: 550px; left: 700px; }
+ #button-timed-fade-cue { top: 620px; left: 700px; width: 20px; }
+ #button-timed-fade-prev { top: 660px; left: 695px; }
+ #button-timed-fade-next { top: 660px; left: 710px; }
+ #button-timed-fade-wait-prev-time { top: 660px; left: 740px; }
+ #button-timed-fade-wait-next-time { top: 660px; left: 760px; }
+ #button-timed-fade-fade-prev-time { top: 690px; left: 740px; }
+ #button-timed-fade-fade-next-time { top: 690px; left: 760px; }
+ #button-program-1 { top: 550px; left: 985px; }
+ #button-program-2 { top: 580px; left: 985px; }
+ #button-program-3 { top: 610px; left: 985px; }
+ #button-program-4 { top: 640px; left: 985px; }
+ #button-program-5 { top: 670px; left: 985px; }
+ #button-program-6 { top: 700px; left: 985px; }
+ [connect] { position: absolute; top: 100px; left: 1200px; z-index: 11; }
+ #baud-rate { position: absolute; top: 100px; left: 1300px; z-index: 11; }
+ [editor] { position: absolute; top: 125px; left: 1200px; z-index: 11; }
+ #edit-full { position: absolute; top: 125px; left: 1300px; z-index: 11; }
+ [tester] { position: absolute; top: 150px; left: 1200px; z-index: 11; }
+ #test-text { position: absolute; top: 150px; left: 1300px; z-index: 11; }
+</style>
+<script>
+var cue = 0;
+var master_page = 0;
+var master_page_prev = 0;
+var effects_page = 0;
+var effects_page_prev = 0;
+var video_page = 0;
+var universe = [];
+var cue_faders_display_1 =
+[
+    [
+        "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD",
+        "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD"
+    ],
+    [
+        "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH",
+        "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH",
+    ],
+    [
+        "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL",
+        "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL",
+    ],
+    [
+        "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP",
+        "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP",
+    ],
+];
+var cue_faders_display_2 =
+[
+    [
+        "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD",
+        "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "ABCD"
+    ],
+    [
+        "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH",
+        "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH", "EFGH",
+    ],
+    [
+        "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL",
+        "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL", "IJKL",
+    ],
+    [
+        "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP",
+        "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP", "MNOP",
+    ],
+];
+var grabs =
+[
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+];
+var swops =
+[
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ],
+];
+var adds =
+[
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ],
+];
+var faders =
+[
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ],
+    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ],
+];
+var presets =
+[
+    [ [], [], [], [], [], [], [], [], [], [],   [], [], [], [], [], [], [], [], [], [], ],
+    [ [], [], [], [], [], [], [], [], [], [],   [], [], [], [], [], [], [], [], [], [], ],
+    [ [], [], [], [], [], [], [], [], [], [],   [], [], [], [], [], [], [], [], [], [], ],
+    [ [], [], [], [], [], [], [], [], [], [],   [], [], [], [], [], [], [], [], [], [], ],
+];
+var effects =
+[
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+];
+var effects_tempo =
+[
+    [120,240 ], [ 60, 60 ], [ 60, 60 ], [ 60, 60 ], [ 60, 60 ],
+    [ 60, 60 ], [ 60, 60 ], [ 60, 60 ], [ 60, 60 ], [ 60, 60 ],
+    [ 60, 60 ], [ 60, 60 ], [ 60, 60 ], [ 60, 60 ], [ 60, 60 ],
+    [ 60, 60 ], [ 60, 60 ], [ 60, 60 ], [ 60, 60 ], [ 60, 60 ],
+];
+var effects_swops =
+[
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+];
+var effects_adds =
+[
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+];
+var effects_direction =
+[
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+];
+var effects_pingpong =
+[
+    [ 1, 1 ], [ 1, 1 ], [ 1, 1 ], [ 1, 1 ], [ 1, 1 ],
+    [ 1, 1 ], [ 1, 1 ], [ 1, 1 ], [ 1, 1 ], [ 1, 1 ],
+    [ 1, 1 ], [ 1, 1 ], [ 1, 1 ], [ 1, 1 ], [ 1, 1 ],
+    [ 1, 1 ], [ 1, 1 ], [ 1, 1 ], [ 1, 1 ], [ 1, 1 ],
+];
+var effects_stopstep =
+[
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+];
+var effects_stopprev =
+[
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+];
+var effects_steps =
+[
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+    [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ], [ 0, 0 ],
+];
+var effects_presets =
+[
+    [ [], [] ], [ [], [] ], [ [], [] ], [ [], [] ], [ [], [] ],
+    [ [], [] ], [ [], [] ], [ [], [] ], [ [], [] ], [ [], [] ],
+    [ [], [] ], [ [], [] ], [ [], [] ], [ [], [] ], [ [], [] ],
+    [ [], [] ], [ [], [] ], [ [], [] ], [ [], [] ], [ [], [] ],
+];
+var effects_interval =
+[
+    [ null, null ], [ null, null ], [ null, null ], [ null, null ], [ null, null ],
+    [ null, null ], [ null, null ], [ null, null ], [ null, null ], [ null, null ],
+    [ null, null ], [ null, null ], [ null, null ], [ null, null ], [ null, null ],
+    [ null, null ], [ null, null ], [ null, null ], [ null, null ], [ null, null ],
+];
+var timed_fade_a = [];
+var timed_fade_b = [];
+var timed_fade_cue = 0;
+var timed_fade_swop = 0;
+var timed_fade_add = 0;
+var mastering_cue = 0;
+var mastering_add = 0;
+var mastering_swop = 0;
+var mastering_grand = 0;
+mastering_cue = 1.00;
+mastering_grand = 1.00;
+var fixtures = [];
+var states = [];
+var focus = [];
+var solo = [];
+var cues = [];
+var waits = [];
+var fades = [];
+var keypad = "";
+var edit = 255;
+var clear = 0;
+var enter = 0;
+var preheat = 0;
+var serial = null;
+var encoder = null;
+var writer = null;
+var manual_override = false;
+var channels = 512;
+
+var encode = function(data)
+{
+    var buffer = new ArrayBuffer(data.length);
+    var view = new Uint8Array(buffer);
+    for (var i = 0; i < data.length; ++i)
+    {
+        view[i] = data[i] & 0xFF;
+    }
+    return buffer;
+}
+var connect = function()
+{
+    navigator.serial.requestPort().then(function(port)
+    {
+        port.onconnect = function()
+        {
+            console.log("[INFO]", "connected", port);
+            writer = port.writable.getWriter();
+            serial = port;
+        }
+        port.ondisconnect = function() { console.log("[INFO]", "disconnected"); writer = null; }
+        var options =
+        {
+            baudRate: document.getElementById("baud-rate").value,
+            flowControl: "none", //"hardware",
+            dataBits: 8,
+            stopBits: 2,
+            parity: "none",
+        };
+        port.open(options).then(function()
+        {
+            port.onconnect();
+        });
+    });
+}
+var editor = function()
+{
+    edit = parseInt(document.getElementById("edit-full").value);
+}
+var tester = function()
+{
+    var text = document.getElementById("test-text").value;
+    manual_override = true;
+    alert(text);
+    var data = Array(1 + 512);
+    data[1] = 0xFF;
+    writer.write(encode(data));
+    //writer.write(encode([0x7E, 0x06, 0x02, 0x00, 0x00, 0xFF, 0xE7]));
+    setTimeout(function() { console.log("[TEST]", "complete"); manual_override = false; }, 1000);
+}
+window.onload = function()
+{
+    encoder = new TextEncoder();
+    for (var i = 0; i < 4; ++i)
+    {
+        universe.push([]);
+        for (var j = 0; j < 512; ++j)
+        {
+            universe[i].push(0);
+        }
+    }
+    for (var i = 0; i < 100; ++i)
+    {
+        cues.push([]);
+        waits.push([1, 1]);
+        fades.push([3, 3]);
+    }
+    states = [ [[], []], [], [], [[], []], [], [] ];
+    for (var i = 0; i < effects.length; ++i)
+    {
+        states[3][0].push(0);
+        states[3][1].push(0);
+    }
+    setInterval(refresh, 0);
+    setInterval(generate, 0);
+    setInterval(interface, 10);
+    for (var i = 0; i < 20; ++i)
+    {
+        effects_interval[i][0] = setInterval(chase, parseInt((parseFloat(effects_tempo[i][0]) / 60) * 1000), i, 0);
+        effects_interval[i][1] = setInterval(chase, parseInt((parseFloat(effects_tempo[i][1]) / 60) * 1000), i, 1);
+    }
+}
+var generate = function()
+{
+    if ((writer != null) && (!manual_override))
+    {
+        writer.write(encode([0x00]));
+        writer.write(encode(universe[0]));
+        //writer.write(encode([0x7E]));
+        //writer.write(encode([0x06, (channels + 1) & 0xFF, ((channels + 1) >> 8) & 0xFF, 0x00]));
+        //writer.write(encode(universe[0]));
+        //writer.write(encode([0xE7]));
+    }
+}
+var refresh = function()
+{
+    for (var i = 0; i < fixtures.length; ++i)
+    {
+        states[0][0][i] = fixtures[i];
+        states[0][1][i] = fixtures[i][1] * mastering_grand;
+        var univ = parseInt(fixtures[i][0] / 512);
+        var addr = parseInt(fixtures[i][0] % 512);
+        universe[univ][addr] = parseInt(states[0][1][i]);
+    }
+    for (var i = 0; i < presets.length; ++i)
+    {
+        var state = presets[i][1] * (parseFloat(faders[i]) / 100) * mastering_cue * mastering_grand;
+        var univ = parseInt(presets[i][0] / 512);
+        var addr = parseInt(presets[i][0] % 512);
+        universe[univ][addr] = parseInt(state);
+    }
+    for (var i = 0; i < timed_fade_a.length; ++i)
+    {
+        states[1][i] = timed_fade_a[i][1] * timed_fade_cue * mastering_grand;
+        var univ = parseInt(timed_fade_a[i][0] / 512);
+        var addr = parseInt(timed_fade_a[i][0] % 512);
+        universe[univ][addr] = parseInt();
+    }
+    for (var i = 0; i < timed_fade_b.length; ++i)
+    {
+        states[2][i] = timed_fade_b[i][1] * timed_fade_cue * mastering_grand;
+        var univ = parseInt(timed_fade_b[i][0] / 512);
+        var addr = parseInt(timed_fade_b[i][0] % 512);
+        universe[univ][addr] = parseInt(states[2][i]);
+    }
+    for (var i = 0; i < effects_presets.length; ++i)
+    {
+        var state = effects_presets[i][0][1];
+        states[3][0][i] = state * (parseFloat(effects[i][0]) / 100) * mastering_grand;
+        if (effects_presets[i][0][0] != null)
+        {
+            var univ = parseInt(effects_presets[i][0][effects_steps[i][0]] / 512);
+            var addr = parseInt(effects_presets[i][0][effects_steps[i][0]] % 512);
+            universe[univ][addr] = parseInt(states[3][0][i]);
+        }
+    }
+    for (var i = 0; i < effects_presets.length; ++i)
+    {
+        var state = effects_presets[i][0][1];
+        states[3][1][i] = state * (parseFloat(effects[i][1]) / 100) * mastering_grand;
+        if (effects_presets[i][0][0] != null)
+        {
+            var univ = parseInt(effects_presets[i][1][effects_steps[i][1]] / 512);
+            var addr = parseInt(effects_presets[i][1][effects_steps[i][1]] % 512);
+            universe[univ][addr] = parseInt(states[3][1][i]);
+        }
+    }
+    for (var i = 0; i < effects.length; ++i)
+    {
+        states[3][0][i] = effects_steps[i][0];
+        states[3][1][i] = effects_steps[i][1];
+    }
+    focus = [];
+    for (var i = 0; i < adds[0].length; ++i)
+    {
+        if (adds[0][i] > 0) { focus.push(presets[0][i]); }
+        if (adds[1][i] > 0) { focus.push(presets[1][i]); }
+        if (adds[2][i] > 0) { focus.push(presets[2][i]); }
+        if (adds[3][i] > 0) { focus.push(presets[3][i]); }
+    }
+    if (timed_fade_add > 0) { focus.push(timed_fade_a); focus.push(timed_fade_b); }
+    for (var i = 0; i < effects_adds.length; ++i)
+    {
+        if (effects_adds[i][0] > 0) { focus.push(effects_presets[i][0][effects_steps[i][0]]); }
+        if (effects_adds[i][1] > 0) { focus.push(effects_presets[i][1][effects_steps[i][1]]); }
+    }
+    for (var i = 0; i < focus.length; ++i)
+    {
+        focus[i][1] *= mastering_add * mastering_grand;
+        var univ = parseInt(focus[i][0] / 512);
+        var addr = parseInt(focus[i][0] % 512);
+        universe[univ][addr] = parseInt(focus[i][1]);
+        states[4][i] = focus[i][1];
+    }
+    solo = [];
+    for (var i = 0; i < swops[0].length; ++i)
+    {
+        if (swops[0][i] > 0) { solo.push(presets[0][i]); }
+        if (swops[1][i] > 0) { solo.push(presets[1][i]); }
+        if (swops[2][i] > 0) { solo.push(presets[2][i]); }
+        if (swops[3][i] > 0) { solo.push(presets[3][i]); }
+    }
+    if (timed_fade_swop > 0) { solo.push(timed_fade_a); solo.push(timed_fade_b); }
+    for (var i = 0; i < effects.length; ++i)
+    {
+        if (effects_adds[i][0] > 0) { solo.push(effects_presets[i][0][effects_steps[i][0]]); }
+        if (effects_adds[i][1] > 0) { solo.push(effects_presets[i][1][effects_steps[i][1]]); }
+    }
+    for (var i = 0; i < solo.length; ++i)
+    {
+        solo[i][1] *= mastering_swop * mastering_grand;
+        var univ = parseInt(solo[i][0] / 512);
+        var addr = parseInt(solo[i][0] % 512);
+        universe[univ][addr] = parseInt(solo[i][1]);
+        states[5][i] = solo[i][1];
+    }
+    if (preheat)
+    {
+        for (var i = 0; i < timed_fade_b.length; ++i)
+        {
+            var univ = parseInt(timed_fade_b[i][0] / 512);
+            var addr = parseInt(timed_fade_b[i][0] % 512);
+            universe[univ][addr] = parseInt(parseFloat(timed_fade_b[i][1]) * 0.1);
+        }
+    }
+}
+var interface = function()
+{
+    canvas = document.getElementById("display-video");
+    canvas.width = 300; canvas.height = 200;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#321";
+    ctx.fillRect(0, 0, 300, 200);
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = "#fda";
+    ctx.shadowStyle = ctx.strokeStyle;
+    ctx.shadowBlur = 10;
+    ctx.strokeRect(10, 10, 280, 180);
+    ctx.fillStyle = "#fda";
+    ctx.font = "8pt sans-serif";
+    if (video_page == 0)
+    {
+        ctx.fillText("___LIVE_TF___", 110, 25);
+        for (var i = 0; i < states[0][0].length; ++i)
+        {
+            ctx.fillText(states[0][0][i], 15, 45 + (20 * i));
+        }
+        for (var i = 0; i < states[0][1].length; ++i)
+        {
+            ctx.fillText(states[0][1][i], 115, 45 + (20 * i));
+        }
+    }
+    if (video_page == 1)
+    {
+        ctx.fillText("___MEMORY___", 110, 25);
+        for (var i = 0; i < states[1].length; ++i)
+        {
+            ctx.fillText(states[1][i], 15, 45 + (20 * i));
+        }
+    }
+    if (video_page == 2)
+    {
+        ctx.fillText("___BLK_STK___", 110, 25);
+        for (var i = 0; i < states[2].length; ++i)
+        {
+            ctx.fillText(states[2][i], 15, 45 + (20 * i));
+        }
+    }
+    if (video_page == 3)
+    {
+        ctx.fillText("___UTILS___", 110, 25);
+        for (var i = 0; i < states[3][0].length; ++i)
+        {
+            ctx.fillText(states[3][0][i], 15, 45 + (20 * i));
+        }
+        for (var i = 0; i < states[3][1].length; ++i)
+        {
+            ctx.fillText(states[3][1][i], 115, 45 + (20 * i));
+        }
+    }
+    if (video_page == 4)
+    {
+        ctx.fillText("___VIEW___", 110, 25);
+        for (var i = 0; i < states[4].length; ++i)
+        {
+            ctx.fillText(states[4][i], 15, 45 + (20 * i));
+        }
+    }
+    if (video_page == 5)
+    {
+        ctx.fillText("___NUMBERS___", 110, 25);
+        for (var i = 0; i < states[5].length; ++i)
+        {
+            ctx.fillText(states[5][i], 15, 45 + (20 * i));
+        }
+    }
+
+    canvas = document.getElementById("display-cue-faders-1");
+    canvas.width = 300; canvas.height = 90;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#f33";
+    ctx.font = "8pt sans-serif";
+    ctx.fillText(cue_faders_display_1[(grabs[0] < 0) ? master_page : grabs[0]][0],   0, 25);
+    ctx.fillText(cue_faders_display_1[(grabs[1] < 0) ? master_page : grabs[1]][1],  30, 25);
+    ctx.fillText(cue_faders_display_1[(grabs[2] < 0) ? master_page : grabs[2]][2],  60, 25);
+    ctx.fillText(cue_faders_display_1[(grabs[3] < 0) ? master_page : grabs[3]][3],  90, 25);
+    ctx.fillText(cue_faders_display_1[(grabs[4] < 0) ? master_page : grabs[4]][4], 120, 25);
+    ctx.fillText(cue_faders_display_1[(grabs[5] < 0) ? master_page : grabs[5]][5], 150, 25);
+    ctx.fillText(cue_faders_display_1[(grabs[6] < 0) ? master_page : grabs[6]][6], 180, 25);
+    ctx.fillText(cue_faders_display_1[(grabs[7] < 0) ? master_page : grabs[7]][7], 210, 25);
+    ctx.fillText(cue_faders_display_1[(grabs[8] < 0) ? master_page : grabs[8]][8], 240, 25);
+    ctx.fillText(cue_faders_display_1[(grabs[9] < 0) ? master_page : grabs[9]][9], 270, 25);
+
+    ctx.fillText(cue_faders_display_1[(grabs[0] < 0) ? master_page : grabs[0]][10],   0, 75);
+    ctx.fillText(cue_faders_display_1[(grabs[1] < 0) ? master_page : grabs[1]][11],  30, 75);
+    ctx.fillText(cue_faders_display_1[(grabs[2] < 0) ? master_page : grabs[2]][12],  60, 75);
+    ctx.fillText(cue_faders_display_1[(grabs[3] < 0) ? master_page : grabs[3]][13],  90, 75);
+    ctx.fillText(cue_faders_display_1[(grabs[4] < 0) ? master_page : grabs[4]][14], 120, 75);
+    ctx.fillText(cue_faders_display_1[(grabs[5] < 0) ? master_page : grabs[5]][15], 150, 75);
+    ctx.fillText(cue_faders_display_1[(grabs[6] < 0) ? master_page : grabs[6]][16], 180, 75);
+    ctx.fillText(cue_faders_display_1[(grabs[7] < 0) ? master_page : grabs[7]][17], 210, 75);
+    ctx.fillText(cue_faders_display_1[(grabs[8] < 0) ? master_page : grabs[8]][18], 240, 75);
+    ctx.fillText(cue_faders_display_1[(grabs[9] < 0) ? master_page : grabs[9]][19], 270, 75);
+
+    canvas = document.getElementById("display-cue-faders-2");
+    canvas.width = 300; canvas.height = 90;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#f33";
+    ctx.font = "8pt sans-serif";
+    ctx.fillText(cue_faders_display_2[(grabs[10] < 0) ? master_page : grabs[10]][0],   0, 25);
+    ctx.fillText(cue_faders_display_2[(grabs[11] < 0) ? master_page : grabs[11]][1],  30, 25);
+    ctx.fillText(cue_faders_display_2[(grabs[12] < 0) ? master_page : grabs[12]][2],  60, 25);
+    ctx.fillText(cue_faders_display_2[(grabs[13] < 0) ? master_page : grabs[13]][3],  90, 25);
+    ctx.fillText(cue_faders_display_2[(grabs[14] < 0) ? master_page : grabs[14]][4], 120, 25);
+    ctx.fillText(cue_faders_display_2[(grabs[15] < 0) ? master_page : grabs[15]][5], 150, 25);
+    ctx.fillText(cue_faders_display_2[(grabs[16] < 0) ? master_page : grabs[16]][6], 180, 25);
+    ctx.fillText(cue_faders_display_2[(grabs[17] < 0) ? master_page : grabs[17]][7], 210, 25);
+    ctx.fillText(cue_faders_display_2[(grabs[18] < 0) ? master_page : grabs[18]][8], 240, 25);
+    ctx.fillText(cue_faders_display_2[(grabs[19] < 0) ? master_page : grabs[19]][9], 270, 25);
+
+    ctx.fillText(cue_faders_display_2[(grabs[10] < 0) ? master_page : grabs[10]][10],   0, 75);
+    ctx.fillText(cue_faders_display_2[(grabs[11] < 0) ? master_page : grabs[11]][11],  30, 75);
+    ctx.fillText(cue_faders_display_2[(grabs[12] < 0) ? master_page : grabs[12]][12],  60, 75);
+    ctx.fillText(cue_faders_display_2[(grabs[13] < 0) ? master_page : grabs[13]][13],  90, 75);
+    ctx.fillText(cue_faders_display_2[(grabs[14] < 0) ? master_page : grabs[14]][14], 120, 75);
+    ctx.fillText(cue_faders_display_2[(grabs[15] < 0) ? master_page : grabs[15]][15], 150, 75);
+    ctx.fillText(cue_faders_display_2[(grabs[16] < 0) ? master_page : grabs[16]][16], 180, 75);
+    ctx.fillText(cue_faders_display_2[(grabs[17] < 0) ? master_page : grabs[17]][17], 210, 75);
+    ctx.fillText(cue_faders_display_2[(grabs[18] < 0) ? master_page : grabs[18]][18], 240, 75);
+    ctx.fillText(cue_faders_display_2[(grabs[19] < 0) ? master_page : grabs[19]][19], 270, 75);
+
+    canvas = document.getElementById("display-timed-fade-1");
+    canvas.width = 50; canvas.height = 300;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#f33";
+    ctx.font = "10pt sans-serif";
+    ctx.fillText("PRE-", 7, 25);
+    ctx.fillText("-SET", 7, 55);
+    ctx.fillText("    ", 7, 85);
+    ctx.font = "25pt sans-serif";
+    ctx.fillText(((cue < 10) ? "0" : "") + cue.toString(), 7, 150);
+    ctx.font = "10pt sans-serif";
+    ctx.fillText("LIVE", 7, 265);
+
+    canvas = document.getElementById("display-timed-fade-2");
+    canvas.width = 80; canvas.height = 100;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#f33";
+    ctx.font = "10pt sans-serif";
+    ctx.fillText("1x10", 25, 25);
+    ctx.fillText(waits[cue][0], 10, 55); ctx.fillText(waits[cue][1], 50, 55);
+    ctx.fillText(fades[cue][0], 10, 85); ctx.fillText(fades[cue][1], 50, 85);
+
+    canvas = document.getElementById("display-program-1");
+    canvas.width = 300; canvas.height = 50;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#f33";
+    ctx.font = "10pt sans-serif";
+    ctx.fillText("AVOLITES QM500-TD", 25, 25);
+    ctx.fillText("EMULATION FACEPLATE", 25, 40);
+
+    canvas = document.getElementById("display-program-2");
+    canvas.width = 80; canvas.height = 220;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#f33";
+    ctx.font = "10pt sans-serif";
+    ctx.fillText("LIVE TF", 5, 35);
+    ctx.fillText("MEMORY", 5, 65);
+    ctx.fillText("BLK STK", 5, 95);
+    ctx.fillText("UTILS", 5, 125);
+    ctx.fillText("VIEW", 5, 155);
+    ctx.fillText("NUMBERS", 5, 185);
+
+    canvas = document.getElementById("display-program-3");
+    canvas.width = 50; canvas.height = 50;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#f33";
+    ctx.font = "10pt sans-serif";
+    ctx.fillText(keypad, 25, 25);
+
+    canvas = document.getElementById("display-program-4");
+    canvas.width = 50; canvas.height = 50;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#f33";
+    ctx.font = "10pt sans-serif";
+    ctx.fillText(edit, 25, 25);
+
+    canvas = document.getElementById("display-effects-1");
+    canvas.width = 50; canvas.height = 50;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#f33";
+    ctx.font = "10pt sans-serif";
+    ctx.fillText(effects_tempo[effects_page][0], 25, 25);
+
+    canvas = document.getElementById("display-effects-2");
+    canvas.width = 50; canvas.height = 50;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#f33";
+    ctx.font = "10pt sans-serif";
+    ctx.fillText(effects_tempo[effects_page][1], 25, 25);
+
+    { var i = (grabs[0] < 0) ? master_page : grabs[0]; document.getElementById("div-cue-faders-1-sel-0").style.background = (swops[i][0]) ? "#f33": "#733"; }
+    { var i = (grabs[1] < 0) ? master_page : grabs[1]; document.getElementById("div-cue-faders-1-sel-1").style.background = (swops[i][1]) ? "#f33": "#733"; }
+    { var i = (grabs[2] < 0) ? master_page : grabs[2]; document.getElementById("div-cue-faders-1-sel-2").style.background = (swops[i][2]) ? "#f33": "#733"; }
+    { var i = (grabs[3] < 0) ? master_page : grabs[3]; document.getElementById("div-cue-faders-1-sel-3").style.background = (swops[i][3]) ? "#f33": "#733"; }
+    { var i = (grabs[4] < 0) ? master_page : grabs[4]; document.getElementById("div-cue-faders-1-sel-4").style.background = (swops[i][4]) ? "#f33": "#733"; }
+    { var i = (grabs[5] < 0) ? master_page : grabs[5]; document.getElementById("div-cue-faders-1-sel-5").style.background = (swops[i][5]) ? "#f33": "#733"; }
+    { var i = (grabs[6] < 0) ? master_page : grabs[6]; document.getElementById("div-cue-faders-1-sel-6").style.background = (swops[i][6]) ? "#f33": "#733"; }
+    { var i = (grabs[7] < 0) ? master_page : grabs[7]; document.getElementById("div-cue-faders-1-sel-7").style.background = (swops[i][7]) ? "#f33": "#733"; }
+    { var i = (grabs[8] < 0) ? master_page : grabs[8]; document.getElementById("div-cue-faders-1-sel-8").style.background = (swops[i][8]) ? "#f33": "#733"; }
+    { var i = (grabs[9] < 0) ? master_page : grabs[9]; document.getElementById("div-cue-faders-1-sel-9").style.background = (swops[i][9]) ? "#f33": "#733"; }
+
+    { var i = (grabs[10] < 0) ? master_page : grabs[10]; document.getElementById("div-cue-faders-2-sel-0").style.background = (swops[i][10]) ? "#f33": "#733"; }
+    { var i = (grabs[11] < 0) ? master_page : grabs[11]; document.getElementById("div-cue-faders-2-sel-1").style.background = (swops[i][11]) ? "#f33": "#733"; }
+    { var i = (grabs[12] < 0) ? master_page : grabs[12]; document.getElementById("div-cue-faders-2-sel-2").style.background = (swops[i][12]) ? "#f33": "#733"; }
+    { var i = (grabs[13] < 0) ? master_page : grabs[13]; document.getElementById("div-cue-faders-2-sel-3").style.background = (swops[i][13]) ? "#f33": "#733"; }
+    { var i = (grabs[14] < 0) ? master_page : grabs[14]; document.getElementById("div-cue-faders-2-sel-4").style.background = (swops[i][14]) ? "#f33": "#733"; }
+    { var i = (grabs[15] < 0) ? master_page : grabs[15]; document.getElementById("div-cue-faders-2-sel-5").style.background = (swops[i][15]) ? "#f33": "#733"; }
+    { var i = (grabs[16] < 0) ? master_page : grabs[16]; document.getElementById("div-cue-faders-2-sel-6").style.background = (swops[i][16]) ? "#f33": "#733"; }
+    { var i = (grabs[17] < 0) ? master_page : grabs[17]; document.getElementById("div-cue-faders-2-sel-7").style.background = (swops[i][17]) ? "#f33": "#733"; }
+    { var i = (grabs[18] < 0) ? master_page : grabs[18]; document.getElementById("div-cue-faders-2-sel-8").style.background = (swops[i][18]) ? "#f33": "#733"; }
+    { var i = (grabs[19] < 0) ? master_page : grabs[19]; document.getElementById("div-cue-faders-2-sel-9").style.background = (swops[i][19]) ? "#f33": "#733"; }
+
+    document.getElementById("div-timed-fade-sel").style.background = (timed_fade_swop) ? "#f33" : "#733";
+    document.getElementById("div-effects-sel-1").style.background = (effects_swops[effects_page][0]) ? "#f33" : "#733";
+    document.getElementById("div-effects-sel-2").style.background = (effects_swops[effects_page][1]) ? "#f33" : "#733";
+
+    if (effects_page != effects_page_prev)
+    {
+        document.getElementById("fader-effects-1").value = effects[effects_page][0];
+        document.getElementById("fader-effects-2").value = effects[effects_page][1];
+    }
+    effects_page_prev = effects_page;
+
+    if (master_page != master_page_prev)
+    {
+        { var i = (grabs[0] < 0) ? master_page : grabs[0]; document.getElementById("fader-cue-faders-1-0").value = faders[i][0]; }
+        { var i = (grabs[1] < 0) ? master_page : grabs[1]; document.getElementById("fader-cue-faders-1-1").value = faders[i][1]; }
+        { var i = (grabs[2] < 0) ? master_page : grabs[2]; document.getElementById("fader-cue-faders-1-2").value = faders[i][2]; }
+        { var i = (grabs[3] < 0) ? master_page : grabs[3]; document.getElementById("fader-cue-faders-1-3").value = faders[i][3]; }
+        { var i = (grabs[4] < 0) ? master_page : grabs[4]; document.getElementById("fader-cue-faders-1-4").value = faders[i][4]; }
+        { var i = (grabs[5] < 0) ? master_page : grabs[5]; document.getElementById("fader-cue-faders-1-5").value = faders[i][5]; }
+        { var i = (grabs[6] < 0) ? master_page : grabs[6]; document.getElementById("fader-cue-faders-1-6").value = faders[i][6]; }
+        { var i = (grabs[7] < 0) ? master_page : grabs[7]; document.getElementById("fader-cue-faders-1-7").value = faders[i][7]; }
+        { var i = (grabs[8] < 0) ? master_page : grabs[8]; document.getElementById("fader-cue-faders-1-8").value = faders[i][8]; }
+        { var i = (grabs[9] < 0) ? master_page : grabs[9]; document.getElementById("fader-cue-faders-1-9").value = faders[i][9]; }
+
+        { var i = (grabs[10] < 0) ? master_page : grabs[10]; document.getElementById("fader-cue-faders-2-0").value = faders[i][10]; }
+        { var i = (grabs[11] < 0) ? master_page : grabs[11]; document.getElementById("fader-cue-faders-2-1").value = faders[i][11]; }
+        { var i = (grabs[12] < 0) ? master_page : grabs[12]; document.getElementById("fader-cue-faders-2-2").value = faders[i][12]; }
+        { var i = (grabs[13] < 0) ? master_page : grabs[13]; document.getElementById("fader-cue-faders-2-3").value = faders[i][13]; }
+        { var i = (grabs[14] < 0) ? master_page : grabs[14]; document.getElementById("fader-cue-faders-2-4").value = faders[i][14]; }
+        { var i = (grabs[15] < 0) ? master_page : grabs[15]; document.getElementById("fader-cue-faders-2-5").value = faders[i][15]; }
+        { var i = (grabs[16] < 0) ? master_page : grabs[16]; document.getElementById("fader-cue-faders-2-6").value = faders[i][16]; }
+        { var i = (grabs[17] < 0) ? master_page : grabs[17]; document.getElementById("fader-cue-faders-2-7").value = faders[i][17]; }
+        { var i = (grabs[18] < 0) ? master_page : grabs[18]; document.getElementById("fader-cue-faders-2-8").value = faders[i][18]; }
+        { var i = (grabs[19] < 0) ? master_page : grabs[19]; document.getElementById("fader-cue-faders-2-9").value = faders[i][19]; }
+    }
+    master_page_prev = master_page;
+}
+var chase = function(id, num)
+{
+    if (effects_direction[id][num] == 0)
+    {
+        effects_steps[id][num] += 1;
+        effects_steps[id][num] %= effects_presets[id][num].length;
+    }
+    if (effects_direction[id][num] == 1)
+    {
+        effects_steps[id][num] -= 1;
+        if (effects_steps[id][num] < 0)
+        {
+            effects_steps[id][num] = effects_presets[id][num].length - 1;
+        }
+    }
+    if (effects_direction[id][num] == 2)
+    {
+        if (effects_pingpong[id][num] == 1)
+        {
+            effects_steps[id][num] += 1;
+            if (effects_steps[id][num] >= effects_presets[id][num].length)
+            {
+                effects_steps[id][num] = effects_presets[id][num].length - 1;
+                effects_pingpong[id][num] = -1;
+            }
+        }
+        else if (effects_pingpong[id][num] == -1)
+        {
+            effects_steps[id][num] -= 1;
+            if (effects_steps[id][num] < 0)
+            {
+                effects_steps[id][num] = 0;
+                effects_pingpong[id][num] = 1;
+            }
+        }
+    }
+    if (effects_direction[id][num] = 3)
+    {
+        if (effects_stopstep[id][num] != effects_stopprev[id][num])
+        {
+            effects_steps[id][num] += 1;
+            if (effects_steps[id][num] >= effects_presets[id][num].length)
+            {
+                effects_steps[id][num] = 0;
+            }
+        }
+        effects_stopprev[id][num] = effects_stopstep[id][num];
+    }
+}
+var animate = function()
+{
+    var prev = cue - 1;
+    if (prev < 0) { prev = cues.length - 1; }
+    var curr_wait = waits[prev][1];
+    var curr_fade = fades[prev][1];
+    var next_wait = waits[cue][0];
+    var next_fade = fades[cue][0];
+    setTimeout(fade_out, curr_wait * 1000, curr_fade, curr_fade, prev);
+    setTimeout(fade_in, next_wait * 1000, next_fade, next_fade, cue);
+}
+var fade_out = function(fade, max, pos)
+{
+    var a = fade / max;
+    timed_fade_a = cues[pos];
+    for (var i = 0; i < cues[pos].length; ++i)
+    {
+        timed_fade_a[i][1] *= a;
+    }
+    fade -= 0.01;
+    if (fade > 0) { setTimeout(fade_out, 10, fade, max, pos); }
+}
+var fade_in = function(fade, max, pos)
+{
+    var b = (max - fade) / max;
+    timed_fade_b = cues[pos];
+    for (var i = 0; i < cues[pos].length; ++i)
+    {
+        timed_fade_b[i][1] *= b;
+    }
+    fade -= 0.01;
+    if (fade > 0) { setTimeout(fade_out, 10, fade, max, pos); }
+}
+var fader = function(event, sender)
+{
+    console.log(event.type, sender.id, sender.value);
+    if (sender.id == "fader-cue-faders-1-0") { var i = (grabs[0] < 0) ? master_page : grabs[0]; faders[i][0] = sender.value; }
+    if (sender.id == "fader-cue-faders-1-1") { var i = (grabs[1] < 0) ? master_page : grabs[1]; faders[i][1] = sender.value; }
+    if (sender.id == "fader-cue-faders-1-2") { var i = (grabs[2] < 0) ? master_page : grabs[2]; faders[i][2] = sender.value; }
+    if (sender.id == "fader-cue-faders-1-3") { var i = (grabs[3] < 0) ? master_page : grabs[3]; faders[i][3] = sender.value; }
+    if (sender.id == "fader-cue-faders-1-4") { var i = (grabs[4] < 0) ? master_page : grabs[4]; faders[i][4] = sender.value; }
+    if (sender.id == "fader-cue-faders-1-5") { var i = (grabs[5] < 0) ? master_page : grabs[5]; faders[i][5] = sender.value; }
+    if (sender.id == "fader-cue-faders-1-6") { var i = (grabs[6] < 0) ? master_page : grabs[6]; faders[i][6] = sender.value; }
+    if (sender.id == "fader-cue-faders-1-7") { var i = (grabs[7] < 0) ? master_page : grabs[7]; faders[i][7] = sender.value; }
+    if (sender.id == "fader-cue-faders-1-8") { var i = (grabs[8] < 0) ? master_page : grabs[8]; faders[i][8] = sender.value; }
+    if (sender.id == "fader-cue-faders-1-9") { var i = (grabs[9] < 0) ? master_page : grabs[9]; faders[i][9] = sender.value; }
+
+    if (sender.id == "fader-cue-faders-2-0") { var i = (grabs[10] < 0) ? master_page : grabs[10]; faders[i][10] = sender.value; }
+    if (sender.id == "fader-cue-faders-2-1") { var i = (grabs[11] < 0) ? master_page : grabs[11]; faders[i][11] = sender.value; }
+    if (sender.id == "fader-cue-faders-2-2") { var i = (grabs[12] < 0) ? master_page : grabs[12]; faders[i][12] = sender.value; }
+    if (sender.id == "fader-cue-faders-2-3") { var i = (grabs[13] < 0) ? master_page : grabs[13]; faders[i][13] = sender.value; }
+    if (sender.id == "fader-cue-faders-2-4") { var i = (grabs[14] < 0) ? master_page : grabs[14]; faders[i][14] = sender.value; }
+    if (sender.id == "fader-cue-faders-2-5") { var i = (grabs[15] < 0) ? master_page : grabs[15]; faders[i][15] = sender.value; }
+    if (sender.id == "fader-cue-faders-2-6") { var i = (grabs[16] < 0) ? master_page : grabs[16]; faders[i][16] = sender.value; }
+    if (sender.id == "fader-cue-faders-2-7") { var i = (grabs[17] < 0) ? master_page : grabs[17]; faders[i][17] = sender.value; }
+    if (sender.id == "fader-cue-faders-2-8") { var i = (grabs[18] < 0) ? master_page : grabs[18]; faders[i][18] = sender.value; }
+    if (sender.id == "fader-cue-faders-2-9") { var i = (grabs[19] < 0) ? master_page : grabs[19]; faders[i][19] = sender.value; }
+
+    if (sender.id == "fader-timed-fade-1") { timed_fade_cue = parseFloat(sender.value) / 100; }
+    if (sender.id == "fader-effects-1") { effects[effects_page][0] = sender.value; }
+    if (sender.id == "fader-effects-2") { effects[effects_page][1] = sender.value; }
+
+    if (sender.id == "fader-mastering-1") { mastering_cue = parseFloat(sender.value) / 100; }
+    if (sender.id == "fader-mastering-2") { mastering_add = parseFloat(sender.value) / 100; }
+    if (sender.id == "fader-mastering-3") { mastering_swop = parseFloat(sender.value) / 100; }
+    if (sender.id == "fader-mastering-4") { mastering_grand = parseFloat(sender.value) / 100; }
+}
+var pad = function(event, sender)
+{
+    console.log(event.type, sender.id, event.x, event.y);
+    if (sender.id == "button-program")
+    {
+        var x = parseFloat(event.x - 1015) / 100;
+        var y = parseFloat(event.y - 602) / 125;
+        var n = -1; var d = 0;
+        if ((x < 0.333) && (y < 0.25)) { n = 1; }
+        else if ((x < 0.666) && (y < 0.25)) { n = 2; }
+        else if (y < 0.25) { n = 3; }
+        else if ((x < 0.333) && (y < 0.5)) { n = 4; }
+        else if ((x < 0.666) && (y < 0.5)) { n = 5; }
+        else if (y < 0.5) { n = 6; }
+        else if ((x < 0.333) && (y < 0.75)) { n = 7; }
+        else if ((x < 0.666) && (y < 0.75)) { n = 8; }
+        else if (y < 0.75) { n = 9; }
+        else if (x > 0.666) { d = 1; }
+        else if (x > 0.333) { n = 0; }
+        else { d = -1; }
+        if (n != -1) { keypad += n.toString(); }
+        if (d < 0)
+        {
+            clear += 1;
+            if (clear > 1)
+            {
+                fixtures = []; states[0] = [[], []];
+                for (var i = 0; i < swops[0].length; ++i)
+                {
+                    if (swops[0][i]) { presets[0][i] = []; }
+                    if (swops[1][i]) { presets[1][i] = []; }
+                    if (swops[2][i]) { presets[2][i] = []; }
+                    if (swops[3][i]) { presets[3][i] = []; }
+                    if (timed_fade_swop) { cues[i] = timed_fade_a = []; }
+                    for (var j = 0; j < effects_swops.length; ++j)
+                    {
+                        if (effects_swops[j][0]) { effects_presets[j].pop(); }
+                        if (effects_swops[j][1]) { effects_presets[j].pop(); }
+                    }
+                }
+                clear = 0;
+            }
+            else { keypad = ""; }
+        }
+        else { clear = 0; }
+        if (d > 0)
+        {
+            enter += 1;
+            if (enter > 1)
+            {
+                for (var i = 0; i < swops[0].length; ++i)
+                {
+                    if (swops[0][i]) { presets[0][i] = fixtures; }
+                    if (swops[1][i]) { presets[1][i] = fixtures; }
+                    if (swops[2][i]) { presets[2][i] = fixtures; }
+                    if (swops[3][i]) { presets[3][i] = fixtures; }
+                    if (timed_fade_swop) { cues[i] = timed_fade_a = fixtures; }
+                    for (var j = 0; j < effects_swops.length; ++j)
+                    {
+                        if (effects_swops[j][0]) { effects_presets[j].push(fixtures); }
+                        if (effects_swops[j][1]) { effects_presets[j].push(fixtures); }
+                    }
+                }
+                enter = 0;
+            }
+            else
+            {
+                var found = false;
+                for (var i = 0; i < fixtures.length; ++i)
+                {
+                    if (fixtures[i][0] == keypad) { fixtures[i][1] = edit; found = true; break; }
+                }
+                if (keypad == "") { keypad = ""; }
+                else if (!found) { fixtures.push([parseInt(keypad), edit]); }
+            }
+            keypad = "";
+        }
+        else { enter = 0; }
+    }
+    if (sender.id == "wheel-program")
+    {
+        var y = parseFloat(event.y - 600) / 130;
+        if (y < 0.5) { edit += 1; if (edit > 255) { edit = 255; } }
+        else { edit -= 1; if (edit < 0) { edit = 0; } }
+    }
+    if (sender.id == "wheel-effects-1")
+    {
+        var y = parseFloat(event.y - 600) / 130;
+        if (y < 0.5) { effects[effects_page][0] += 1; if (effects[effects_page][0] > 999) { effects[effects_page][0] = 999; } }
+        else { effects[effects_page][0] -= 1; if (effects[effects_page][0] < 0) { effects[effects_page][0] = 0; } }
+        clearInterval(effects_interval[effects_page][0]);
+        effects_interval[effects_page][0] = setInterval(chase, parseInt((parseFloat(effects_tempo[effects_page][0]) / 60) * 1000), effects_page, 0);
+    }
+    if (sender.id == "wheel-effects-2")
+    {
+        var y = parseFloat(event.y - 600) / 130;
+        if (y < 0.5) { effects[effects_page][1] += 1; if (effects[effects_page][1] > 999) { effects[effects_page][1] = 999; } }
+        else { effects[effects_page][1] -= 1; if (effects[effects_page][1] < 0) { effects[effects_page][1] = 0; } }
+        clearInterval(effects_interval[effects_page][1]);
+        effects_interval[effects_page][1] = setInterval(chase, parseInt((parseFloat(effects_tempo[effects_page][1]) / 60) * 1000), effects_page, 1);
+    }
+    if (sender.id == "wheel-timed-fade-1")
+    {
+        var y = parseFloat(event.y - 600) / 130;
+        if (y < 0.5) { fades[cue][0] += 1; if (fades[cue][0] > 10) { fades[cue][0] = 10; } }
+        else { fades[cue][0] -= 1; if (fades[cue][0] < 0) { fades[cue][0] = 0; } }
+    }
+    if (sender.id == "wheel-timed-fade-2")
+    {
+        var y = parseFloat(event.y - 600) / 130;
+        if (y < 0.5) { fades[cue][1] += 1; if (fades[cue][1] > 10) { fades[cue][1] = 10; } }
+        else { fades[cue][1] -= 1; if (fades[cue][1] < 0) { fades[cue][1] = 0; } }
+    }
+}
+var grab = function(event, sender)
+{
+    console.log("[GRAB]", event.type, sender.id);
+    if (sender.id == "button-cue-faders-1-grab-0") { grabs[0] = (grabs[0] < 0) ? master_page : -1; }
+    if (sender.id == "button-cue-faders-1-grab-1") { grabs[1] = (grabs[1] < 0) ? master_page : -1; }
+    if (sender.id == "button-cue-faders-1-grab-2") { grabs[2] = (grabs[2] < 0) ? master_page : -1; }
+    if (sender.id == "button-cue-faders-1-grab-3") { grabs[3] = (grabs[3] < 0) ? master_page : -1; }
+    if (sender.id == "button-cue-faders-1-grab-4") { grabs[4] = (grabs[4] < 0) ? master_page : -1; }
+    if (sender.id == "button-cue-faders-1-grab-5") { grabs[5] = (grabs[5] < 0) ? master_page : -1; }
+    if (sender.id == "button-cue-faders-1-grab-6") { grabs[6] = (grabs[6] < 0) ? master_page : -1; }
+    if (sender.id == "button-cue-faders-1-grab-7") { grabs[7] = (grabs[7] < 0) ? master_page : -1; }
+    if (sender.id == "button-cue-faders-1-grab-8") { grabs[8] = (grabs[8] < 0) ? master_page : -1; }
+    if (sender.id == "button-cue-faders-1-grab-9") { grabs[9] = (grabs[9] < 0) ? master_page : -1; }
+
+    if (sender.id == "button-cue-faders-2-grab-0") { grabs[10] = (grabs[10] < 0) ? master_page : -1; }
+    if (sender.id == "button-cue-faders-2-grab-1") { grabs[11] = (grabs[11] < 0) ? master_page : -1; }
+    if (sender.id == "button-cue-faders-2-grab-2") { grabs[12] = (grabs[12] < 0) ? master_page : -1; }
+    if (sender.id == "button-cue-faders-2-grab-3") { grabs[13] = (grabs[13] < 0) ? master_page : -1; }
+    if (sender.id == "button-cue-faders-2-grab-4") { grabs[14] = (grabs[14] < 0) ? master_page : -1; }
+    if (sender.id == "button-cue-faders-2-grab-5") { grabs[15] = (grabs[15] < 0) ? master_page : -1; }
+    if (sender.id == "button-cue-faders-2-grab-6") { grabs[16] = (grabs[16] < 0) ? master_page : -1; }
+    if (sender.id == "button-cue-faders-2-grab-7") { grabs[17] = (grabs[17] < 0) ? master_page : -1; }
+    if (sender.id == "button-cue-faders-2-grab-8") { grabs[18] = (grabs[18] < 0) ? master_page : -1; }
+    if (sender.id == "button-cue-faders-2-grab-9") { grabs[19] = (grabs[19] < 0) ? master_page : -1; }
+}
+var swop = function(event, sender)
+{
+    console.log("[SWOP]", event.type, sender.id);
+    if (sender.id == "button-cue-faders-1-swop-0") { var i = (grabs[0] < 0) ? master_page : grabs[0]; swops[i][0] = 1 - swops[i][0]; }
+    if (sender.id == "button-cue-faders-1-swop-1") { var i = (grabs[1] < 0) ? master_page : grabs[1]; swops[i][1] = 1 - swops[i][1]; }
+    if (sender.id == "button-cue-faders-1-swop-2") { var i = (grabs[2] < 0) ? master_page : grabs[2]; swops[i][2] = 1 - swops[i][2]; }
+    if (sender.id == "button-cue-faders-1-swop-3") { var i = (grabs[3] < 0) ? master_page : grabs[3]; swops[i][3] = 1 - swops[i][3]; }
+    if (sender.id == "button-cue-faders-1-swop-4") { var i = (grabs[4] < 0) ? master_page : grabs[4]; swops[i][4] = 1 - swops[i][4]; }
+    if (sender.id == "button-cue-faders-1-swop-5") { var i = (grabs[5] < 0) ? master_page : grabs[5]; swops[i][5] = 1 - swops[i][5]; }
+    if (sender.id == "button-cue-faders-1-swop-6") { var i = (grabs[6] < 0) ? master_page : grabs[6]; swops[i][6] = 1 - swops[i][6]; }
+    if (sender.id == "button-cue-faders-1-swop-7") { var i = (grabs[7] < 0) ? master_page : grabs[7]; swops[i][7] = 1 - swops[i][7]; }
+    if (sender.id == "button-cue-faders-1-swop-8") { var i = (grabs[8] < 0) ? master_page : grabs[8]; swops[i][8] = 1 - swops[i][8]; }
+    if (sender.id == "button-cue-faders-1-swop-9") { var i = (grabs[9] < 0) ? master_page : grabs[9]; swops[i][9] = 1 - swops[i][9]; }
+
+    if (sender.id == "button-cue-faders-2-swop-0") { var i = (grabs[10] < 0) ? master_page : grabs[10]; swops[i][10] = 1 - swops[i][10]; }
+    if (sender.id == "button-cue-faders-2-swop-1") { var i = (grabs[11] < 0) ? master_page : grabs[11]; swops[i][11] = 1 - swops[i][11]; }
+    if (sender.id == "button-cue-faders-2-swop-2") { var i = (grabs[12] < 0) ? master_page : grabs[12]; swops[i][12] = 1 - swops[i][12]; }
+    if (sender.id == "button-cue-faders-2-swop-3") { var i = (grabs[13] < 0) ? master_page : grabs[13]; swops[i][13] = 1 - swops[i][13]; }
+    if (sender.id == "button-cue-faders-2-swop-4") { var i = (grabs[14] < 0) ? master_page : grabs[14]; swops[i][14] = 1 - swops[i][14]; }
+    if (sender.id == "button-cue-faders-2-swop-5") { var i = (grabs[15] < 0) ? master_page : grabs[15]; swops[i][15] = 1 - swops[i][15]; }
+    if (sender.id == "button-cue-faders-2-swop-6") { var i = (grabs[16] < 0) ? master_page : grabs[16]; swops[i][16] = 1 - swops[i][16]; }
+    if (sender.id == "button-cue-faders-2-swop-7") { var i = (grabs[17] < 0) ? master_page : grabs[17]; swops[i][17] = 1 - swops[i][17]; }
+    if (sender.id == "button-cue-faders-2-swop-8") { var i = (grabs[18] < 0) ? master_page : grabs[18]; swops[i][18] = 1 - swops[i][18]; }
+    if (sender.id == "button-cue-faders-2-swop-9") { var i = (grabs[19] < 0) ? master_page : grabs[19]; swops[i][19] = 1 - swops[i][19]; }
+
+    if (sender.id == "button-timed-fade-swop") { timed_fade_swop = 1 - timed_fade_swop; }
+    if (sender.id == "button-effects-swop-1") { effects_swops[effects_page][0] = 1 - effects_swops[effects_page][0]; }
+    if (sender.id == "button-effects-swop-2") { effects_swops[effects_page][1] = 1 - effects_swops[effects_page][1]; }
+}
+var add = function(event, sender)
+{
+    console.log("[_ADD]", event.type, sender.id);
+    if (sender.id == "button-cue-faders-1-add-0") { var i = (grabs[0] < 0) ? master_page : grabs[0]; add[i][0] = 1 - add[i][0]; }
+    if (sender.id == "button-cue-faders-1-add-1") { var i = (grabs[1] < 0) ? master_page : grabs[1]; add[i][1] = 1 - add[i][1]; }
+    if (sender.id == "button-cue-faders-1-add-2") { var i = (grabs[2] < 0) ? master_page : grabs[2]; add[i][2] = 1 - add[i][2]; }
+    if (sender.id == "button-cue-faders-1-add-3") { var i = (grabs[3] < 0) ? master_page : grabs[3]; add[i][3] = 1 - add[i][3]; }
+    if (sender.id == "button-cue-faders-1-add-4") { var i = (grabs[4] < 0) ? master_page : grabs[4]; add[i][4] = 1 - add[i][4]; }
+    if (sender.id == "button-cue-faders-1-add-5") { var i = (grabs[5] < 0) ? master_page : grabs[5]; add[i][5] = 1 - add[i][5]; }
+    if (sender.id == "button-cue-faders-1-add-6") { var i = (grabs[6] < 0) ? master_page : grabs[6]; add[i][6] = 1 - add[i][6]; }
+    if (sender.id == "button-cue-faders-1-add-7") { var i = (grabs[7] < 0) ? master_page : grabs[7]; add[i][7] = 1 - add[i][7]; }
+    if (sender.id == "button-cue-faders-1-add-8") { var i = (grabs[8] < 0) ? master_page : grabs[8]; add[i][8] = 1 - add[i][8]; }
+    if (sender.id == "button-cue-faders-1-add-9") { var i = (grabs[9] < 0) ? master_page : grabs[9]; add[i][9] = 1 - add[i][9]; }
+
+    if (sender.id == "button-cue-faders-2-add-0") { var i = (grabs[10] < 0) ? master_page : grabs[10]; add[i][10] = 1 - add[i][10]; }
+    if (sender.id == "button-cue-faders-2-add-1") { var i = (grabs[11] < 0) ? master_page : grabs[11]; add[i][11] = 1 - add[i][11]; }
+    if (sender.id == "button-cue-faders-2-add-2") { var i = (grabs[12] < 0) ? master_page : grabs[12]; add[i][12] = 1 - add[i][12]; }
+    if (sender.id == "button-cue-faders-2-add-3") { var i = (grabs[13] < 0) ? master_page : grabs[13]; add[i][13] = 1 - add[i][13]; }
+    if (sender.id == "button-cue-faders-2-add-4") { var i = (grabs[14] < 0) ? master_page : grabs[14]; add[i][14] = 1 - add[i][14]; }
+    if (sender.id == "button-cue-faders-2-add-5") { var i = (grabs[15] < 0) ? master_page : grabs[15]; add[i][15] = 1 - add[i][15]; }
+    if (sender.id == "button-cue-faders-2-add-6") { var i = (grabs[16] < 0) ? master_page : grabs[16]; add[i][16] = 1 - add[i][16]; }
+    if (sender.id == "button-cue-faders-2-add-7") { var i = (grabs[17] < 0) ? master_page : grabs[17]; add[i][17] = 1 - add[i][17]; }
+    if (sender.id == "button-cue-faders-2-add-8") { var i = (grabs[18] < 0) ? master_page : grabs[18]; add[i][18] = 1 - add[i][18]; }
+    if (sender.id == "button-cue-faders-2-add-9") { var i = (grabs[19] < 0) ? master_page : grabs[19]; add[i][19] = 1 - add[i][19]; }
+
+    if (sender.id == "button-timed-fade-add") { timed_fade_add = 1 - timed_fade_add; }
+    if (sender.id == "button-effects-add-1") { effects_adds[effects_page][0] = 1 - effects_adds[effects_page][0]; }
+    if (sender.id == "button-effects-add-2") { effects_adds[effects_page][1] = 1 - effects_adds[effects_page][1]; }
+}
+var go = function(event, sender)
+{
+    console.log("[_GO_]", event.type, sender.id);
+    cue += 1; cue %= cues.length; animate();
+}
+var fx = function(event, sender)
+{
+    console.log("[__FX]", event.type, sender.id);
+    if (sender.id == "button-effects-1") { effects_page = 0; }
+    if (sender.id == "button-effects-2") { effects_page = 1; }
+    if (sender.id == "button-effects-3") { effects_page = 2; }
+    if (sender.id == "button-effects-4") { effects_page = 3; }
+    if (sender.id == "button-effects-5") { effects_page = 4; }
+    if (sender.id == "button-effects-6") { effects_page = 5; }
+    if (sender.id == "button-effects-7") { effects_page = 6; }
+    if (sender.id == "button-effects-8") { effects_page = 7; }
+    if (sender.id == "button-effects-9") { effects_page = 8; }
+    if (sender.id == "button-effects-10") { effects_page = 9; }
+    if (sender.id == "button-effects-11") { effects_page = 10; }
+    if (sender.id == "button-effects-12") { effects_page = 11; }
+    if (sender.id == "button-effects-13") { effects_page = 12; }
+    if (sender.id == "button-effects-14") { effects_page = 13; }
+    if (sender.id == "button-effects-15") { effects_page = 14; }
+    if (sender.id == "button-effects-16") { effects_page = 15; }
+    if (sender.id == "button-effects-17") { effects_page = 16; }
+    if (sender.id == "button-effects-18") { effects_page = 17; }
+    if (sender.id == "button-effects-19") { effects_page = 18; }
+    if (sender.id == "button-effects-20") { effects_page = 19; }
+
+    if (sender.id == "button-effects-fd-1") { effects_direction[effects_page][0] = 0; }
+    if (sender.id == "button-effects-fd-2") { effects_direction[effects_page][1] = 0; }
+    if (sender.id == "button-effects-bk-1") { effects_direction[effects_page][0] = 1; }
+    if (sender.id == "button-effects-bk-2") { effects_direction[effects_page][1] = 1; }
+    if (sender.id == "button-effects-pp-1") { effects_direction[effects_page][0] = 2; }
+    if (sender.id == "button-effects-pp-2") { effects_direction[effects_page][1] = 2; }
+    if (sender.id == "button-effects-ss-1") { effects_direction[effects_page][0] = 3; }
+    if (sender.id == "button-effects-ss-2") { effects_direction[effects_page][1] = 3; }
+
+    if (sender.id == "button-effects-ss-1") { effects_stopstep[effects_page][0] = 1 - effects_stopstep[effects_page][0]; }
+    if (sender.id == "button-effects-ss-2") { effects_stopstep[effects_page][1] = 1 - effects_stopstep[effects_page][1]; }
+}
+var misc = function(event, sender)
+{
+    console.log("[MISC]", event.type, sender.id);
+    if (sender.id == "button-timed-fade-1") { master_page = 1; }
+    if (sender.id == "button-timed-fade-2") { master_page = 2; }
+    if (sender.id == "button-timed-fade-3") { master_page = 3; }
+    if (sender.id == "button-timed-fade-live") { master_page = 0; }
+    if (sender.id == "button-timed-fade-cue") { cue += 1; cue %= cues.length; }
+    if (sender.id == "button-timed-fade-next") { cue += 1; cue %= cues.length; }
+    if (sender.id == "button-timed-fade-prev") { cue -= 1; if (cue < 0) { cue = (cues.length - 1); } }
+    if (sender.id == "button-timed-fade-link") { waits[cue][0] = fades[cue][0]; waits[cue][1] = fades[cue][1]; }
+    if (sender.id == "button-timed-fade-wait-next-time") { var next = (cues + 1) % cues.length; waits[cue] = waits[next]; }
+    if (sender.id == "button-timed-fade-wait-prev-time") { var prev = (cues - 1); if (prev < 0) { prev = cues.length - 1; }; waits[cue] = waits[prev]; }
+    if (sender.id == "button-timed-fade-fade-next-time") { var next = (cues + 1) % cues.length; fades[cue] = fades[next]; }
+    if (sender.id == "button-timed-fade-fade-prev-time") { var prev = (cues - 1); if (prev < 0) { prev = cues.length - 1; }; fades[cue] = fades[prev]; }
+    if (sender.id == "button-timed-fade-prewarm") { preheat = 1 - preheat; }
+    if (sender.id == "button-program-1") { video_page = 0; }
+    if (sender.id == "button-program-2") { video_page = 1; }
+    if (sender.id == "button-program-3") { video_page = 2; }
+    if (sender.id == "button-program-4") { video_page = 3; }
+    if (sender.id == "button-program-5") { video_page = 4; }
+    if (sender.id == "button-program-6") { video_page = 5; }
+    if (sender.id == "button-timed-fade-page-next") { }
+    if (sender.id == "button-timed-fade-page-prev") { }
+}
+</script>
+<svg panel id="panel-cue-faders-1">
+  <text x="300" y="370" fill="white" text-anchor="middle">[CUE_FADERS]</text>
+  <path d="M 20 20 l 560 0 M 20 380 l 560 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-cue-faders-1" onclick="pad(event, this);"></canvas>
+  <input fader id="fader-cue-faders-1-0" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-1-1" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-1-2" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-1-3" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-1-4" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-1-5" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-1-6" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-1-7" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-1-8" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-1-9" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <button grab id="button-cue-faders-1-grab-0" onclick="grab(event, this);"></button>
+  <button grab id="button-cue-faders-1-grab-1" onclick="grab(event, this);"></button>
+  <button grab id="button-cue-faders-1-grab-2" onclick="grab(event, this);"></button>
+  <button grab id="button-cue-faders-1-grab-3" onclick="grab(event, this);"></button>
+  <button grab id="button-cue-faders-1-grab-4" onclick="grab(event, this);"></button>
+  <button grab id="button-cue-faders-1-grab-5" onclick="grab(event, this);"></button>
+  <button grab id="button-cue-faders-1-grab-6" onclick="grab(event, this);"></button>
+  <button grab id="button-cue-faders-1-grab-7" onclick="grab(event, this);"></button>
+  <button grab id="button-cue-faders-1-grab-8" onclick="grab(event, this);"></button>
+  <button grab id="button-cue-faders-1-grab-9" onclick="grab(event, this);"></button>
+  <button swop id="button-cue-faders-1-swop-0" onclick="swop(event, this);"></button>
+  <button swop id="button-cue-faders-1-swop-1" onclick="swop(event, this);"></button>
+  <button swop id="button-cue-faders-1-swop-2" onclick="swop(event, this);"></button>
+  <button swop id="button-cue-faders-1-swop-3" onclick="swop(event, this);"></button>
+  <button swop id="button-cue-faders-1-swop-4" onclick="swop(event, this);"></button>
+  <button swop id="button-cue-faders-1-swop-5" onclick="swop(event, this);"></button>
+  <button swop id="button-cue-faders-1-swop-6" onclick="swop(event, this);"></button>
+  <button swop id="button-cue-faders-1-swop-7" onclick="swop(event, this);"></button>
+  <button swop id="button-cue-faders-1-swop-8" onclick="swop(event, this);"></button>
+  <button swop id="button-cue-faders-1-swop-9" onclick="swop(event, this);"></button>
+  <button add id="button-cue-faders-1-add-0" onclick="add(event, this);"></button>
+  <button add id="button-cue-faders-1-add-1" onclick="add(event, this);"></button>
+  <button add id="button-cue-faders-1-add-2" onclick="add(event, this);"></button>
+  <button add id="button-cue-faders-1-add-3" onclick="add(event, this);"></button>
+  <button add id="button-cue-faders-1-add-4" onclick="add(event, this);"></button>
+  <button add id="button-cue-faders-1-add-5" onclick="add(event, this);"></button>
+  <button add id="button-cue-faders-1-add-6" onclick="add(event, this);"></button>
+  <button add id="button-cue-faders-1-add-7" onclick="add(event, this);"></button>
+  <button add id="button-cue-faders-1-add-8" onclick="add(event, this);"></button>
+  <button add id="button-cue-faders-1-add-9" onclick="add(event, this);"></button>
+  <div sel id="div-cue-faders-1-sel-0"></div>
+  <div sel id="div-cue-faders-1-sel-1"></div>
+  <div sel id="div-cue-faders-1-sel-2"></div>
+  <div sel id="div-cue-faders-1-sel-3"></div>
+  <div sel id="div-cue-faders-1-sel-4"></div>
+  <div sel id="div-cue-faders-1-sel-5"></div>
+  <div sel id="div-cue-faders-1-sel-6"></div>
+  <div sel id="div-cue-faders-1-sel-7"></div>
+  <div sel id="div-cue-faders-1-sel-8"></div>
+  <div sel id="div-cue-faders-1-sel-9"></div>
+<svg panel id="panel-video-display">
+  <text x="300" y="370" fill="white" text-anchor="middle">[VIDEO_DISPLAY]</text>
+  <path d="M 20 20 l 560 0 M 20 380 l 560 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-video" onclick="pad(event, this);"></canvas>
+<svg panel id="panel-mastering">
+  <text x="150" y="75" fill="red" text-anchor="middle" font-size="32pt">R U B Y</text>
+  <text x="150" y="370" fill="white" text-anchor="middle">[MASTERING]</text>
+  <path d="M 20 20 l 260 0 M 20 380 l 260 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <input fader id="fader-mastering-1" type="range" orient="vertical" value="100" oninput="fader(event, this);"></input>
+  <input fader id="fader-mastering-2" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-mastering-3" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-mastering-4" type="range" orient="vertical" value="100" oninput="fader(event, this);"></input>
+  <button connect onclick="connect();">Connect</button>
+  <input id="baud-rate" type="text" value="250000"></input>
+  <button editor onclick="editor();">Editor</button>
+  <input id="edit-full" type="text" value="0"></input>
+  <button tester onclick="tester();">Tester</button>
+  <input id="test-text" type="text" value="Testing..."></input>
+<svg panel id="panel-cue-faders-2">
+  <text x="300" y="370" fill="white" text-anchor="middle">[CUE_FADERS]</text>
+  <path d="M 20 20 l 560 0 M 20 380 l 560 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-cue-faders-2" onclick="pad(event, this);"></canvas>
+  <input fader id="fader-cue-faders-2-0" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-2-1" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-2-2" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-2-3" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-2-4" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-2-5" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-2-6" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-2-7" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-2-8" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-cue-faders-2-9" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <button grab id="button-cue-faders-2-grab-0" onclick="grab(event, this);"></button>
+  <button grab id="button-cue-faders-2-grab-1" onclick="grab(event, this);"></button>
+  <button grab id="button-cue-faders-2-grab-2" onclick="grab(event, this);"></button>
+  <button grab id="button-cue-faders-2-grab-3" onclick="grab(event, this);"></button>
+  <button grab id="button-cue-faders-2-grab-4" onclick="grab(event, this);"></button>
+  <button grab id="button-cue-faders-2-grab-5" onclick="grab(event, this);"></button>
+  <button grab id="button-cue-faders-2-grab-6" onclick="grab(event, this);"></button>
+  <button grab id="button-cue-faders-2-grab-7" onclick="grab(event, this);"></button>
+  <button grab id="button-cue-faders-2-grab-8" onclick="grab(event, this);"></button>
+  <button grab id="button-cue-faders-2-grab-9" onclick="grab(event, this);"></button>
+  <button swop id="button-cue-faders-2-swop-0" onclick="swop(event, this);"></button>
+  <button swop id="button-cue-faders-2-swop-1" onclick="swop(event, this);"></button>
+  <button swop id="button-cue-faders-2-swop-2" onclick="swop(event, this);"></button>
+  <button swop id="button-cue-faders-2-swop-3" onclick="swop(event, this);"></button>
+  <button swop id="button-cue-faders-2-swop-4" onclick="swop(event, this);"></button>
+  <button swop id="button-cue-faders-2-swop-5" onclick="swop(event, this);"></button>
+  <button swop id="button-cue-faders-2-swop-6" onclick="swop(event, this);"></button>
+  <button swop id="button-cue-faders-2-swop-7" onclick="swop(event, this);"></button>
+  <button swop id="button-cue-faders-2-swop-8" onclick="swop(event, this);"></button>
+  <button swop id="button-cue-faders-2-swop-9" onclick="swop(event, this);"></button>
+  <button add id="button-cue-faders-2-add-0" onclick="add(event, this);"></button>
+  <button add id="button-cue-faders-2-add-1" onclick="add(event, this);"></button>
+  <button add id="button-cue-faders-2-add-2" onclick="add(event, this);"></button>
+  <button add id="button-cue-faders-2-add-3" onclick="add(event, this);"></button>
+  <button add id="button-cue-faders-2-add-4" onclick="add(event, this);"></button>
+  <button add id="button-cue-faders-2-add-5" onclick="add(event, this);"></button>
+  <button add id="button-cue-faders-2-add-6" onclick="add(event, this);"></button>
+  <button add id="button-cue-faders-2-add-7" onclick="add(event, this);"></button>
+  <button add id="button-cue-faders-2-add-8" onclick="add(event, this);"></button>
+  <button add id="button-cue-faders-2-add-9" onclick="add(event, this);"></button>
+  <div sel id="div-cue-faders-2-sel-0"></div>
+  <div sel id="div-cue-faders-2-sel-1"></div>
+  <div sel id="div-cue-faders-2-sel-2"></div>
+  <div sel id="div-cue-faders-2-sel-3"></div>
+  <div sel id="div-cue-faders-2-sel-4"></div>
+  <div sel id="div-cue-faders-2-sel-5"></div>
+  <div sel id="div-cue-faders-2-sel-6"></div>
+  <div sel id="div-cue-faders-2-sel-7"></div>
+  <div sel id="div-cue-faders-2-sel-8"></div>
+  <div sel id="div-cue-faders-2-sel-9"></div>
+<svg panel id="panel-timed-fade">
+  <text x="150" y="370" fill="white" text-anchor="middle">[TIMED_FADE]</text>
+  <path d="M 20 20 l 260 0 M 20 380 l 260 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-timed-fade-1" onclick="pad(event, this);"></canvas>
+  <canvas display id="display-timed-fade-2" onclick="pad(event, this);"></canvas>
+  <div wheel id="wheel-timed-fade-1" onclick="pad(event, this);"></div>
+  <div wheel id="wheel-timed-fade-2" onclick="pad(event, this);"></div>
+  <input fader id="fader-timed-fade-1" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <button swop id="button-timed-fade-swop" onclick="swop(event, this);"></button>
+  <button add id="button-timed-fade-add" onclick="add(event, this);"></button>
+  <div sel id="div-timed-fade-sel"></div>
+  <button go id="button-timed-fade-go-1" onclick="go(event, this);"></button>
+  <button go id="button-timed-fade-go-2" onclick="go(event, this);"></button>
+  <button misc id="button-timed-fade-1" onclick="misc(event, this);"></button>
+  <button misc id="button-timed-fade-2" onclick="misc(event, this);"></button>
+  <button misc id="button-timed-fade-3" onclick="misc(event, this);"></button>
+  <button misc id="button-timed-fade-live" onclick="misc(event, this);"></button>
+  <button misc id="button-timed-fade-page-next" onclick="misc(event, this);"></button>
+  <button misc id="button-timed-fade-page-prev" onclick="misc(event, this);"></button>
+  <button misc id="button-timed-fade-pre-warm" onclick="misc(event, this);"></button>
+  <button misc id="button-timed-fade-link-wait" onclick="misc(event, this);"></button>
+  <button misc id="button-timed-fade-cue" onclick="misc(event, this);"></button>
+  <button misc id="button-timed-fade-prev" onclick="misc(event, this);"></button>
+  <button misc id="button-timed-fade-next" onclick="misc(event, this);"></button>
+  <button misc id="button-timed-fade-wait-prev-time" onclick="misc(event, this);"></button>
+  <button misc id="button-timed-fade-wait-next-time" onclick="misc(event, this);"></button>
+  <button misc id="button-timed-fade-fade-prev-time" onclick="misc(event, this);"></button>
+  <button misc id="button-timed-fade-fade-next-time" onclick="misc(event, this);"></button>
+<svg panel id="panel-program">
+  <text x="150" y="370" fill="white" text-anchor="middle">[PROGRAM]</text>
+  <path d="M 20 20 l 260 0 M 20 380 l 260 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-program-1" onclick="pad(event, this);"></canvas>
+  <canvas display id="display-program-2" onclick="pad(event, this);"></canvas>
+  <canvas display id="display-program-3" onclick="pad(event, this);"></canvas>
+  <canvas display id="display-program-4" onclick="pad(event, this);"></canvas>
+  <div wheel id="wheel-program" onclick="pad(event, this);"></div>
+  <button misc id="button-program-1" onclick="misc(event, this);"></button>
+  <button misc id="button-program-2" onclick="misc(event, this);"></button>
+  <button misc id="button-program-3" onclick="misc(event, this);"></button>
+  <button misc id="button-program-4" onclick="misc(event, this);"></button>
+  <button misc id="button-program-5" onclick="misc(event, this);"></button>
+  <button misc id="button-program-6" onclick="misc(event, this);"></button>
+  <table button id="button-program" onclick="pad(event, this);">
+    <tr><td>1</td><td>2</td><td>3</td></tr>
+    <tr><td>4</td><td>5</td><td>6</td></tr>
+    <tr><td>7</td><td>8</td><td>9</td></tr>
+    <tr><td><</td><td>0</td><td>></td></tr>
+  </table>
+<svg panel id="panel-effects">
+  <text x="150" y="370" fill="white" text-anchor="middle">[EFFECTS]</text>
+  <path d="M 20 20 l 260 0 M 20 380 l 260 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-effects-1" onclick="pad(event, this);"></canvas>
+  <canvas display id="display-effects-2" onclick="pad(event, this);"></canvas>
+  <input fader id="fader-effects-1" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-effects-2" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <div wheel id="wheel-effects-1" onclick="pad(event, this);"></div>
+  <div wheel id="wheel-effects-2" onclick="pad(event, this);"></div>
+  <button swop id="button-effects-swop-1" onclick="swop(event, this);"></button>
+  <button swop id="button-effects-swop-2" onclick="swop(event, this);"></button>
+  <button add id="button-effects-add-1" onclick="add(event, this);"></button>
+  <button add id="button-effects-add-2" onclick="add(event, this);"></button>
+  <div sel id="div-effects-sel-1"></div>
+  <div sel id="div-effects-sel-2"></div>
+  <button fx id="button-effects-1" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-2" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-3" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-4" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-5" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-6" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-7" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-8" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-9" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-10" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-11" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-12" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-13" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-14" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-15" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-16" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-17" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-18" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-19" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-20" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-fd-1" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-bk-1" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-pp-1" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-ss-1" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-fd-2" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-bk-2" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-pp-2" onclick="fx(event, this);"></button>
+  <button fx id="button-effects-ss-2" onclick="fx(event, this);"></button>
+<div style="position: absolute; top: 10px; left: 1510px; width: 400px; height: 800px; color: white; word-wrap: break-word; white-space: pre;">
+___STATUS___
+* Program Panel Operational
+* Cue Fader 1 Panel Operational
+* Cue Fader 2 Panel Operational
+* Video Display Panel Operational
+* Timed Fade Panel Operational
+* Effects Panel Operational
+* Mastering Panel Operational
+* May Be Subject To Glitches
+</div>
