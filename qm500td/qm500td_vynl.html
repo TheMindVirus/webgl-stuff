@@ -1,0 +1,276 @@
+<title>Avolites QM500-TD VYNL</title>
+<style>
+ * { box-sizing: border-box; margin: auto; font-family: sans-serif; overflow: hidden; }
+ body { background: black; }
+ [audio] { width: 500px; height: 100px; position: absolute;  z-index: 11; }
+ #audio-deck-a { top: 550px; left: 50px; }
+ #audio-deck-b { top: 550px; left: 950px; }
+ [button] { background: black; color: white; width: 100px; height: 50px; font-size: 25pt; position: absolute; z-index: 12; }
+ #button-cue-deck-a { top: 550px; left: 50px; }
+ #button-cue-deck-b { top: 550px; left: 950px; }
+ #button-fil-deck-a { top: 650px; left: 50px; }
+ #button-fil-deck-b { top: 650px; left: 950px; }
+ #button-dir-deck-a { top: 700px; left: 50px; }
+ #button-dir-deck-b { top: 700px; left: 950px; }
+ [canvas] { width: 500px; height: 100px; border: 1px white solid; position: absolute; z-index: 2; }
+ #display-vdu-deck-a { background: #111; top: 50px; left: 50px; height: 300px; }
+ #display-sfx-unit { background: #311; top: 50px; left: 625px; width: 250px; height: 100px; border-radius: 10px; }
+ #display-vdu-deck-b { background: #111; top: 50px; left: 950px; height: 300px; }
+ #display-dvd-deck-a { background: #311; top: 450px; left: 50px; border-radius: 10px; }
+ #display-sfx-mixer { background: #311; top: 450px; left: 625px; width: 250px; height: 100px; border-radius: 10px; }
+ #display-sfx-level { background: #111; top: 600px; left: 700px; width: 100px; height: 100px; }
+ #display-dvd-deck-b { background: #311; top: 450px; left: 950px; border-radius: 10px; }
+ [edit] { width: 400px; height: 50px; position: absolute; z-index: 9; }
+ #edit-fil-deck-a { top: 650px; left: 150px; }
+ #edit-fil-deck-b { top: 650px; left: 1050px; }
+ #edit-dir-deck-a { top: 700px; left: 150px; }
+ #edit-dir-deck-b { top: 700px; left: 1050px; }
+ [panel] { background: #333; border: 1px black solid; user-select: none; position: absolute; z-index: 1; }
+ #panel-vdu-deck-a { top: 0px; left: 0px; width: 600px; height: 400px; }
+ #panel-sfx-unit { top: 0px; left: 600px; width: 300px; height: 400px; }
+ #panel-vdu-deck-b { top: 0px; left: 900px; width: 600px; height: 400px; }
+ #panel-dvd-deck-a { top: 400px; left: 0px; width: 600px; height: 400px; }
+ #panel-sfx-mixer { top: 400px; left: 600px; width: 300px; height: 400px; }
+ #panel-dvd-deck-b { top: 400px; left: 900px; width: 600px; height: 400px; }
+ [fader] { appearance: slider-vertical; -webkit-appearance: slider-vertical; width: 10px; height: 130px; margin-left: 59px; position: absolute; z-index: 3; }
+ #fader-sfx-unit-1 { top: 200px; left: 570px; }
+ #fader-sfx-unit-2 { top: 200px; left: 660px; }
+ #fader-sfx-unit-3 { top: 200px; left: 710px; }
+ #fader-sfx-unit-4 { top: 200px; left: 800px; }
+ #fader-sfx-mixer-a { top: 600px; left: 585px; }
+ #fader-sfx-mixer-x { top: 720px; left: 685px; width: 130px; height: 10px; margin-left: 0px; appearance: slider-horizontal; -webkit-appearance: slider-horizontal; }
+ #fader-sfx-mixer-b { top: 600px; left: 785px; }
+ [misc] { background: grey; width: 10px; height: 20px; position: absolute; z-index: 12; }
+ #button-timed-fade-1 { top: 460px; left: 615px; }
+</style>
+<script>
+var lvl_sfx_mixer_a = 0;
+var lvl_sfx_mixer_x = 0;
+var lvl_sfx_mixer_b = 0;
+var lvl_sfx_unit_1 = 0;
+var lvl_sfx_unit_2 = 0;
+var lvl_sfx_unit_3 = 0;
+var lvl_sfx_unit_4 = 0;
+
+var peak_dvd_deck_a_L = 10;
+var peak_dvd_deck_a_R = 20;
+var peak_dvd_deck_b_L = 30;
+var peak_dvd_deck_b_R = 40;
+var peak_master_L = 50;
+var peak_master_R = 60;
+
+var loaded_deck_a = "DECK_A";
+var loaded_deck_b = "DECK_B";
+var loaded_mixer = "MIXER";
+var loaded_unit = "SFX";
+
+var edit_fil_deck_a = null;
+var edit_fil_deck_b = null;
+var edit_dir_deck_a = null;
+var edit_dir_deck_b = null;
+var audio_deck_a = null;
+var audio_deck_b = null;
+
+var audio_buffer_deck_a = [];
+var audio_buffer_deck_b = [];
+var audio_pos_deck_a = 0;
+var audio_pos_deck_b = 0;
+
+var audio = null;
+var audio_source_deck_a = null;
+var audio_source_deck_b = null;
+var audio_gain_deck_a = null;
+var audio_gain_deck_b = null;
+var audio_fade_deck_a = null;
+var audio_fade_deck_b = null;
+
+var encode = function(data)
+{
+    var buffer = new ArrayBuffer(data.length);
+    var view = new Uint8Array(buffer);
+    for (var i = 0; i < data.length; ++i)
+    {
+        view[i] = data[i] & 0xFF;
+    }
+    return buffer;
+}
+window.onload = function()
+{
+    for (var i = 0; i < 100; ++i)
+    {
+        audio_buffer_deck_a.push(i);
+        audio_buffer_deck_b.push(100 - i);
+    }
+    audio_deck_a = document.getElementById("audio-deck-a");
+    audio_deck_b = document.getElementById("audio-deck-b");
+    edit_fil_deck_a = document.getElementById("edit-fil-deck-a");
+    edit_fil_deck_b = document.getElementById("edit-fil-deck-b");
+    edit_dir_deck_a = document.getElementById("edit-dir-deck-a");
+    edit_dir_deck_b = document.getElementById("edit-dir-deck-b");
+    document.getElementById("button-fil-deck-a").onclick = function() { window.showOpenFilePicker().then(function(event) { edit_fil_deck_a.value = event[0].name; }); }
+    document.getElementById("button-fil-deck-b").onclick = function() { window.showOpenFilePicker().then(function(event) { edit_fil_deck_b.value = event[0].name; }); }
+    document.getElementById("button-dir-deck-a").onclick = function() { window.showDirectoryPicker().then(function(event) { edit_dir_deck_a.value = event.name; }); }
+    document.getElementById("button-dir-deck-b").onclick = function() { window.showDirectoryPicker().then(function(event) { edit_dir_deck_b.value = event.name; }); }
+    document.getElementById("button-cue-deck-a").onclick = function() { audio_deck_a.src = edit_dir_deck_a.value + "/" + edit_fil_deck_a.value; }
+    document.getElementById("button-cue-deck-b").onclick = function() { audio_deck_b.src = edit_dir_deck_a.value + "/" + edit_fil_deck_b.value; }
+    /*
+    audio = new AudioContext();
+    audio_source_deck_a = audio.createMediaElementSource(audio_deck_a);
+    audio_source_deck_b = audio.createMediaElementSource(audio_deck_b);
+    audio_gain_deck_a = audio.createGain();
+    audio_gain_deck_b = audio.createGain();
+    audio_fade_deck_a = audio.createGain();
+    audio_fade_deck_b = audio.createGain();
+    audio_source_deck_a.connect(audio_gain_deck_a);
+    audio_source_deck_b.connect(audio_gain_deck_b);
+    audio_gain_deck_a.connect(audio_fade_deck_a);
+    audio_gain_deck_b.connect(audio_fade_deck_b);
+    audio_fade_deck_a.connect(audio.destination);
+    audio_fade_deck_b.connect(audio.destination);
+    */
+    setInterval(refresh, 0);
+}
+var refresh = function()
+{
+    /*
+    audio_gain_deck_a.value = lvl_sfx_mixer_a;
+    audio_gain_deck_b.value = lvl_sfx_mixer_b;
+    audio_fade_deck_a.value = ((1 - lvl_sfx_mixer_x) * 2) - 1;
+    audio_fade_deck_b.value = ((0 + lvl_sfx_mixer_x) * 2) - 1;
+    */
+    canvas = document.getElementById("display-vdu-deck-a");
+    canvas.width = 1000; canvas.height = 100;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#111";
+    ctx.fillRect(0, 0, 100, 100);
+    ctx.fillStyle = "#007";
+    for (var i = 0; i < 100; ++i)
+    {
+        var lvl = audio_buffer_deck_a[i + audio_pos_deck_a];
+        ctx.fillRect(i * 10, 50 - (lvl / 2), 10, lvl);
+    }
+
+    canvas = document.getElementById("display-vdu-deck-b");
+    canvas.width = 1000; canvas.height = 100;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#111";
+    ctx.fillRect(0, 0, 100, 100);
+    ctx.fillStyle = "#007";
+    for (var i = 0; i < 100; ++i)
+    {
+        var lvl = audio_buffer_deck_b[i + audio_pos_deck_b];
+        ctx.fillRect(i * 10, 50 - (lvl / 2), 10, lvl);
+    }
+
+    canvas = document.getElementById("display-dvd-deck-a");
+    canvas.width = 300; canvas.height = 90;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#f33";
+    ctx.font = "8pt sans-serif";
+    ctx.fillText(loaded_deck_a, 25, 25);
+
+    canvas = document.getElementById("display-dvd-deck-b");
+    canvas.width = 300; canvas.height = 90;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#f33";
+    ctx.font = "8pt sans-serif";
+    ctx.fillText(loaded_deck_b, 25, 25);
+
+    canvas = document.getElementById("display-sfx-mixer");
+    canvas.width = 50; canvas.height = 50;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#f33";
+    ctx.font = "10pt sans-serif";
+    ctx.fillText(loaded_mixer, 25, 25);
+
+    canvas = document.getElementById("display-sfx-unit");
+    canvas.width = 50; canvas.height = 50;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#f33";
+    ctx.font = "10pt sans-serif";
+    ctx.fillText(loaded_unit, 25, 25);
+
+    canvas = document.getElementById("display-sfx-level");
+    canvas.width = 100; canvas.height = 100;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#f33";
+    ctx.font = "10pt sans-serif";
+    ctx.fillRect(20, 100 - peak_dvd_deck_a_L, 10, peak_dvd_deck_a_L);
+    ctx.fillRect(30, 100 - peak_dvd_deck_a_R, 10, peak_dvd_deck_b_R);
+    ctx.fillRect(40, 100 - peak_master_L, 10, peak_master_L);
+    ctx.fillRect(50, 100 - peak_master_R, 10, peak_master_R);
+    ctx.fillRect(60, 100 - peak_dvd_deck_b_L, 10, peak_dvd_deck_b_L);
+    ctx.fillRect(70, 100 - peak_dvd_deck_b_R, 10, peak_dvd_deck_b_R);
+}
+var fader = function(event, sender)
+{
+    console.log(event.type, sender.id, sender.value);
+    if (sender.id == "fader-sfx-unit-1") { lvl_sfx_unit_1 = parseFloat(sender.value) / 100; }
+    if (sender.id == "fader-sfx-unit-2") { lvl_sfx_unit_2 = parseFloat(sender.value) / 100; }
+    if (sender.id == "fader-sfx-unit-3") { lvl_sfx_unit_3 = parseFloat(sender.value) / 100; }
+    if (sender.id == "fader-sfx-unit-4") { lvl_sfx_unit_4 = parseFloat(sender.value) / 100; }
+    if (sender.id == "fader-sfx-mixer-a") { lvl_sfx_mixer_a = parseFloat(sender.value) / 100; }
+    if (sender.id == "fader-sfx-mixer-x") { lvl_sfx_mixer_x = parseFloat(sender.value) / 100; }
+    if (sender.id == "fader-sfx-mixer-b") { lvl_sfx_mixer_b = parseFloat(sender.value) / 100; }
+}
+var misc = function(event, sender)
+{
+    console.log("[MISC]", event.type, sender.id);
+    if (sender.id == "button-timed-fade-page-next") { }
+    if (sender.id == "button-timed-fade-page-prev") { }
+}
+</script>
+<svg panel id="panel-vdu-deck-a">
+  <text x="300" y="370" fill="white" text-anchor="middle">[VDU_A]</text>
+  <path d="M 20 20 l 560 0 M 20 380 l 560 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas canvas id="display-vdu-deck-a"></canvas>
+<svg panel id="panel-sfx-unit">
+  <text x="150" y="190" fill="blue" text-anchor="middle" font-size="32pt">V Y N L</text>
+  <text x="150" y="370" fill="white" text-anchor="middle">[SFX_UNIT]</text>
+  <path d="M 20 20 l 260 0 M 20 380 l 260 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas canvas id="display-sfx-unit"></canvas>
+  <input fader id="fader-sfx-unit-1" type="range" orient="vertical" value="100" oninput="fader(event, this);"></input>
+  <input fader id="fader-sfx-unit-2" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-sfx-unit-3" type="range" orient="vertical" value="0" oninput="fader(event, this);"></input>
+  <input fader id="fader-sfx-unit-4" type="range" orient="vertical" value="100" oninput="fader(event, this);"></input>
+<svg panel id="panel-vdu-deck-b">
+  <text x="300" y="370" fill="white" text-anchor="middle">[VDU_B]</text>
+  <path d="M 20 20 l 560 0 M 20 380 l 560 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas canvas id="display-vdu-deck-b"></canvas>
+<svg panel id="panel-dvd-deck-a">
+  <text x="300" y="190" fill="blue" text-anchor="middle" font-size="32pt">V Y N L</text>
+  <text x="300" y="370" fill="white" text-anchor="middle">[DECK_A]</text>
+  <path d="M 20 20 l 560 0 M 20 380 l 560 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <audio audio controls id="audio-deck-a"></audio>
+  <button button id="button-cue-deck-a">Cue</button>
+  <canvas canvas id="display-dvd-deck-a"></canvas>
+  <button button id="button-fil-deck-a">Fil</button>
+  <button button id="button-dir-deck-a">Dir</button>
+  <input edit type="text" id="edit-fil-deck-a"></input>
+  <input edit type="text" id="edit-dir-deck-a"></input>
+<svg panel id="panel-sfx-mixer">
+  <text x="150" y="190" fill="blue" text-anchor="middle" font-size="32pt">V Y N L</text>
+  <text x="150" y="370" fill="white" text-anchor="middle">[MIXER]</text>
+  <path d="M 20 20 l 260 0 M 20 380 l 260 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas canvas id="display-sfx-mixer"></canvas>
+  <canvas canvas id="display-sfx-level"></canvas>
+  <input fader id="fader-sfx-mixer-a" type="range" orient="vertical" value="100" oninput="fader(event, this);"></input>
+  <input fader id="fader-sfx-mixer-x" type="range" orient="horizontal" value="50" oninput="fader(event, this);"></input>
+  <input fader id="fader-sfx-mixer-b" type="range" orient="vertical" value="100" oninput="fader(event, this);"></input>
+<svg panel id="panel-dvd-deck-b">
+  <text x="300" y="190" fill="blue" text-anchor="middle" font-size="32pt">V Y N L</text>
+  <text x="300" y="370" fill="white" text-anchor="middle">[DECK_B]</text>
+  <path d="M 20 20 l 560 0 M 20 380 l 560 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <audio audio controls id="audio-deck-b"></audio>
+  <button button id="button-cue-deck-b">Cue</button>
+  <canvas canvas id="display-dvd-deck-b"></canvas>
+  <button button id="button-fil-deck-b">Fil</button>
+  <button button id="button-dir-deck-b">Dir</button>
+  <input edit type="text" id="edit-fil-deck-b"></input>
+  <input edit type="text" id="edit-dir-deck-b"></input>
