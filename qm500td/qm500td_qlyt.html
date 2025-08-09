@@ -1,0 +1,269 @@
+<title>Avolites QM500-TD QLYT</title>
+<style>
+ * { box-sizing: border-box; margin: auto; font-family: sans-serif; overflow: hidden; }
+ body { background: black; }
+ [panel] { background: #333; border: 1px black solid; user-select: none; position: absolute; z-index: 1; }
+ #panel-base-station { top: 0px; left: 0px; width: 600px; height: 400px; }
+ #panel-blanking-plate { top: 400px; left: 0px; width: 100px; height: 400px; }
+ #panel-channel-1 { top: 400px; left: 100px; width: 100px; height: 400px; }
+ #panel-channel-2 { top: 400px; left: 200px; width: 100px; height: 400px; }
+ #panel-channel-3 { top: 400px; left: 300px; width: 100px; height: 400px; }
+ #panel-channel-4 { top: 400px; left: 400px; width: 100px; height: 400px; }
+ #panel-channel-5 { top: 400px; left: 500px; width: 100px; height: 400px; }
+ #panel-channel-6 { top: 400px; left: 600px; width: 100px; height: 400px; }
+ #panel-channel-7 { top: 400px; left: 700px; width: 100px; height: 400px; }
+ #panel-channel-8 { top: 400px; left: 800px; width: 100px; height: 400px; }
+ [sel] { background: #311; width: 20px; height: 20px; border-radius: 10px; position: absolute; z-index: 2; }
+ #sel-base-stby-ch-1 { top: 150px; left: 50px; }
+ #sel-base-stby-ch-2 { top: 150px; left: 100px; }
+ #sel-base-stby-ch-3 { top: 150px; left: 150px; }
+ #sel-base-stby-ch-4 { top: 150px; left: 200px; }
+ #sel-base-stby-ch-5 { top: 150px; left: 250px; }
+ #sel-base-stby-ch-6 { top: 150px; left: 300px; }
+ #sel-base-stby-ch-7 { top: 150px; left: 350px; }
+ #sel-base-stby-ch-8 { top: 150px; left: 400px; }
+ #sel-base-go-ch-1 { top: 250px; left: 50px; background: #131; }
+ #sel-base-go-ch-2 { top: 250px; left: 100px; background: #131; }
+ #sel-base-go-ch-3 { top: 250px; left: 150px; background: #131; }
+ #sel-base-go-ch-4 { top: 250px; left: 200px; background: #131; }
+ #sel-base-go-ch-5 { top: 250px; left: 250px; background: #131; }
+ #sel-base-go-ch-6 { top: 250px; left: 300px; background: #131; }
+ #sel-base-go-ch-7 { top: 250px; left: 350px; background: #131; }
+ #sel-base-go-ch-8 { top: 250px; left: 400px; background: #131; }
+ #sel-chan-stby-ch-1 { top: 500px; left: 140px; }
+ #sel-chan-stby-ch-2 { top: 500px; left: 240px; }
+ #sel-chan-stby-ch-3 { top: 500px; left: 340px; }
+ #sel-chan-stby-ch-4 { top: 500px; left: 440px; }
+ #sel-chan-stby-ch-5 { top: 500px; left: 540px; }
+ #sel-chan-stby-ch-6 { top: 500px; left: 640px; }
+ #sel-chan-stby-ch-7 { top: 500px; left: 740px; }
+ #sel-chan-stby-ch-8 { top: 500px; left: 840px; }
+ #sel-chan-go-ch-1 { top: 600px; left: 140px; background: #131; }
+ #sel-chan-go-ch-2 { top: 600px; left: 240px; background: #131; }
+ #sel-chan-go-ch-3 { top: 600px; left: 340px; background: #131; }
+ #sel-chan-go-ch-4 { top: 600px; left: 440px; background: #131; }
+ #sel-chan-go-ch-5 { top: 600px; left: 540px; background: #131; }
+ #sel-chan-go-ch-6 { top: 600px; left: 640px; background: #131; }
+ #sel-chan-go-ch-7 { top: 600px; left: 740px; background: #131; }
+ #sel-chan-go-ch-8 { top: 600px; left: 840px; background: #131; }
+ [stby] { background: red; width: 20px; height: 20px; position: absolute; z-index: 3; }
+ #stby-base-ch-1 { top: 200px; left: 50px; }
+ #stby-base-ch-2 { top: 200px; left: 100px; }
+ #stby-base-ch-3 { top: 200px; left: 150px; }
+ #stby-base-ch-4 { top: 200px; left: 200px; }
+ #stby-base-ch-5 { top: 200px; left: 250px; }
+ #stby-base-ch-6 { top: 200px; left: 300px; }
+ #stby-base-ch-7 { top: 200px; left: 350px; }
+ #stby-base-ch-8 { top: 200px; left: 400px; }
+ #stby-base-reset { top: 200px; left: 500px; }
+ [go] { background: green; width: 20px; height: 20px; position: absolute; z-index: 4; }
+ #go-base-ch-1 { top: 300px; left: 50px; }
+ #go-base-ch-2 { top: 300px; left: 100px; }
+ #go-base-ch-3 { top: 300px; left: 150px; }
+ #go-base-ch-4 { top: 300px; left: 200px; }
+ #go-base-ch-5 { top: 300px; left: 250px; }
+ #go-base-ch-6 { top: 300px; left: 300px; }
+ #go-base-ch-7 { top: 300px; left: 350px; }
+ #go-base-ch-8 { top: 300px; left: 400px; }
+ #go-base-global { top: 300px; left: 500px; }
+ [ack] { background: yellow; width: 20px; height: 20px; position: absolute; z-index: 4; }
+ #ack-chan-ch-1 { top: 700px; left: 140px; }
+ #ack-chan-ch-2 { top: 700px; left: 240px; }
+ #ack-chan-ch-3 { top: 700px; left: 340px; }
+ #ack-chan-ch-4 { top: 700px; left: 440px; }
+ #ack-chan-ch-5 { top: 700px; left: 540px; }
+ #ack-chan-ch-6 { top: 700px; left: 640px; }
+ #ack-chan-ch-7 { top: 700px; left: 740px; }
+ #ack-chan-ch-8 { top: 700px; left: 840px; }
+</style>
+<script>
+var toggle_blink = 0;
+var cue_states = [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
+var sel_stby = [ 0, 0, 0, 0, 0, 0, 0, 0 ];
+var sel_go = [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
+var base_sel_stby = [];
+var base_sel_go = [];
+var chan_sel_stby = [];
+var chan_sel_go = [];
+
+window.onload = function()
+{
+    base_sel_stby.push(null);
+    base_sel_go.push(null);
+    chan_sel_stby.push(null);
+    chan_sel_go.push(null);
+    for (var i = 1; i < cue_states.length; ++i)
+    {
+        base_sel_stby.push(document.getElementById("sel-base-stby-ch-" + i));
+        base_sel_go.push(document.getElementById("sel-base-go-ch-" + i));
+        chan_sel_stby.push(document.getElementById("sel-chan-stby-ch-" + i));
+        chan_sel_go.push(document.getElementById("sel-chan-go-ch-" + i));
+    }
+    setInterval(blink, 200);
+    setInterval(refresh, 0);
+}
+var refresh = function()
+{
+    for (var i = 1; i < cue_states.length; ++i)
+    {
+        if (cue_states[i] == 0) { sel_stby[i] = 0; sel_go[i] = 0; }
+        if (cue_states[i] == 1) { sel_stby[i] = toggle_blink; sel_go[i] = 0; }
+        if (cue_states[i] == 2) { sel_stby[i] = 1; sel_go[i] = 0; }
+        if (cue_states[i] == 3) { sel_stby[i] = 0; sel_go[i] = 1; }
+
+        if (sel_stby[i] == 0)
+        {
+            base_sel_stby[i].style.background = "#311";
+            chan_sel_stby[i].style.background = "#311";
+        }
+        else
+        {
+            base_sel_stby[i].style.background = "#f11";
+            chan_sel_stby[i].style.background = "#f11";
+        }
+        if (sel_go[i] == 0)
+        {
+            base_sel_go[i].style.background = "#131";
+            chan_sel_go[i].style.background = "#131";
+        }
+        else
+        {
+            base_sel_go[i].style.background = "#1f1";
+            chan_sel_go[i].style.background = "#1f1";
+        }
+    }
+}
+var blink = function()
+{
+    toggle_blink = 1 - toggle_blink;
+}
+var stby = function(event, sender)
+{
+    console.log("[STBY]", event.type, sender.id);
+    for (var i = 1; i < cue_states.length; ++i)
+    {
+        if (sender.id == "stby-base-ch-" + i) { cue_states[i] = 1; }
+    }
+    if (sender.id == "stby-base-reset")
+    {
+        for (var i = 1; i < cue_states.length; ++i) { cue_states[i] = 0; }
+    }
+}
+var go = function(event, sender)
+{
+    console.log("[_GO_]", event.type, sender.id);
+    for (var i = 1; i < cue_states.length; ++i)
+    {
+        if (sender.id == "go-base-ch-" + i) { if (cue_states[i] > 0) { cue_states[i] = 3; } }
+    }
+    if (sender.id == "go-base-global")
+    {
+        for (var i = 1; i < cue_states.length; ++i) { if (cue_states[i] > 0) { cue_states[i] = 3; } }
+    }
+}
+var ack = function(event, sender)
+{
+    console.log("[_ACK]", event.type, sender.id);
+    for (var i = 1; i < cue_states.length; ++i)
+    {
+        if (sender.id == "ack-chan-ch-" + i) { if (cue_states[i] == 1) { cue_states[i] = 2; } }
+    }
+}
+</script>
+<svg panel id="panel-base-station">
+  <text x="500" y="80" fill="yellow" text-anchor="middle" font-size="32pt">Q L Y T</text>
+  <text x="300" y="370" fill="white" text-anchor="middle">[CUE_LIGHTS]</text>
+  <path d="M 20 20 l 560 0 M 20 380 l 560 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <button stby id="stby-base-ch-1" onclick="stby(event, this);"></button>
+  <button stby id="stby-base-ch-2" onclick="stby(event, this);"></button>
+  <button stby id="stby-base-ch-3" onclick="stby(event, this);"></button>
+  <button stby id="stby-base-ch-4" onclick="stby(event, this);"></button>
+  <button stby id="stby-base-ch-5" onclick="stby(event, this);"></button>
+  <button stby id="stby-base-ch-6" onclick="stby(event, this);"></button>
+  <button stby id="stby-base-ch-7" onclick="stby(event, this);"></button>
+  <button stby id="stby-base-ch-8" onclick="stby(event, this);"></button>
+  <button stby id="stby-base-reset" onclick="stby(event, this);"></button>
+  <button go id="go-base-ch-1" onclick="go(event, this);"></button>
+  <button go id="go-base-ch-2" onclick="go(event, this);"></button>
+  <button go id="go-base-ch-3" onclick="go(event, this);"></button>
+  <button go id="go-base-ch-4" onclick="go(event, this);"></button>
+  <button go id="go-base-ch-5" onclick="go(event, this);"></button>
+  <button go id="go-base-ch-6" onclick="go(event, this);"></button>
+  <button go id="go-base-ch-7" onclick="go(event, this);"></button>
+  <button go id="go-base-ch-8" onclick="go(event, this);"></button>
+  <button go id="go-base-global" onclick="go(event, this);"></button>
+  <div sel id="sel-base-stby-ch-1"></div>
+  <div sel id="sel-base-stby-ch-2"></div>
+  <div sel id="sel-base-stby-ch-3"></div>
+  <div sel id="sel-base-stby-ch-4"></div>
+  <div sel id="sel-base-stby-ch-5"></div>
+  <div sel id="sel-base-stby-ch-6"></div>
+  <div sel id="sel-base-stby-ch-7"></div>
+  <div sel id="sel-base-stby-ch-8"></div>
+  <div sel id="sel-base-go-ch-1"></div>
+  <div sel id="sel-base-go-ch-2"></div>
+  <div sel id="sel-base-go-ch-3"></div>
+  <div sel id="sel-base-go-ch-4"></div>
+  <div sel id="sel-base-go-ch-5"></div>
+  <div sel id="sel-base-go-ch-6"></div>
+  <div sel id="sel-base-go-ch-7"></div>
+  <div sel id="sel-base-go-ch-8"></div>
+<svg panel id="panel-blanking-plate">
+</svg>
+<svg panel id="panel-channel-1">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_1]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <div sel id="sel-chan-stby-ch-1"></div>
+  <div sel id="sel-chan-go-ch-1"></div>
+  <button ack id="ack-chan-ch-1" onclick="ack(event, this);"></button>
+<svg panel id="panel-channel-2">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_2]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <div sel id="sel-chan-stby-ch-2"></div>
+  <div sel id="sel-chan-go-ch-2"></div>
+  <button ack id="ack-chan-ch-2" onclick="ack(event, this);"></button>
+<svg panel id="panel-channel-3">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_3]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <div sel id="sel-chan-stby-ch-3"></div>
+  <div sel id="sel-chan-go-ch-3"></div>
+  <button ack id="ack-chan-ch-3" onclick="ack(event, this);"></button>
+<svg panel id="panel-channel-4">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_4]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <div sel id="sel-chan-stby-ch-4"></div>
+  <div sel id="sel-chan-go-ch-4"></div>
+  <button ack id="ack-chan-ch-4" onclick="ack(event, this);"></button>
+<svg panel id="panel-channel-5">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_5]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <div sel id="sel-chan-stby-ch-5"></div>
+  <div sel id="sel-chan-go-ch-5"></div>
+  <button ack id="ack-chan-ch-5" onclick="ack(event, this);"></button>
+<svg panel id="panel-channel-6">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_6]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <div sel id="sel-chan-stby-ch-6"></div>
+  <div sel id="sel-chan-go-ch-6"></div>
+  <button ack id="ack-chan-ch-6" onclick="ack(event, this);"></button>
+<svg panel id="panel-channel-7">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_7]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <div sel id="sel-chan-stby-ch-7"></div>
+  <div sel id="sel-chan-go-ch-7"></div>
+  <button ack id="ack-chan-ch-7" onclick="ack(event, this);"></button>
+<svg panel id="panel-channel-8">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_8]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <div sel id="sel-chan-stby-ch-8"></div>
+  <div sel id="sel-chan-go-ch-8"></div>
+  <button ack id="ack-chan-ch-8" onclick="ack(event, this);"></button>
