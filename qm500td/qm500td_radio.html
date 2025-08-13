@@ -1,0 +1,329 @@
+<title>Avolites QM500-TD Radio</title>
+<script>
+
+var drawbar_pos =
+[   [  0,  0 ],
+    [ 50, 50 ], [ 50, 50 ], [ 50, 50 ], [ 50, 50 ],
+    [ 50, 50 ], [ 50, 50 ], [ 50, 50 ], [ 50, 50 ],
+    [ 50, 50 ], [ 50, 50 ], [ 50, 50 ], [ 50, 50 ],
+    [ 50, 50 ], [ 50, 50 ], [ 50, 50 ], [ 50, 50 ],
+]
+
+window.onload = function()
+{
+    setInterval(refresh, 0);
+}
+
+var refresh = function()
+{
+    for (var i = 1; i <= 16; ++i)
+    {
+        var canvas = document.getElementById("cutout-drawbar-" + i);
+        canvas.width = 80; canvas.height = 300; canvas.willReadFrequently = true;
+        var ctx = canvas.getContext("2d");
+
+        ctx.strokeStyle = "#333";
+        ctx.lineJoin = "miter";
+        ctx.lineCap = "miter";
+        ctx.lineWidth = 15;
+        ctx.beginPath();
+        ctx.moveTo(55, 15);
+        ctx.lineTo(25, 150);
+        ctx.lineTo(55, 150);
+        ctx.lineTo(25, 285);
+        ctx.stroke();
+
+        ctx.strokeStyle = "#fed";
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+        ctx.lineWidth = 15;
+        ctx.beginPath();
+        ctx.moveTo(40, 15);
+        ctx.lineTo(10, 165);
+        ctx.lineTo(35, 165);
+        ctx.lineTo(10, 285);
+        ctx.moveTo(40, 285);
+        ctx.lineTo(70, 135);
+        ctx.lineTo(45, 135);
+        ctx.lineTo(70, 15);
+        ctx.stroke();
+
+        ctx.strokeStyle = "#711";
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+        ctx.lineWidth = 10;
+        ctx.beginPath();
+        var x = drawbar_pos[i][0];
+        var y = drawbar_pos[i][1];
+        ctx.moveTo(x, y);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+    }
+}
+
+var drawbar = function(event, sender)
+{
+    if (event.buttons == 1)
+    {
+        var tokens = sender.id.split("-");
+        if (tokens.length >= 2)
+        {
+            var channel = parseInt(tokens[2])
+            var canvas = document.getElementById("cutout-drawbar-" + channel);
+            var ctx = canvas.getContext("2d");
+            var pixel = ctx.getImageData(event.offsetX, event.offsetY, 1, 1);
+            console.log(pixel.data);
+            if ((pixel.data[0] == 51)
+            &&  (pixel.data[1] == 51)
+            &&  (pixel.data[2] == 51)
+            &&  (pixel.data[3] == 255))
+            {
+                drawbar_pos[channel][0] = event.offsetX;
+                drawbar_pos[channel][1] = event.offsetY;
+                var edit = document.getElementById("edit-channel-" + channel);
+                edit.value = (((parseFloat(event.clientY) - 15) / 270) * 100).toFixed(2);
+            }
+        }
+    }
+}
+
+</script>
+<style>
+ * { box-sizing: border-box; margin: auto; font-family: sans-serif; overflow: hidden; }
+ body { background: black; }
+ [status] { color: white; word-wrap: break-word; white-space: pre; position: absolute; z-index: 0; }
+ #status { top: 10px; left: 1610px; width: 400px; height: 800px; }
+ [panel] { background: #333; border: 1px black solid; user-select: none; position: absolute; z-index: 1; }
+ #panel-channel-1 { top: 0px; left: 0px; width: 100px; height: 400px; }
+ #panel-channel-2 { top: 0px; left: 100px; width: 100px; height: 400px; }
+ #panel-channel-3 { top: 0px; left: 200px; width: 100px; height: 400px; }
+ #panel-channel-4 { top: 0px; left: 300px; width: 100px; height: 400px; }
+ #panel-channel-5 { top: 0px; left: 400px; width: 100px; height: 400px; }
+ #panel-channel-6 { top: 0px; left: 500px; width: 100px; height: 400px; }
+ #panel-channel-7 { top: 0px; left: 600px; width: 100px; height: 400px; }
+ #panel-channel-8 { top: 0px; left: 700px; width: 100px; height: 400px; }
+ #panel-channel-9 { top: 0px; left: 800px; width: 100px; height: 400px; }
+ #panel-channel-10 { top: 0px; left: 900px; width: 100px; height: 400px; }
+ #panel-channel-11 { top: 0px; left: 1000px; width: 100px; height: 400px; }
+ #panel-channel-12 { top: 0px; left: 1100px; width: 100px; height: 400px; }
+ #panel-channel-13 { top: 0px; left: 1200px; width: 100px; height: 400px; }
+ #panel-channel-14 { top: 0px; left: 1300px; width: 100px; height: 400px; }
+ #panel-channel-15 { top: 0px; left: 1400px; width: 100px; height: 400px; }
+ #panel-channel-16 { top: 0px; left: 1500px; width: 100px; height: 400px; }
+ #panel-drawbar-1 { top: 400px; left: 0px; width: 100px; height: 400px; }
+ #panel-drawbar-2 { top: 400px; left: 100px; width: 100px; height: 400px; }
+ #panel-drawbar-3 { top: 400px; left: 200px; width: 100px; height: 400px; }
+ #panel-drawbar-4 { top: 400px; left: 300px; width: 100px; height: 400px; }
+ #panel-drawbar-5 { top: 400px; left: 400px; width: 100px; height: 400px; }
+ #panel-drawbar-6 { top: 400px; left: 500px; width: 100px; height: 400px; }
+ #panel-drawbar-7 { top: 400px; left: 600px; width: 100px; height: 400px; }
+ #panel-drawbar-8 { top: 400px; left: 700px; width: 100px; height: 400px; }
+ #panel-drawbar-9 { top: 400px; left: 800px; width: 100px; height: 400px; }
+ #panel-drawbar-10 { top: 400px; left: 900px; width: 100px; height: 400px; }
+ #panel-drawbar-11 { top: 400px; left: 1000px; width: 100px; height: 400px; }
+ #panel-drawbar-12 { top: 400px; left: 1100px; width: 100px; height: 400px; }
+ #panel-drawbar-13 { top: 400px; left: 1200px; width: 100px; height: 400px; }
+ #panel-drawbar-14 { top: 400px; left: 1300px; width: 100px; height: 400px; }
+ #panel-drawbar-15 { top: 400px; left: 1400px; width: 100px; height: 400px; }
+ #panel-drawbar-16 { top: 400px; left: 1500px; width: 100px; height: 400px; }
+ [edit] { transform: rotate(-90deg) translate(-110px, -110px); background: #311; color: white; font-size: 50pt; border: 3px #711 solid; position: absolute; z-index: 2; }
+ #edit-channel-1 { top: 40px; left: 10px; width: 300px; height: 80px; }
+ #edit-channel-2 { top: 40px; left: 110px; width: 300px; height: 80px; }
+ #edit-channel-3 { top: 40px; left: 210px; width: 300px; height: 80px; }
+ #edit-channel-4 { top: 40px; left: 310px; width: 300px; height: 80px; }
+ #edit-channel-5 { top: 40px; left: 410px; width: 300px; height: 80px; }
+ #edit-channel-6 { top: 40px; left: 510px; width: 300px; height: 80px; }
+ #edit-channel-7 { top: 40px; left: 610px; width: 300px; height: 80px; }
+ #edit-channel-8 { top: 40px; left: 710px; width: 300px; height: 80px; }
+ #edit-channel-9 { top: 40px; left: 810px; width: 300px; height: 80px; }
+ #edit-channel-10 { top: 40px; left: 910px; width: 300px; height: 80px; }
+ #edit-channel-11 { top: 40px; left: 1010px; width: 300px; height: 80px; }
+ #edit-channel-12 { top: 40px; left: 1110px; width: 300px; height: 80px; }
+ #edit-channel-13 { top: 40px; left: 1210px; width: 300px; height: 80px; }
+ #edit-channel-14 { top: 40px; left: 1310px; width: 300px; height: 80px; }
+ #edit-channel-15 { top: 40px; left: 1410px; width: 300px; height: 80px; }
+ #edit-channel-16 { top: 40px; left: 1510px; width: 300px; height: 80px; }
+ [cutout] { background: black; border: 3px white solid; position: absolute; z-index: 3; }
+ #cutout-drawbar-1 { top: 440px; left: 10px; width: 80px; height: 300px; }
+ #cutout-drawbar-2 { top: 440px; left: 110px; width: 80px; height: 300px; }
+ #cutout-drawbar-3 { top: 440px; left: 210px; width: 80px; height: 300px; }
+ #cutout-drawbar-4 { top: 440px; left: 310px; width: 80px; height: 300px; }
+ #cutout-drawbar-5 { top: 440px; left: 410px; width: 80px; height: 300px; }
+ #cutout-drawbar-6 { top: 440px; left: 510px; width: 80px; height: 300px; }
+ #cutout-drawbar-7 { top: 440px; left: 610px; width: 80px; height: 300px; }
+ #cutout-drawbar-8 { top: 440px; left: 710px; width: 80px; height: 300px; }
+ #cutout-drawbar-9 { top: 440px; left: 810px; width: 80px; height: 300px; }
+ #cutout-drawbar-10 { top: 440px; left: 910px; width: 80px; height: 300px; }
+ #cutout-drawbar-11 { top: 440px; left: 1010px; width: 80px; height: 300px; }
+ #cutout-drawbar-12 { top: 440px; left: 1110px; width: 80px; height: 300px; }
+ #cutout-drawbar-13 { top: 440px; left: 1210px; width: 80px; height: 300px; }
+ #cutout-drawbar-14 { top: 440px; left: 1310px; width: 80px; height: 300px; }
+ #cutout-drawbar-15 { top: 440px; left: 1410px; width: 80px; height: 300px; }
+ #cutout-drawbar-16 { top: 440px; left: 1510px; width: 80px; height: 300px; }
+</style>
+<svg panel id="panel-channel-1">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_1]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <input edit id="edit-channel-1" type="text" value="100.00"></input>
+<svg panel id="panel-channel-2">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_2]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <input edit id="edit-channel-2" type="text" value="100.00"></input>
+<svg panel id="panel-channel-3">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_3]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <input edit id="edit-channel-3" type="text" value="100.00"></input>
+<svg panel id="panel-channel-4">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_4]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <input edit id="edit-channel-4" type="text" value="100.00"></input>
+<svg panel id="panel-channel-5">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_5]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <input edit id="edit-channel-5" type="text" value="100.00"></input>
+<svg panel id="panel-channel-6">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_6]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <input edit id="edit-channel-6" type="text" value="100.00"></input>
+<svg panel id="panel-channel-7">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_7]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <input edit id="edit-channel-7" type="text" value="100.00"></input>
+<svg panel id="panel-channel-8">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_8]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <input edit id="edit-channel-8" type="text" value="100.00"></input>
+<svg panel id="panel-channel-9">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_9]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <input edit id="edit-channel-9" type="text" value="100.00"></input>
+<svg panel id="panel-channel-10">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_10]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <input edit id="edit-channel-10" type="text" value="100.00"></input>
+<svg panel id="panel-channel-11">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_11]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <input edit id="edit-channel-11" type="text" value="100.00"></input>
+<svg panel id="panel-channel-12">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_12]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <input edit id="edit-channel-12" type="text" value="100.00"></input>
+<svg panel id="panel-channel-13">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_13]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <input edit id="edit-channel-13" type="text" value="100.00"></input>
+<svg panel id="panel-channel-14">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_14]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <input edit id="edit-channel-14" type="text" value="100.00"></input>
+<svg panel id="panel-channel-15">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_15]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <input edit id="edit-channel-15" type="text" value="100.00""></input>
+<svg panel id="panel-channel-16">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_16]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <input edit id="edit-channel-16" type="text" value="100.00"></input>
+<svg panel id="panel-drawbar-1">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_1]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas cutout id="cutout-drawbar-1" onmousemove="drawbar(event, this);"></canvas>
+<svg panel id="panel-drawbar-2">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_2]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas cutout id="cutout-drawbar-2" onmousemove="drawbar(event, this);"></canvas>
+<svg panel id="panel-drawbar-3">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_3]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas cutout id="cutout-drawbar-3" onmousemove="drawbar(event, this);"></canvas>
+<svg panel id="panel-drawbar-4">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_4]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas cutout id="cutout-drawbar-4" onmousemove="drawbar(event, this);"></canvas>
+<svg panel id="panel-drawbar-5">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_5]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas cutout id="cutout-drawbar-5" onmousemove="drawbar(event, this);"></canvas>
+<svg panel id="panel-drawbar-6">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_6]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas cutout id="cutout-drawbar-6" onmousemove="drawbar(event, this);"></canvas>
+<svg panel id="panel-drawbar-7">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_7]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas cutout id="cutout-drawbar-7" onmousemove="drawbar(event, this);"></canvas>
+<svg panel id="panel-drawbar-8">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_8]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas cutout id="cutout-drawbar-8" onmousemove="drawbar(event, this);"></canvas>
+<svg panel id="panel-drawbar-9">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_9]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas cutout id="cutout-drawbar-9" onmousemove="drawbar(event, this);"></canvas>
+<svg panel id="panel-drawbar-10">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_10]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas cutout id="cutout-drawbar-10" onmousemove="drawbar(event, this);"></canvas>
+<svg panel id="panel-drawbar-11">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_11]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas cutout id="cutout-drawbar-11" onmousemove="drawbar(event, this);"></canvas>
+<svg panel id="panel-drawbar-12">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_12]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas cutout id="cutout-drawbar-12" onmousemove="drawbar(event, this);"></canvas>
+<svg panel id="panel-drawbar-13">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_13]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas cutout id="cutout-drawbar-13" onmousemove="drawbar(event, this);"></canvas>
+<svg panel id="panel-drawbar-14">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_14]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas cutout id="cutout-drawbar-14" onmousemove="drawbar(event, this);"></canvas>
+<svg panel id="panel-drawbar-15">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_15]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas cutout id="cutout-drawbar-15" onmousemove="drawbar(event, this);"></canvas>
+<svg panel id="panel-drawbar-16">
+  <text x="50" y="370" fill="white" text-anchor="middle">[CH_16]</text>
+  <path d="M 20 20 l 60 0 M 20 380 l 60 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas cutout id="cutout-drawbar-16" onmousemove="drawbar(event, this);"></canvas>
+<div status id="status">
+___STATUS___
+* All Panels Require Configuration
+* Avoid Radio Intermodulation
+* Record Settings Manually
+</div>
