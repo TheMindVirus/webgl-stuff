@@ -1,0 +1,159 @@
+<title>Avolites Ruby Mobile</title>
+<script>
+var universe = [];
+var fixture = 0;
+var state = "";
+var swop = 0;
+var add = 0;
+var edit = 0;
+var preset = [];
+var keypad = "";
+var clear = 0;
+var enter = 0;
+
+window.onload = function()
+{
+    for (var i = 0; i < 4; ++i)
+    {
+        universe.push([]);
+        for (var j = 0; j <= 512; ++j)
+        {
+            universe[i].push(0);
+        }
+    }
+    setInterval(refresh, 0);
+    setInterval(generate, 100);
+}
+var generate = function()
+{
+    var json = JSON.stringify(universe);
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST", "./webdmx", true);
+    //xmlhttp.send(json);
+}
+var refresh = function()
+{
+    for (var i = 0; i < preset.length; ++i)
+    {
+        var univ = parseInt(preset[i] / 512);
+        var addr = parseInt(preset[i] % 512);
+        universe[univ][addr] = parseInt((add) ? 255 : edit);
+    }
+    //document.querySelector("[left]").innerText = fixture + ", " + ((add) ? 255 : edit) + ", " + keypad;
+    document.querySelector("[left]").innerText = keypad;
+    document.querySelector("[right]").innerText = fixture + ", " + ((add) ? 255 : edit);
+    document.getElementById("swop").style.border = (swop) ? "3px #f33 solid" : "3px #733 solid";
+    document.getElementById("add").style.border = (add) ? "3px #f33 solid" : "3px #733 solid";
+}
+var swops = function(event, sender)
+{
+    console.log("[SWOP]", event.type, sender.id);
+    if (sender.id == "swop") { swop = 1 - swop; }
+}
+var adds = function(event, sender)
+{
+    console.log("[_ADD]", event.type, sender.id);
+    if (sender.id == "add") { add = 1 - add; }
+}
+var fader = function(event, sender)
+{
+    console.log("[FADR]", event.type, sender.id, sender.value);
+    if (sender.id == "fader") { edit = sender.value; }
+}
+var pad = function(event, sender)
+{
+    console.log("[KPAD]", event.type, sender.id);
+    var n = -1;
+    var d = 0;
+    if (sender.id == "keypad-1") { n = 1; }
+    if (sender.id == "keypad-2") { n = 2; }
+    if (sender.id == "keypad-3") { n = 3; }
+    if (sender.id == "keypad-4") { n = 4; }
+    if (sender.id == "keypad-5") { n = 5; }
+    if (sender.id == "keypad-6") { n = 6; }
+    if (sender.id == "keypad-7") { n = 7; }
+    if (sender.id == "keypad-8") { n = 8; }
+    if (sender.id == "keypad-9") { n = 9; }
+    if (sender.id == "keypad-b") { d =-1; }
+    if (sender.id == "keypad-0") { n = 0; }
+    if (sender.id == "keypad-f") { d = 1; }
+
+    if (n != -1) { keypad += n.toString(); }
+    if (d < 0)
+    {
+        clear += 1;
+        if (clear > 1)
+        {
+            fixture = 0;
+            if (swop) { preset = []; }
+            clear = 0;
+        }
+        else { keypad = ""; }
+    }
+    else { clear = 0; }
+    if (d > 0)
+    {
+        enter += 1;
+        if (enter > 1)
+        {
+            if (swop) { preset.push(fixture); }
+            enter = 0;
+        }
+        else
+        {
+            fixture = parseInt(keypad);
+            if (keypad == "") { fixture = 0; }
+        }
+        keypad = "";
+    }
+    else { enter = 0; }
+}
+</script>
+<style>
+ * { box-sizing: border-box; margin: auto; font-family: sans-serif; overflow: hidden; touch-action: none; user-select: none; font-size: 100%; }
+ body { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: black; }
+ [panel] { position: relative; width: 100%; height: 100%; color: white; text-align: center; }
+ [header] { position: relative; width: 95%; height: 10%; background: #fff; }
+ [footer] { position: relative; width: 95%; height: 10%; background: #fff; }
+ [screen] { position: relative; width: 95%; height: 95%; background: #311; border: 1px white solid; color: #fed; }
+ [title] { position: relative; width: 100%; height: 100%; color: #733; text-align: middle; z-index: 1; }
+ [text] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; }
+ [left] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-align: left; z-index: 2; }
+ [right] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-align: right; z-index: 2; }
+ [swop] { background: blue; border: 3px #733 solid; }
+ [add] { background: grey; border: 3px #733 solid; }
+ [faderbox] { position: relative; border: thin blue solid; width: 100%; height: 100%; }
+ [fader] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; appearance: slider-vertical; -webkit-appearance: slider-vertical; }
+ [keypad] { position: relative; width: 95%; height: 95%; }
+ [cell] { width: 25%; height: 20%; }
+ [cell2] { width: 25%; height: 40%; }
+</style>
+<meta name="Viewport" content="width=device-width, user-scalable=no"></meta>
+<table panel style="">
+  <tr><td colspan="4"><div header></div></td></tr>
+  <tr><td colspan="4"><div screen><h1 title>R U B Y</h1><h1 text><span left>0</span><span right>0</span></h1></div></td></tr>
+  <tr>
+    <td rowspan="1"><button keypad id="keypad-1" onclick="pad(event, this);">1</button></td>
+    <td rowspan="1"><button keypad id="keypad-2" onclick="pad(event, this);">2</button></td>
+    <td rowspan="1"><button keypad id="keypad-3" onclick="pad(event, this);">3</button></td>
+    <td rowspan="1"><button keypad swop id="swop" onclick="swops(event, this);"></button></td>
+  </tr>
+  <tr>
+    <td rowspan="1"><button keypad id="keypad-4" onclick="pad(event, this);">4</button></td>
+    <td rowspan="1"><button keypad id="keypad-5" onclick="pad(event, this);">5</button></td>
+    <td rowspan="1"><button keypad id="keypad-6" onclick="pad(event, this);">6</button></td>
+    <td rowspan="1"><button keypad add id="add" onclick="adds(event, this);"></button></td>
+  </tr>
+  <tr>
+    <td rowspan="1"><button keypad id="keypad-7" onclick="pad(event, this);">7</button></td>
+    <td rowspan="1"><button keypad id="keypad-8" onclick="pad(event, this);">8</button></td>
+    <td rowspan="1"><button keypad id="keypad-9" onclick="pad(event, this);">9</button></td>
+    <td rowspan="2"><div faderbox><input fader id="fader" type="range" orient="vertical" value="0" max="255" oninput="fader(event, this);"></input></div></td>
+  </tr>
+  <tr>
+    <td rowspan="1"><button keypad id="keypad-b" onclick="pad(event, this);"><</button></td>
+    <td rowspan="1"><button keypad id="keypad-0" onclick="pad(event, this);">0</button></td>
+    <td rowspan="1"><button keypad id="keypad-f" onclick="pad(event, this);">></button></td>
+  </tr>
+  <tr><td colspan="4"><div footer></div></td></tr>
+</table>
