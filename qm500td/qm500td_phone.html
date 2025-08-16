@@ -1,0 +1,176 @@
+<title>Avolites QM500-TD Phone</title>
+<style>
+ * { box-sizing: border-box; margin: auto; font-family: sans-serif; overflow: hidden; }
+ body { background: black; }
+ [status] { color: white; word-wrap: break-word; white-space: pre; position: absolute; z-index: 0; }
+ #status { top: 10px; left: 1610px; width: 400px; height: 800px; }
+ [panel] { background: #333; border: 1px black solid; user-select: none; position: absolute; z-index: 1; }
+ #panel-phone-1 { top: 0px; left: 0px; width: 200px; height: 400px; }
+ #panel-phone-2 { top: 0px; left: 200px; width: 200px; height: 400px; }
+ #panel-phone-3 { top: 0px; left: 400px; width: 200px; height: 400px; }
+ #panel-phone-4 { top: 0px; left: 600px; width: 200px; height: 400px; }
+ #panel-phone-5 { top: 0px; left: 800px; width: 200px; height: 400px; }
+ #panel-phone-6 { top: 0px; left: 1000px; width: 200px; height: 400px; }
+ #panel-phone-7 { top: 0px; left: 1200px; width: 200px; height: 400px; }
+ #panel-phone-8 { top: 0px; left: 1400px; width: 200px; height: 400px; }
+ #panel-edge-1 { top: 400px; left: 0px; width: 200px; height: 400px; }
+ #panel-edge-2 { top: 400px; left: 200px; width: 200px; height: 400px; }
+ #panel-edge-3 { top: 400px; left: 400px; width: 200px; height: 400px; }
+ #panel-edge-4 { top: 400px; left: 600px; width: 200px; height: 400px; }
+ #panel-edge-5 { top: 400px; left: 800px; width: 200px; height: 400px; }
+ #panel-edge-6 { top: 400px; left: 1000px; width: 200px; height: 400px; }
+ #panel-edge-7 { top: 400px; left: 1200px; width: 200px; height: 400px; }
+ #panel-edge-8 { top: 400px; left: 1400px; width: 200px; height: 400px; }
+ [iframe] { width: 150px; height: 300px; position: absolute; z-index: 2; }
+ #iframe-phone-1 { top: 50px; left: 25px; }
+ #iframe-phone-2 { top: 50px; left: 225; }
+ #iframe-phone-3 { top: 50px; left: 425px; }
+ #iframe-phone-4 { top: 50px; left: 625px; }
+ #iframe-phone-5 { top: 50px; left: 825px; }
+ #iframe-phone-6 { top: 50px; left: 1025px; }
+ #iframe-phone-7 { top: 50px; left: 1225px; }
+ #iframe-phone-8 { top: 50px; left: 1425px; }
+ [display] { background: #311; border: 1px white solid; border-radius: 10px; width: 100px; height: 300px; position: absolute; z-index: 3; }
+ #display-edge-1 { top: 450px; left: 50px; }
+ #display-edge-2 { top: 450px; left: 250px; }
+ #display-edge-3 { top: 450px; left: 450px; }
+ #display-edge-4 { top: 450px; left: 650px; }
+ #display-edge-5 { top: 450px; left: 850px; }
+ #display-edge-6 { top: 450px; left: 1050px; }
+ #display-edge-7 { top: 450px; left: 1250px; }
+ #display-edge-8 { top: 450px; left: 1450px; }
+</style>
+<script>
+var universe = [];
+var universe_prev = [];
+window.onload = function()
+{
+    universe = []
+    universe_prev = [];
+    for (var i = 0; i <= 8; ++i)
+    {
+        universe = []
+        universe_prev.push([]);
+    }
+    setInterval(refresh, 0);
+}
+var hex_encode = function(data)
+{
+    var abcdef = "0123456789ABCDEF";
+    var lo = data & 0xF;
+    var hi = (data >> 4) & 0xF;
+    return abcdef[hi] + abcdef[lo];
+}
+var refresh = function()
+{
+    for (var i = 1; i <= 8; ++i)
+    {
+        universe[i] = document.getElementById("iframe-phone-" + i).contentWindow.universe;
+        if (universe[i] != universe_prev[i])
+        {
+            console.log(i, universe[i]);
+            universe_prev[i] = universe[i];
+        }
+        var canvas = document.getElementById("display-edge-" + i);
+        canvas.width = 100; canvas.height = 100;
+        var ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#f33";
+        var d = 0;
+        for (var j = 0; j < 9; ++j)
+        {
+            var str = "";
+            for (var k = 0; k < 6; ++k)
+            {
+                str += hex_encode(universe[i][0][d]) + " "; d += 1;
+            }
+            ctx.fillText(str, 10, 10 + j * 10);
+        }
+    }
+}
+</script>
+<svg panel id="panel-phone-1">
+  <text x="100" y="370" fill="white" text-anchor="middle">[CH_1]</text>
+  <path d="M 20 20 l 160 0 M 20 380 l 160 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <iframe iframe id="iframe-phone-1" src="qm500td_mobile_dev.html"></iframe>
+<svg panel id="panel-phone-2">
+  <text x="100" y="370" fill="white" text-anchor="middle">[CH_2]</text>
+  <path d="M 20 20 l 160 0 M 20 380 l 160 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <iframe iframe id="iframe-phone-2" src="qm500td_mobile_dev.html"></iframe>
+<svg panel id="panel-phone-3">
+  <text x="100" y="370" fill="white" text-anchor="middle">[CH_3]</text>
+  <path d="M 20 20 l 160 0 M 20 380 l 160 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <iframe iframe id="iframe-phone-3" src="qm500td_mobile_dev.html"></iframe>
+<svg panel id="panel-phone-4">
+  <text x="100" y="370" fill="white" text-anchor="middle">[CH_4]</text>
+  <path d="M 20 20 l 160 0 M 20 380 l 160 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <iframe iframe id="iframe-phone-4" src="qm500td_mobile_dev.html"></iframe>
+<svg panel id="panel-phone-5">
+  <text x="100" y="370" fill="white" text-anchor="middle">[CH_5]</text>
+  <path d="M 20 20 l 160 0 M 20 380 l 160 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <iframe iframe id="iframe-phone-5" src="qm500td_mobile_dev.html"></iframe>
+<svg panel id="panel-phone-6">
+  <text x="100" y="370" fill="white" text-anchor="middle">[CH_6]</text>
+  <path d="M 20 20 l 160 0 M 20 380 l 160 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <iframe iframe id="iframe-phone-6" src="qm500td_mobile_dev.html"></iframe>
+<svg panel id="panel-phone-7">
+  <text x="100" y="370" fill="white" text-anchor="middle">[CH_7]</text>
+  <path d="M 20 20 l 160 0 M 20 380 l 160 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <iframe iframe id="iframe-phone-7" src="qm500td_mobile_dev.html"></iframe>
+<svg panel id="panel-phone-8">
+  <text x="100" y="370" fill="white" text-anchor="middle">[CH_8]</text>
+  <path d="M 20 20 l 160 0 M 20 380 l 160 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <iframe iframe id="iframe-phone-8" src="qm500td_mobile_dev.html"></iframe>
+<svg panel id="panel-edge-1">
+  <text x="100" y="370" fill="white" text-anchor="middle">[CH_1]</text>
+  <path d="M 20 20 l 160 0 M 20 380 l 160 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-edge-1"></canvas>
+<svg panel id="panel-edge-2">
+  <text x="100" y="370" fill="white" text-anchor="middle">[CH_2]</text>
+  <path d="M 20 20 l 160 0 M 20 380 l 160 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-edge-2"></canvas>
+<svg panel id="panel-edge-3">
+  <text x="100" y="370" fill="white" text-anchor="middle">[CH_3]</text>
+  <path d="M 20 20 l 160 0 M 20 380 l 160 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-edge-3"></canvas>
+<svg panel id="panel-edge-4">
+  <text x="100" y="370" fill="white" text-anchor="middle">[CH_4]</text>
+  <path d="M 20 20 l 160 0 M 20 380 l 160 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-edge-4"></canvas>
+<svg panel id="panel-edge-5">
+  <text x="100" y="370" fill="white" text-anchor="middle">[CH_5]</text>
+  <path d="M 20 20 l 160 0 M 20 380 l 160 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-edge-5"></canvas>
+<svg panel id="panel-edge-6">
+  <text x="100" y="370" fill="white" text-anchor="middle">[CH_6]</text>
+  <path d="M 20 20 l 160 0 M 20 380 l 160 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-edge-6"></canvas>
+<svg panel id="panel-edge-7">
+  <text x="100" y="370" fill="white" text-anchor="middle">[CH_7]</text>
+  <path d="M 20 20 l 160 0 M 20 380 l 160 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-edge-7"></canvas>
+<svg panel id="panel-edge-8">
+  <text x="100" y="370" fill="white" text-anchor="middle">[CH_8]</text>
+  <path d="M 20 20 l 160 0 M 20 380 l 160 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-edge-8"></canvas>
+<div status id="status">
+___STATUS___
+* Self-Referential Code Required
+* Portable Edge Server Required
+* WISP Access Point Required
+</div>
