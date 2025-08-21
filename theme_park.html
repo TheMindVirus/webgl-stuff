@@ -1,0 +1,268 @@
+<script>
+var X = [];
+var Y = [];
+var Z = 1000;
+
+var MX = 0;
+var MY = 0;
+var MZ = 0;
+
+var RX = Math.PI / 4;
+var RY = Math.PI / 6;
+var RZ = 0;
+
+var DX = [];
+var DY = [];
+var DZ = [];
+
+var PA = [];
+var PB = [];
+var PC = [];
+var PD = [];
+
+var BX = [];
+var BY = [];
+var BZ = [];
+
+var canvas = null;
+var ctx = null;
+var w = 0;
+var h = 0;
+
+var hw = 0;
+var hh = 0;
+var qw = 0;
+var qh = 0;
+
+window.onload=function()
+{
+    document.body.style.background = "black";
+    canvas = document.createElement("canvas");
+    document.body.appendChild(canvas);
+    canvas.style.position = "fixed";
+    canvas.style.top = "0";
+    canvas.style.left = "0";
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.onmousemove = Mouse;
+    canvas.onmousewheel = Scroll;
+    ctx = canvas.getContext("2d");
+    window.onresize = ClearScreen;
+    ClearScreen();
+    setTimeout(function() { Setup(); setInterval(Loop, 0); }, 0);
+}
+
+var ClearBuffers = function()
+{
+    DX = [];
+    DY = [];
+    DZ = [];
+    PA = [];
+    PB = [];
+    PC = [];
+    PD = [];
+    BX = [];
+    BY = [];
+    BZ = [];
+}
+
+var ClearScreen = function()
+{
+    var style = window.getComputedStyle(canvas);
+    w = canvas.width = parseFloat(style.width);
+    h = canvas.height = parseFloat(style.height);
+    hw = w / 2;
+    hh = h / 2;
+    qw = hw / 2;
+    qh = hh / 2;
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, w, h);
+    ctx.lineWidth = 0.6;
+    ctx.shadowBlur = 6;
+    ctx.strokeStyle = ctx.shadowColor = "#0af";
+    ctx.lineCap = ctx.lineJoin = "round";
+}
+
+var Setup = function()
+{
+    ClearBuffers();
+    ClearScreen();
+}
+
+var Loop = function()
+{
+    ClearBuffers();
+    ClearScreen();
+    AddBox();
+    DrawBox();
+    Rotate();
+    Overlay();
+}
+
+var AddDot = function(x, y, z)
+{
+    DX.push(x);
+    DY.push(y);
+    DZ.push(z);
+}
+
+var AddPad = function(a, b, c, d)
+{
+    PA.push(a);
+    PB.push(b);
+    PC.push(c);
+    PD.push(d);
+}
+
+var AddRod = function(a, b)
+{
+    PA.push(a);
+    PB.push(b);
+    PC.push(b);
+    PD.push(a);
+}
+
+var AddBox = function(ox = 0, oy = 0, oz = 0, s = 200)
+{
+    var o = DX.length;
+    BZ.push(o);
+    AddDot(ox - s, oy + s, oz + s);
+    AddDot(ox + s, oy + s, oz + s);
+    AddDot(ox + s, oy + s, oz - s);
+    AddDot(ox - s, oy + s, oz - s);
+    AddDot(ox - s, oy - s, oz + s);
+    AddDot(ox + s, oy - s, oz + s);
+    AddDot(ox + s, oy - s, oz - s);
+    AddDot(ox - s, oy - s, oz - s);
+    AddPad(o + 0, o + 1, o + 2, o + 3);
+    AddPad(o + 4, o + 5, o + 6, o + 7);
+    AddPad(o + 0, o + 4, o + 5, o + 1);
+    AddPad(o + 1, o + 5, o + 6, o + 2);
+    AddPad(o + 2, o + 6, o + 7, o + 3);
+    AddPad(o + 3, o + 7, o + 4, o + 0);
+    s /= 4;
+    o = DX.length;
+    BZ.push(o);
+    AddDot(MX + ox - s, MY + oy + s, MZ + oz + s);
+    AddDot(MX + ox + s, MY + oy + s, MZ + oz + s);
+    AddDot(MX + ox + s, MY + oy + s, MZ + oz - s);
+    AddDot(MX + ox - s, MY + oy + s, MZ + oz - s);
+    AddDot(MX + ox - s, MY + oy - s, MZ + oz + s);
+    AddDot(MX + ox + s, MY + oy - s, MZ + oz + s);
+    AddDot(MX + ox + s, MY + oy - s, MZ + oz - s);
+    AddDot(MX + ox - s, MY + oy - s, MZ + oz - s);
+    AddPad(o + 0, o + 1, o + 2, o + 3);
+    AddPad(o + 4, o + 5, o + 6, o + 7);
+    AddPad(o + 0, o + 4, o + 5, o + 1);
+    AddPad(o + 1, o + 5, o + 6, o + 2);
+    AddPad(o + 2, o + 6, o + 7, o + 3);
+    AddPad(o + 3, o + 7, o + 4, o + 0);
+    AddRod(0, 0 + 8);
+    AddRod(1, 1 + 8);
+    AddRod(2, 2 + 8);
+    AddRod(3, 3 + 8);
+    AddRod(4, 4 + 8);
+    AddRod(5, 5 + 8);
+    AddRod(6, 6 + 8);
+    AddRod(7, 7 + 8);
+    return BZ[BZ.length - 1];
+}
+
+var DrawBox = function(z = 1)
+{
+    for (var i = 0; i < BZ.length; ++i)
+    {
+        for (var j = 0; j < PA.length; ++j)
+        {
+            BX = new Array(X[PA[BZ[i] + j]], X[PB[BZ[i] + j]], X[PC[BZ[i] + j]], X[PD[BZ[i] + j]]);
+            BY = new Array(Y[PA[BZ[i] + j]], Y[PB[BZ[i] + j]], Y[PC[BZ[i] + j]], Y[PD[BZ[i] + j]]);
+            ctx.beginPath();
+            for (var k = 0; k < BX.length; ++k)
+            {
+                ctx.lineTo(BX[k], BY[k]);
+            }
+            if (z)
+            {
+                ctx.lineTo(BX[0], BY[0]);
+            }
+            ctx.closePath();
+            ctx.stroke();
+        }
+    }
+}
+
+var Sine = function(x)
+{
+    return Math.sin(x);
+}
+
+var Cosine = function(x)
+{
+    return Math.cos(x);
+}
+
+var Rotate = function()
+{
+    var rx = RY;
+    var ry = RX;
+    var rz = RZ;
+    var A = Sine(rx);
+    var B = Sine(ry);
+    var C = Sine(rz);
+    var D = Cosine(rx);
+    var E = Cosine(ry);
+    var F = Cosine(rz);
+    for (var i = 0; i < DX.length; ++i)
+    {
+        var x = DX[i];
+        var y = DY[i];
+        var z = DZ[i];
+        var R = (A * y) + (D * z);
+        var S = (D * y) - (A * z);
+        var T = (E * x) + (B * R);
+        var nx = (F * T) - (C * S);
+        var ny = (C * T) + (F * S);
+        var nz = (E * R) - (B * x);
+        X[i] = (nx / (nz + Z)) * Z + hw;
+        Y[i] = (ny / (nz + Z)) * Z + hh;
+    }
+}
+
+var Overlay = function()
+{
+    ctx.fillStyle = "#000";
+    ctx.shadowBlur = 1;
+    for (var i = 0; i < h; ++i)
+    {
+        if ((i % 2) == 0) { ctx.fillRect(0, i, w, 1); }
+    }
+    ctx.shadowBlur = 0;
+    var px = 10;
+    var bt = 0.01;
+    for (var y = 0; y < h / px; ++y)
+    {
+        for (var x = 0; x < w / px; ++x)
+        {
+            var d1 = 1 - ((x * y) * bt);
+            var d2 = 1 - ((((w / px) - x) * y) * bt);
+            var d3 = 1 - ((((w / px) - x) * ((h / px) - y)) * bt);
+            var d4 = 1 - ((x * ((h / px) - y)) * bt);
+            var d = Math.max(d1, d2, d3, d4);
+            ctx.fillStyle = "rgba(0, 0, 0, " + d + ")";
+            ctx.fillRect(x * px, y * px, px, px);
+        }
+    }
+}
+
+var Mouse = function(event)
+{
+    var screen = { x: w, y: h };
+    MX = event.x - (screen.x / 2);
+    MY = event.y - (screen.y / 2);
+}
+
+var Scroll = function(event)
+{
+    MZ += event.deltaY / 4;
+}
+</script>
