@@ -1,0 +1,137 @@
+<title>Avolites QM500-TD Studio</title>
+<style>
+  * { box-sizing: border-box; margin: auto; font-family: sans-serif; overflow: hidden; }
+  body { background: black;
+  [PANEL] { background: #333; border: 1px black solid; user-select: none; position: absolute; z-index: 1; }
+  #panel-sequencer { top: 0px; left: 0px; width: 800px; height: 400px; }
+  #panel-arranger { top: 0px; left: 800px; width: 800px; height: 400px; }
+  #panel-mixer { top: 400px; left: 0px; width: 1600px; height: 200px; }
+  #panel-timeline { top: 600px; left: 0px; width: 1600px; height: 200px; }
+  [display] { width: 700px; height: 100px; border: 1px white solid; position: absolute; z-index: 2; }
+  #display-sequencer { background: #111; top: 50px; left: 50px; height: 300px; }
+  #display-arranger { background: #111; top: 50px; left: 850px; height: 300px; }
+  #display-mixer { background: #111; top: 450px; left: 50px; height: 300px; width: 1500px; height: 100px; }
+  #display-timeline { background: #111; top: 650px; left: 50px; width: 1500px; height: 100px; }
+</style>
+<script>
+var steps =
+[
+    1, 0, 0, 0, 1, 0, 0, 0,
+    0, 1, 0, 1, 0, 1, 0, 1,
+    0, 0, 1, 0, 0, 0, 1, 0,
+    0, 0, 1, 0, 0, 0, 1, 0,
+]
+var notes =
+[
+    [ 50, 100, 200, 100],
+    [250, 200,  50, 100],
+    [350, 100, 100, 100],
+];
+var mixes =
+[
+    function(i) { return i * 2; }
+];
+var clips =
+[
+    [ 50, 50, 200, 50],
+    [250, 100,  50, 50],
+    [350, 50, 100, 50],
+];
+
+window.onload = function()
+{
+    setInterval(refresh, 0);
+}
+var refresh = function()
+{
+    canvas = document.getElementById("display-sequencer");
+    canvas.width = 800; canvas.height = 400;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#333";
+    ctx.fillRect(0, 0, 800, 400);
+    for (var j = 0; j < 4; ++j)
+    {
+        for (var i = 0; i < 8; ++i)
+        {
+            var lvl = 50;
+            var idx = (8 * j) + i;
+            ctx.fillStyle = (steps[idx]) ? "#f33" : "#733";
+            ctx.beginPath();
+            ctx.roundRect(25 + i * 100, 50 - (lvl / 2) + (j * 100), 50, lvl, 10);
+            ctx.fill();
+            ctx.stroke();
+        }
+    }
+
+    canvas = document.getElementById("display-arranger");
+    canvas.width = 800; canvas.height = 400;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#111";
+    ctx.fillRect(0, 0, 800, 400);
+    ctx.fillStyle = "#007";
+    for (var i = 0; i < 4; ++i)
+    {
+        ctx.fillRect(0, i * 100, 800, 10);
+    }
+    ctx.fillStyle = "#1fa";
+    for (var i = 0; i < notes.length; ++i)
+    {
+        ctx.beginPath();
+        ctx.roundRect(notes[i][0], notes[i][1], notes[i][2], notes[i][3], 10);
+        ctx.fill();
+        ctx.stroke();
+    }
+
+    canvas = document.getElementById("display-mixer");
+    canvas.width = 1600; canvas.height = 200;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, 1600, 200);
+    ctx.fillStyle = "#1fa";
+    for (var i = 0; i < 160; ++i)
+    {
+        var lvl = mixes[0](i);
+        ctx.fillRect(i * 10, 100 - (lvl / 2), 10, lvl);
+        ctx.strokeRect(i * 10, 100 - (lvl / 2), 10, lvl);
+    }
+
+    canvas = document.getElementById("display-timeline");
+    canvas.width = 1600; canvas.height = 200;
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, 1600, 200);
+    ctx.fillStyle = "#007";
+    for (var i = 0; i < 4; ++i)
+    {
+        ctx.fillRect(0, i * 50, 1600, 10);
+    }
+    ctx.fillStyle = "#733";
+    for (var i = 0; i < clips.length; ++i)
+    {
+        ctx.beginPath();
+        ctx.roundRect(clips[i][0], clips[i][1], clips[i][2], clips[i][3], 10);
+        ctx.fill();
+        ctx.stroke();
+    }
+}
+</script>
+<svg PANEL id="panel-sequencer">
+  <text x="400" y="370" fill="white" text-anchor="middle">[SEQUENCER]</text>
+  <path d="M 20 20 l 760 0 M 20 380 l 760 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-sequencer"></canvas>
+<svg PANEL id="panel-arranger">
+  <text x="400" y="370" fill="white" text-anchor="middle">[ARRANGER]</text>
+  <path d="M 20 20 l 760 0 M 20 380 l 760 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-arranger"></canvas>
+<svg PANEL id="panel-mixer">
+  <text x="800" y="170" fill="white" text-anchor="middle">[MIXER]</text>
+  <path d="M 20 20 l 1560 0 M 20 180 l 1560 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-mixer"></canvas>
+<svg PANEL id="panel-timeline">
+  <text x="800" y="170" fill="white" text-anchor="middle">[TIMELINE]</text>
+  <path d="M 20 20 l 1560 0 M 20 180 l 1560 0" stroke="white" stroke-width="6"></path>
+</svg>
+  <canvas display id="display-timeline"></canvas>
